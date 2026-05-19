@@ -25,6 +25,154 @@ Exposes 8 tools over MCP:
 
 ---
 
+## Tools reference
+
+### `search_legislation`
+
+Search bills and resolutions by keyword or file number.
+
+| Parameter | Type | Required | Default | Description |
+|---|---|---|---|---|
+| `query` | string | yes | — | Search term (title or file number) |
+| `limit` | number | no | 20 | Max results to return (max 50) |
+
+```
+search_legislation("open data")
+search_legislation("tenant protection", limit=50)
+```
+
+---
+
+### `get_bill`
+
+Fetch a specific bill by its intro/file number. Returns the full matter record.
+
+| Parameter | Type | Required | Description |
+|---|---|---|---|
+| `file_number` | string | yes | Bill file number, e.g. `0001-2024` |
+
+```
+get_bill("0001-2024")
+get_bill("0837-2025")
+```
+
+---
+
+### `get_bill_history`
+
+Get the full legislative history of a bill — hearings, referrals, votes, and status changes. The `matter_id` is returned by `search_legislation` or `get_bill`.
+
+| Parameter | Type | Required | Description |
+|---|---|---|---|
+| `matter_id` | number | yes | Legistar matter ID |
+
+```
+get_bill_history(12345)
+```
+
+---
+
+### `get_upcoming_hearings`
+
+List upcoming committee hearings and Stated meetings.
+
+| Parameter | Type | Required | Default | Description |
+|---|---|---|---|---|
+| `days_ahead` | number | no | 14 | How many days ahead to look (max 90) |
+
+```
+get_upcoming_hearings()
+get_upcoming_hearings(days_ahead=90)
+```
+
+---
+
+### `get_council_member`
+
+Look up a council member by full or partial name.
+
+| Parameter | Type | Required | Description |
+|---|---|---|---|
+| `name` | string | yes | Full or partial name |
+
+```
+get_council_member("De La Rosa")
+get_council_member("Justin Brannan")
+```
+
+---
+
+### `get_committee`
+
+Look up a committee by name. Returns jurisdiction, chair contact, member count, and active status.
+
+| Parameter | Type | Required | Description |
+|---|---|---|---|
+| `name` | string | yes | Full or partial committee name |
+
+```
+get_committee("technology")
+get_committee("Committee on Housing and Buildings")
+```
+
+---
+
+### `get_votes`
+
+Get the vote record for a specific agenda item. Shows how each member voted. The `event_item_id` is returned in bill history records as `MatterHistoryEventId`.
+
+| Parameter | Type | Required | Description |
+|---|---|---|---|
+| `event_item_id` | number | yes | Event item ID |
+
+```
+get_votes(98765)
+```
+
+---
+
+### `list_recent_legislation`
+
+List the most recently introduced NYC Council legislation.
+
+| Parameter | Type | Required | Default | Description |
+|---|---|---|---|---|
+| `limit` | number | no | 25 | Number of items to return (max 50) |
+
+```
+list_recent_legislation()
+list_recent_legislation(limit=50)
+```
+
+---
+
+## Common workflows
+
+### Track a bill from keyword to vote record
+
+```
+1. search_legislation("e-bike")          → returns matter_id
+2. get_bill_history(matter_id)           → returns event items and MatterHistoryEventId
+3. get_votes(event_item_id)              → shows how each member voted
+```
+
+### Find what a committee covers and when it meets next
+
+```
+1. get_committee("technology")           → returns jurisdiction and chair contact
+2. get_upcoming_hearings(days_ahead=90)  → filter results by committee name
+```
+
+### Look up recent legislation and dig into a bill
+
+```
+1. list_recent_legislation(limit=50)     → browse recent introductions
+2. get_bill(file_number)                 → fetch full matter record
+3. get_bill_history(matter_id)           → trace its path through committee
+```
+
+---
+
 ## Prerequisites
 
 - Node.js 18 or later
