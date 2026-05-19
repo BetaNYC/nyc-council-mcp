@@ -280,6 +280,12 @@ For the most up-to-date legislative information, also see:
 
 ---
 
+## Acknowledgments
+
+This project builds on the foundational work of [@jehiah](https://github.com/jehiah), whose [nyc_legislation](https://github.com/jehiah/nyc_legislation) project has been mirroring NYC Council legislative data since 2018 and powers [intro.nyc](https://intro.nyc/). His Go client for the Legistar API and his approach to making legislative data accessible were an early reference point for this project.
+
+---
+
 ## Contributing
 
 Issues and pull requests welcome at [github.com/BetaNYC/nyc-council-mcp](https://github.com/BetaNYC/nyc-council-mcp).

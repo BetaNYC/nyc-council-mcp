@@ -1,6 +1,6 @@
 {
   "name": "@betanyc/nyc-council-mcp",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "MCP server for NYC Council legislative data via the Legistar API",
   "license": "MIT",
   "author": "BetaNYC",

@@ -27,7 +27,7 @@ if (!token) {
 }
 
 const server = new Server(
-  { name: "nyc-council-mcp", version: "0.1.0" },
+  { name: "nyc-council-mcp", version: "1.0.0" },
   { capabilities: { tools: {} } }
 );
 
