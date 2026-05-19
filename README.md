@@ -284,6 +284,8 @@ For the most up-to-date legislative information, also see:
 
 This project builds on the foundational work of [@jehiah](https://github.com/jehiah), whose [nyc_legislation](https://github.com/jehiah/nyc_legislation) project has been mirroring NYC Council legislative data since 2018 and powers [intro.nyc](https://intro.nyc/). His Go client for the Legistar API and his approach to making legislative data accessible were an early reference point for this project.
 
+Thank you to Nathan Storey for including this project in the [Civic AI Tools Directory](https://www.civicaitools.org/directory) — a curated index of open-source tools for accessing civic and government data through AI.
+
 ---
 
 ## Contributing
