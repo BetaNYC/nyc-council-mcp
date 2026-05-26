@@ -27,55 +27,47 @@ import {
 // Types matching jehiah/nyc_legislation JSON shape
 // ---------------------------------------------------------------------------
 
+// jehiah/nyc_legislation archive uses plain field names (no Matter/Event/Person prefix)
 interface MatterJson {
-  MatterId?: number;
-  MatterFile?: string;
-  MatterName?: string;
-  MatterTitle?: string;
-  MatterTypeName?: string;
-  MatterStatusName?: string;
-  MatterBodyName?: string;
-  MatterIntroDate?: string | null;
-  MatterPassedDate?: string | null;
-  MatterEnactmentDate?: string | null;
-  MatterSponsorNames?: string | null;
-  // Sponsors may be embedded as an array
+  ID?: number;
+  File?: string;
+  Name?: string;
+  Title?: string;
+  TypeName?: string;
+  StatusName?: string;
+  BodyName?: string;
+  IntroDate?: string | null;
+  PassedDate?: string | null;
+  EnactmentDate?: string | null;
+  Summary?: string | null;
   Sponsors?: Array<{
-    MatterSponsorNameId?: number;
-    MatterSponsorName?: string;
-    MatterSponsorSequence?: number;
+    ID?: number;
+    FullName?: string;
+    Slug?: string;
   }>;
 }
 
 interface EventJson {
-  EventId?: number;
-  EventDate?: string;
-  EventTime?: string;
-  EventBodyName?: string;
-  EventLocation?: string;
-  EventAgendaStatusName?: string;
-  EventItems?: Array<{
-    EventItemId?: number;
-    EventItemMatterId?: number | null;
-    EventItemMatterFile?: string | null;
-    EventItemMatterName?: string | null;
-    EventItemActionName?: string | null;
-    EventItemPassedFlagName?: string | null;
-    Votes?: Array<{
-      VoteId?: number;
-      VotePersonId?: number;
-      VotePersonName?: string;
-      VoteValueName?: string;
-    }>;
+  ID?: number;
+  Date?: string;
+  Time?: string;
+  BodyName?: string;
+  Location?: string;
+  AgendaStatusName?: string;
+  // Archive uses "Items" not "EventItems"
+  Items?: Array<{
+    ID?: number;
+    Title?: string | null;
+    // MatterId and Votes are not present in the archive format
   }>;
 }
 
 interface PersonJson {
-  PersonId?: number;
-  PersonFullName?: string;
-  PersonFirstName?: string;
-  PersonLastName?: string;
-  PersonActiveFlag?: number;
+  ID?: number;
+  FullName?: string;
+  FirstName?: string;
+  LastName?: string;
+  IsActive?: boolean | number;
 }
 
 // ---------------------------------------------------------------------------
@@ -180,34 +172,40 @@ function indexBills(
       }
 
       const matter = safeParse<MatterJson>(raw);
-      if (!matter || !matter.MatterId) {
+      if (!matter || !matter.ID) {
         stats.errors++;
         continue;
       }
 
       try {
+        // Build sponsor names string from Sponsors array (archive has no flat SponsorNames field)
+        const sponsorNames = Array.isArray(matter.Sponsors)
+          ? matter.Sponsors.map((s) => s.FullName ?? "").filter(Boolean).join(", ") || null
+          : null;
+
         upsert.run(
-          matter.MatterId,
-          matter.MatterFile ?? basename(filePath, ".json"),
-          matter.MatterTitle || matter.MatterName || "",
-          matter.MatterTypeName ?? null,
-          matter.MatterStatusName ?? null,
-          matter.MatterBodyName ?? null,
-          isoDate(matter.MatterIntroDate),
-          isoDate(matter.MatterPassedDate),
-          isoDate(matter.MatterEnactmentDate),
-          matter.MatterSponsorNames ?? null,
+          matter.ID,
+          matter.File ?? basename(filePath, ".json"),
+          matter.Title || matter.Name || "",
+          matter.TypeName ?? null,
+          matter.StatusName ?? null,
+          matter.BodyName ?? null,
+          isoDate(matter.IntroDate),
+          isoDate(matter.PassedDate),
+          isoDate(matter.EnactmentDate),
+          sponsorNames,
           raw
         );
 
         // Index inline sponsors if present
         if (Array.isArray(matter.Sponsors)) {
-          for (const sponsor of matter.Sponsors) {
-            if (sponsor.MatterSponsorNameId) {
+          for (let i = 0; i < matter.Sponsors.length; i++) {
+            const sponsor = matter.Sponsors[i];
+            if (sponsor.ID) {
               upsertSponsor.run(
-                matter.MatterId,
-                sponsor.MatterSponsorNameId,
-                sponsor.MatterSponsorSequence === 1 ? 1 : 0
+                matter.ID,
+                sponsor.ID,
+                i === 0 ? 1 : 0  // first sponsor is primary
               );
             }
           }
@@ -284,47 +282,35 @@ function indexEvents(
       }
 
       const event = safeParse<EventJson>(raw);
-      if (!event || !event.EventId) {
+      if (!event || !event.ID) {
         stats.errors++;
         continue;
       }
 
       try {
         upsertEvent.run(
-          event.EventId,
-          isoDate(event.EventDate) ?? "",
-          event.EventTime ?? null,
-          event.EventBodyName ?? null,
-          event.EventLocation ?? null,
-          event.EventAgendaStatusName ?? null,
+          event.ID,
+          isoDate(event.Date) ?? "",
+          event.Time ?? null,
+          event.BodyName ?? null,
+          event.Location ?? null,
+          event.AgendaStatusName ?? null,
           raw
         );
 
-        if (Array.isArray(event.EventItems)) {
-          for (const item of event.EventItems) {
-            if (!item.EventItemId) continue;
+        // Archive uses "Items" not "EventItems"; MatterId and Votes not present
+        if (Array.isArray(event.Items)) {
+          for (const item of event.Items) {
+            if (!item.ID) continue;
             upsertItem.run(
-              item.EventItemId,
-              event.EventId,
-              item.EventItemMatterId ?? null,
-              item.EventItemMatterFile ?? null,
-              item.EventItemMatterName ?? null,
-              item.EventItemActionName ?? null
+              item.ID,
+              event.ID,
+              null,   // MatterId not available in archive
+              null,   // file_number not available in archive
+              item.Title ?? null,
+              null    // ActionName not available in archive
             );
-
-            if (Array.isArray(item.Votes)) {
-              for (const vote of item.Votes) {
-                if (!vote.VoteId) continue;
-                upsertVote.run(
-                  vote.VoteId,
-                  item.EventItemId,
-                  vote.VotePersonId ?? null,
-                  vote.VotePersonName ?? null,
-                  vote.VoteValueName ?? null,
-                  item.EventItemMatterId ?? null
-                );
-              }
-            }
+            // Votes not present in archive format — skip
           }
         }
 
@@ -368,15 +354,15 @@ function indexPeople(
       const raw = safeRead(filePath);
       if (!raw) continue;
       const person = safeParse<PersonJson>(raw);
-      if (!person?.PersonId) continue;
+      if (!person?.ID) continue;
 
       try {
         upsert.run(
-          person.PersonId,
-          person.PersonFullName ?? "",
-          person.PersonFirstName ?? null,
-          person.PersonLastName ?? null,
-          person.PersonActiveFlag ?? 1
+          person.ID,
+          person.FullName ?? "",
+          person.FirstName ?? null,
+          person.LastName ?? null,
+          person.IsActive ? 1 : 0
         );
         stats.people++;
       } catch {
