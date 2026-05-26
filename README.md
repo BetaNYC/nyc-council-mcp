@@ -1,290 +1,349 @@
 # nyc-council-mcp
 
-An [MCP (Model Context Protocol)](https://modelcontextprotocol.io/) server for NYC Council legislative data, powered by the [NYC Legistar API](https://council.nyc.gov/legislation/api/).
+An [MCP (Model Context Protocol)](https://modelcontextprotocol.io/) server for NYC Council legislative data. Version 2 adds a **hybrid mode**: a local SQLite index for sub-second search and exploration, plus the live [NYC Legistar API](https://council.nyc.gov/legislation/api/) for authoritative real-time data.
 
-Use this server to give AI assistants (Claude, etc.) real-time access to NYC Council legislation, hearings, council members, committees, and vote records.
-
-Vibe coded with [Claude](https://claude.ai) by [BetaNYC](https://beta.nyc).
+Built by [BetaNYC](https://beta.nyc) with [Claude](https://claude.ai).
 
 ---
 
-## What it does
+## Two-speed design
 
-Exposes 8 tools over MCP:
+| Path | Speed | Data | Use for |
+|---|---|---|---|
+| **Local index** (SQLite) | < 1 second | 1–7 days fresh | Search, browse, voting history, aggregation |
+| **Live API** (Legistar) | 1–5 seconds | Real-time | Current status, upcoming hearings, confirmation |
+
+Use both together for the best experience. Search locally to explore; confirm with the live API when accuracy matters.
+
+---
+
+## Tools
+
+### Fast-path tools (local SQLite index)
+
+These require `LEGISTAR_DB_PATH` and a built index (see [Setup](#setup)).
 
 | Tool | Description |
 |---|---|
-| `search_legislation` | Search bills and resolutions by keyword |
-| `get_bill` | Look up a specific bill by intro/file number |
-| `get_bill_history` | Full legislative history — hearings, referrals, votes |
-| `get_upcoming_hearings` | Committee hearings and Stated meetings in the next N days |
-| `get_council_member` | Look up a council member by name |
-| `get_committee` | Look up a committee by name |
-| `get_votes` | Vote record for a specific agenda item |
-| `list_recent_legislation` | Most recently introduced legislation |
+| `search_bills` | Full-text search across all bills and resolutions |
+| `search_legislation` | Alias for `search_bills` |
+| `search_events` | Full-text search across committee hearings |
+| `list_committees` | All committees with bill and event counts |
+| `recent_bills` | Bills introduced in the last N days |
+| `upcoming_events` | Scheduled events in the next N days |
+| `aggregate_bills` | Count bills grouped by status, type, committee, or year |
+| `vote_breakdown` | Every member's vote on a specific bill |
+| `get_voting_record` | All votes cast by a named council member |
+| `co_sponsors` | Members who most often co-sponsor with a given member |
+| `get_bill_hearings` | Events where a bill appeared on the agenda |
+| `get_event_bills` | Bills on a specific event's agenda |
 
----
+### Confirm-path tools (live Legistar API)
 
-## Tools reference
+These require `LEGISTAR_TOKEN`.
 
-### `search_legislation`
-
-Search bills and resolutions by keyword or file number.
-
-| Parameter | Type | Required | Default | Description |
-|---|---|---|---|---|
-| `query` | string | yes | — | Search term (title or file number) |
-| `limit` | number | no | 20 | Max results to return (max 50) |
-
-```
-search_legislation("open data")
-search_legislation("tenant protection", limit=50)
-```
-
----
-
-### `get_bill`
-
-Fetch a specific bill by its intro/file number. Returns the full matter record.
-
-| Parameter | Type | Required | Description |
-|---|---|---|---|
-| `file_number` | string | yes | Bill file number, e.g. `0001-2024` |
-
-```
-get_bill("0001-2024")
-get_bill("0837-2025")
-```
-
----
-
-### `get_bill_history`
-
-Get the full legislative history of a bill — hearings, referrals, votes, and status changes. The `matter_id` is returned by `search_legislation` or `get_bill`.
-
-| Parameter | Type | Required | Description |
-|---|---|---|---|
-| `matter_id` | number | yes | Legistar matter ID |
-
-```
-get_bill_history(12345)
-```
-
----
-
-### `get_upcoming_hearings`
-
-List upcoming committee hearings and Stated meetings.
-
-| Parameter | Type | Required | Default | Description |
-|---|---|---|---|---|
-| `days_ahead` | number | no | 14 | How many days ahead to look (max 90) |
-
-```
-get_upcoming_hearings()
-get_upcoming_hearings(days_ahead=90)
-```
-
----
-
-### `get_council_member`
-
-Look up a council member by full or partial name.
-
-| Parameter | Type | Required | Description |
-|---|---|---|---|
-| `name` | string | yes | Full or partial name |
-
-```
-get_council_member("De La Rosa")
-get_council_member("Justin Brannan")
-```
-
----
-
-### `get_committee`
-
-Look up a committee by name. Returns jurisdiction, chair contact, member count, and active status.
-
-| Parameter | Type | Required | Description |
-|---|---|---|---|
-| `name` | string | yes | Full or partial committee name |
-
-```
-get_committee("technology")
-get_committee("Committee on Housing and Buildings")
-```
-
----
-
-### `get_votes`
-
-Get the vote record for a specific agenda item. Shows how each member voted. The `event_item_id` is returned in bill history records as `MatterHistoryEventId`.
-
-| Parameter | Type | Required | Description |
-|---|---|---|---|
-| `event_item_id` | number | yes | Event item ID |
-
-```
-get_votes(98765)
-```
-
----
-
-### `list_recent_legislation`
-
-List the most recently introduced NYC Council legislation.
-
-| Parameter | Type | Required | Default | Description |
-|---|---|---|---|---|
-| `limit` | number | no | 25 | Number of items to return (max 50) |
-
-```
-list_recent_legislation()
-list_recent_legislation(limit=50)
-```
-
----
-
-## Common workflows
-
-### Track a bill from keyword to vote record
-
-```
-1. search_legislation("e-bike")          → returns matter_id
-2. get_bill_history(matter_id)           → returns event items and MatterHistoryEventId
-3. get_votes(event_item_id)              → shows how each member voted
-```
-
-### Find what a committee covers and when it meets next
-
-```
-1. get_committee("technology")           → returns jurisdiction and chair contact
-2. get_upcoming_hearings(days_ahead=90)  → filter results by committee name
-```
-
-### Look up recent legislation and dig into a bill
-
-```
-1. list_recent_legislation(limit=50)     → browse recent introductions
-2. get_bill(file_number)                 → fetch full matter record
-3. get_bill_history(matter_id)           → trace its path through committee
-```
+| Tool | Description |
+|---|---|
+| `get_bill` | Current status and record for a specific bill |
+| `get_bill_history` | Authoritative action trail — hearings, referrals, votes |
+| `get_upcoming_hearings` | Real-time upcoming committee hearings and Stated meetings |
+| `get_council_member` | Current contact info and active status for a council member |
+| `get_committee` | Current membership count and details for a committee |
+| `get_votes` | Per-item vote breakdown by event item ID |
+| `list_recent_legislation` | Most recently introduced legislation (catches bills since last index) |
+| `search_legislation_live` | Live Legistar search (slower than local, always current) |
 
 ---
 
 ## Prerequisites
 
 - Node.js 18 or later
-- A free NYC Council Legistar API key — [register here](https://council.nyc.gov/legislation/api/)
+- **For live tools:** a free Legistar API key — [register here](https://council.nyc.gov/legislation/api/)
+- **For local tools:** the `jehiah/nyc_legislation` archive (~700 MB, one-time clone)
 
 ---
 
-## Installation
+## Setup
 
-### Option 1 — npx (no install required)
+### Recommended: hybrid mode (both data sources)
 
-```bash
-LEGISTAR_TOKEN=your_token_here npx @betanyc/nyc-council-mcp
-```
+**Step 1 — Get a Legistar API key**
 
-### Option 2 — global install
+Register at [council.nyc.gov/legislation/api](https://council.nyc.gov/legislation/api/). You'll receive a token by email.
 
-```bash
-npm install -g @betanyc/nyc-council-mcp
-LEGISTAR_TOKEN=your_token_here nyc-council-mcp
-```
-
-### Option 3 — build from source
+**Step 2 — Clone the legislation archive**
 
 ```bash
-git clone https://github.com/BetaNYC/nyc-council-mcp.git
-cd nyc-council-mcp
-npm install
-npm run build
-LEGISTAR_TOKEN=your_token_here npm start
+git clone --depth 1 https://github.com/jehiah/nyc_legislation.git ~/legistar/nyc_legislation
 ```
+
+This is about 700 MB and takes a few minutes. It only needs to be done once.
+
+**Step 3 — Build the local index**
+
+```bash
+npx @betanyc/nyc-council-mcp index \
+  --archive ~/legistar/nyc_legislation \
+  --db ~/legistar/legistar.db \
+  --verbose
+```
+
+This takes about 80 seconds the first time and produces a `legistar.db` file (~100–200 MB).
+
+**Step 4 — Configure your MCP client**
+
+Add both environment variables to your MCP config. See [Configuration](#configuration) below.
+
+---
+
+### Live-only mode (no local index)
+
+If you only want the live Legistar API tools and don't need local search, just set `LEGISTAR_TOKEN` and skip the archive clone.
+
+---
+
+### Local-only mode (no API key)
+
+If you only want fast local search (no real-time data), set `LEGISTAR_DB_PATH` and skip the API key. Note: `get_upcoming_hearings`, `get_bill` (current status), and similar live tools will be unavailable.
+
+---
+
+## Keeping your index fresh
+
+The archive is updated most weekdays. Run these two commands to pull the latest data and update your index:
+
+```bash
+# Pull the latest archive files
+cd ~/legistar/nyc_legislation && git pull
+
+# Rebuild incrementally (only processes new/changed files — takes seconds after the first build)
+npx @betanyc/nyc-council-mcp index \
+  --archive ~/legistar/nyc_legislation \
+  --db ~/legistar/legistar.db
+```
+
+You never need to wait for a BetaNYC-hosted snapshot. Incremental mode (the default) is fast enough to run manually whenever you want fresh data.
+
+**Automated daily updates (cron):**
+
+```bash
+# Add to your crontab: daily at 6am
+0 6 * * * cd ~/legistar/nyc_legislation && git pull && npx @betanyc/nyc-council-mcp index --archive ~/legistar/nyc_legislation --db ~/legistar/legistar.db
+```
+
+**Force a full rebuild:**
+
+```bash
+npx @betanyc/nyc-council-mcp index \
+  --archive ~/legistar/nyc_legislation \
+  --db ~/legistar/legistar.db \
+  --full
+```
+
+> **Note:** The local index may be 1–7 days behind live Legistar depending on when you last updated. For current status and upcoming hearings, use the live API tools (`get_bill`, `get_upcoming_hearings`).
 
 ---
 
 ## Configuration
 
+### Claude Code (recommended)
+
+Register at user scope so the server is available from any project:
+
+```bash
+claude mcp add nyc-council-mcp \
+  --scope user \
+  npx -- -y @betanyc/nyc-council-mcp serve
+```
+
+Then add your environment variables to `~/.claude.json` under the `mcpServers` entry:
+
+```json
+{
+  "mcpServers": {
+    "nyc-council-mcp": {
+      "command": "npx",
+      "args": ["-y", "@betanyc/nyc-council-mcp", "serve"],
+      "env": {
+        "LEGISTAR_TOKEN": "your_token_here",
+        "LEGISTAR_DB_PATH": "/Users/you/legistar/legistar.db"
+      }
+    }
+  }
+}
+```
+
+Set only `LEGISTAR_TOKEN` for live-only mode, or only `LEGISTAR_DB_PATH` for local-only mode.
+
 ### Claude Desktop
 
-Add to your `claude_desktop_config.json`:
+Add to `claude_desktop_config.json`:
 
 ```json
 {
   "mcpServers": {
     "nyc-council": {
       "command": "npx",
-      "args": ["-y", "@betanyc/nyc-council-mcp"],
+      "args": ["-y", "@betanyc/nyc-council-mcp", "serve"],
       "env": {
-        "LEGISTAR_TOKEN": "your_token_here"
+        "LEGISTAR_TOKEN": "your_token_here",
+        "LEGISTAR_DB_PATH": "/Users/you/legistar/legistar.db"
       }
     }
   }
 }
 ```
 
-### Claude Code
+### Build from source
 
-Add to your project's `.claude/settings.json`:
-
-```json
-{
-  "mcpServers": {
-    "nyc-council": {
-      "command": "npx",
-      "args": ["-y", "@betanyc/nyc-council-mcp"],
-      "env": {
-        "LEGISTAR_TOKEN": "your_token_here"
-      }
-    }
-  }
-}
+```bash
+git clone https://github.com/BetaNYC/nyc-council-mcp.git
+cd nyc-council-mcp
+npm install && npm run build
+LEGISTAR_TOKEN=your_token LEGISTAR_DB_PATH=./legistar.db node dist/index.js serve
 ```
 
 ---
 
-## Getting your API key
+## Index CLI reference
 
-1. Go to [council.nyc.gov/legislation/api](https://council.nyc.gov/legislation/api/)
-2. Fill out the short registration form
-3. You will receive a token by email
-4. Set it as the `LEGISTAR_TOKEN` environment variable
+```
+nyc-council-mcp index [options]
 
-Your token is for read-only access. Do not commit it to version control — use an environment variable or a secrets manager.
-
----
-
-## Example usage
-
-Once connected, you can ask your AI assistant things like:
-
-- *"What legislation has been introduced about street vendors this year?"*
-- *"What's the status of Intro 0001-2024?"*
-- *"What committees are holding hearings this week?"*
-- *"How did the council vote on the last zoning amendment?"*
-- *"Who is on the Technology Committee?"*
+Options:
+  --archive <path>    Path to jehiah/nyc_legislation clone (required)
+  --db <path>         SQLite output path (default: $LEGISTAR_DB_PATH or ./legistar.db)
+  --full              Full rebuild (default: incremental)
+  --verbose           Print progress to stderr
+  --help              Show help
+```
 
 ---
 
-## Data source
+## Tool reference
 
-All data comes from the [NYC Council Legistar system](https://legistar.council.nyc.gov/), the official legislative management platform for the New York City Council. The Legistar Web API is provided by [Granicus](https://granicus.com/) and is publicly available for read access.
+### `search_bills` / `search_legislation`
 
-For the most up-to-date legislative information, also see:
-- [NYC Council Legislation Portal](https://legistar.council.nyc.gov/)
-- [intro.nyc](https://intro.nyc/) — community-built legislation tracker
+Full-text search across all bills using the local index.
+
+| Parameter | Type | Required | Default | Description |
+|---|---|---|---|---|
+| `query` | string | yes | — | Search terms |
+| `limit` | number | no | 25 | Max results (max 100) |
+| `agency` | string | no | — | Agency key or name for role-context snippets (e.g. `DEP`, `NYPD`) |
+| `status` | string | no | — | Filter by status (e.g. `Enacted`, `Laid Over`) |
+| `committee` | string | no | — | Filter by committee name |
+
+```
+search_bills("open data")
+search_bills("bicycle lane", agency="DOT", status="Enacted")
+search_bills("tenant protection", committee="Housing")
+```
+
+### `aggregate_bills`
+
+Count bills grouped by a dimension.
+
+| Parameter | Type | Required | Options |
+|---|---|---|---|
+| `group_by` | string | yes | `status`, `type`, `committee`, `year` |
+
+```
+aggregate_bills(group_by="status")
+aggregate_bills(group_by="year")
+```
+
+### `vote_breakdown`
+
+Every council member's vote on a specific bill.
+
+| Parameter | Type | Required | Description |
+|---|---|---|---|
+| `file_number` | string | yes | Bill file number, e.g. `0042-2024` |
+
+### `get_voting_record`
+
+All votes cast by a council member.
+
+| Parameter | Type | Required | Default | Description |
+|---|---|---|---|---|
+| `member_name` | string | yes | — | Full or partial name |
+| `limit` | number | no | 50 | Max results |
+
+### `co_sponsors`
+
+Members who most frequently co-sponsor bills with a given member.
+
+| Parameter | Type | Required | Default | Description |
+|---|---|---|---|---|
+| `member_name` | string | yes | — | Full or partial name |
+| `limit` | number | no | 20 | Top N co-sponsors |
+
+---
+
+## Common workflows
+
+### Explore a topic, then confirm
+
+```
+1. search_bills("e-bike")              → sub-second results from local index
+2. get_bill("0042-2024")               → authoritative current status from live API
+3. get_bill_history(matter_id)         → full action trail from live API
+4. get_votes(event_item_id)            → how each member voted
+```
+
+### Analyze a council member's record
+
+```
+1. get_voting_record("Nurse")          → all votes cast
+2. co_sponsors("Nurse")               → frequent co-sponsors
+3. search_bills("bicycle", committee="Transportation")  → bills in their area
+```
+
+### Track upcoming hearings
+
+```
+1. upcoming_events(days=14)            → from local index (may be 1–7 days stale)
+2. get_upcoming_hearings()             → from live API (real-time)
+```
+
+---
+
+## Agency snippets
+
+When you pass `agency` to `search_bills`, results include a role-context snippet showing HOW the agency appears in the bill — whether it is directed, consulted, or reporting. This helps distinguish bills that merely mention an agency from those that grant or restrict its authority.
+
+Supported agency keys: `DEP`, `DOT`, `NYPD`, `FDNY`, `DOB`, `HPD`, `HRA`, `DSS`, `ACS`, `DOHMH`, `DHS`, `DCAS`, `DSNY`, `DPR`, `DCP`, `FINANCE`, `LAW`, `MAYOR`, `COMPTROLLER`, `MTA`, `EDC`, `SBS`, `DCWP`, `DYCD`, `DFTA`, `DOE`, `CUNY`, and more.
+
+You can also pass a full name: `agency="department of transportation"` or `agency="sanitation"`.
+
+---
+
+## Environment variables
+
+| Variable | Required for | Notes |
+|---|---|---|
+| `LEGISTAR_TOKEN` | Live API tools | Register at [council.nyc.gov/legislation/api](https://council.nyc.gov/legislation/api/) |
+| `LEGISTAR_DB_PATH` | Local SQLite tools | Path to your built `legistar.db` |
+
+Do not commit tokens to version control.
+
+---
+
+## Data sources
+
+- **Live tools:** [NYC Council Legistar API](https://council.nyc.gov/legislation/api/), provided by [Granicus](https://granicus.com/)
+- **Local index:** [jehiah/nyc_legislation](https://github.com/jehiah/nyc_legislation) archive — has been mirroring Legistar since 2018, updated most weekdays
 
 ---
 
 ## Acknowledgments
 
-This project builds on the foundational work of [@jehiah](https://github.com/jehiah), whose [nyc_legislation](https://github.com/jehiah/nyc_legislation) project has been mirroring NYC Council legislative data since 2018 and powers [intro.nyc](https://intro.nyc/). His Go client for the Legistar API and his approach to making legislative data accessible were an early reference point for this project.
+This project builds on the foundational work of [@jehiah](https://github.com/jehiah), whose [nyc_legislation](https://github.com/jehiah/nyc_legislation) project has been mirroring NYC Council legislative data since 2018 and powers [intro.nyc](https://intro.nyc/).
 
-Thank you to Nathan Storey for including this project in the [Civic AI Tools Directory](https://www.civicaitools.org/directory) — a curated index of open-source tools for accessing civic and government data through AI.
+The local SQLite index and agency snippet approach are adapted from [WillHsiaoNYC/legistar-mcp](https://github.com/WillHsiaoNYC/legistar-mcp), which introduced the two-speed architecture and role-context snippet design that v2 implements in TypeScript.
+
+Thank you to Nathan Storey for including this project in the [Civic AI Tools Directory](https://www.civicaitools.org/directory).
 
 ---
 
@@ -296,9 +355,7 @@ Issues and pull requests welcome at [github.com/BetaNYC/nyc-council-mcp](https:/
 
 ## License
 
-MIT License
-
-Copyright (c) 2026 BetaNYC
+MIT License — Copyright (c) 2026 BetaNYC
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
