@@ -325,7 +325,7 @@ You can also pass a full name: `agency="department of transportation"` or `agenc
 |---|---|---|
 | `LEGISTAR_TOKEN` | Live API tools | Register at [council.nyc.gov/legislation/api](https://council.nyc.gov/legislation/api/) |
 | `LEGISTAR_DB_PATH` | Local SQLite tools | Path to your built `legistar.db` |
-| `LEGISTAR_LINK_BILLS` | Agent formatting | Set to `true` to have the agent render bill numbers as Legistar hyperlinks (e.g. `[Int 0042-2024](https://legistar.council.nyc.gov/LegislationDetail.aspx?ID=…)`). Adds a small token overhead per bill. Default: `false`. |
+| `LEGISTAR_LINK_BILLS` | Agent formatting | Set to `true` to have the agent render bill numbers as Legistar hyperlinks (e.g. `[Int 0042-2024](https://legistar.council.nyc.gov/gateway.aspx?m=l&id=…)`). Adds a small token overhead per bill. Default: `false`. |
 
 **Token cost note:** Legistar links add roughly 70–90 tokens per bill reference. For bulk queries (20+ bills), consider leaving `LEGISTAR_LINK_BILLS` unset and only linking specific bills you want to follow up on.
 
