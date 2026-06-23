@@ -373,6 +373,10 @@ Issues and pull requests welcome at [github.com/BetaNYC/nyc-council-mcp](https:/
 
 ---
 
+## Support our work
+
+Freedom isn't free. [Support BetaNYC](https://beta.nyc/donate/).
+
 ## License
 
 MIT License — Copyright (c) 2026 BetaNYC
