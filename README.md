@@ -6,6 +6,23 @@ Built by [BetaNYC](https://beta.nyc) with [Claude](https://claude.ai).
 
 ---
 
+## API key
+
+A free API key is **optional** — it unlocks the live Legistar API tools, but the server also runs in local-only mode without one.
+
+- **Live tools** (`get_bill` current status, `get_upcoming_hearings`, confirmation queries) require a free **Legistar API key**. Register at [council.nyc.gov/legislation/api](https://council.nyc.gov/legislation/api/) — you'll receive a token by email — and set it as the `LEGISTAR_TOKEN` environment variable.
+- **Local fast-path tools** (search, browse, voting history, aggregation) need no key — they read the local SQLite index at `LEGISTAR_DB_PATH`.
+
+You must set at least one of `LEGISTAR_TOKEN` or `LEGISTAR_DB_PATH`; set both for full hybrid mode. Example (live tools):
+
+```bash
+export LEGISTAR_TOKEN="your-legistar-token"
+```
+
+See [Setup](#setup) and [Environment variables](#environment-variables) for full details.
+
+---
+
 ## Two-speed design
 
 | Path | Speed | Data | Use for |
@@ -355,6 +372,10 @@ Thank you to Nathan Storey for including this project in the [Civic AI Tools Dir
 Issues and pull requests welcome at [github.com/BetaNYC/nyc-council-mcp](https://github.com/BetaNYC/nyc-council-mcp).
 
 ---
+
+## Support our work
+
+Freedom isn't free. [Support BetaNYC](https://beta.nyc/donate/).
 
 ## License
 
