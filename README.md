@@ -63,7 +63,7 @@ These require `LEGISTAR_TOKEN`.
 |---|---|
 | `get_bill` | Current status and record for a specific bill |
 | `get_bill_history` | Authoritative action trail — hearings, referrals, votes |
-| `get_upcoming_hearings` | Real-time upcoming committee hearings and Stated meetings |
+| `get_upcoming_hearings` | Real-time upcoming committee hearings and Stated meetings, each with its agenda items (bills/matters) in `EventItems` |
 | `get_council_member` | Current contact info and active status for a council member |
 | `get_committee` | Current membership count and details for a committee |
 | `get_votes` | Per-item vote breakdown by event item ID |
@@ -323,6 +323,13 @@ Members who most frequently co-sponsor bills with a given member.
 1. upcoming_events(days=14)            → from local index (may be 1–7 days stale)
 2. get_upcoming_hearings()             → from live API (real-time)
 ```
+
+`get_upcoming_hearings` populates each event's `EventItems` array with the agenda
+items (the bills/matters on that hearing's agenda), fetched per event from the
+Legistar `/events/{EventId}/eventitems` endpoint. The `/events` list endpoint
+itself always returns `EventItems` empty and ignores `$expand`, so the follow-up
+call is required. Pass `include_agenda=false` to skip it and return the hearing
+schedule faster with `EventItems` empty.
 
 ---
 
