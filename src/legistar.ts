@@ -25,6 +25,52 @@ export type LegistarMatter = {
   MatterText5: string | null;
 };
 
+// Agenda item on an event (one bill/matter, or a procedural line).
+// Field shape verified live 2026-07-01 against
+//   GET https://webapi.legistar.com/v1/nyc/events/{EventId}/eventitems?token=...
+// (36 fields; the union of keys across sample events 22566/22525/22593 exactly
+// matches the field list documented by Legistar — no extra, no missing).
+// Fields that are always null for upcoming (not-yet-held) meetings — votes,
+// mover/seconder, action outcome — are typed nullable accordingly.
+export type LegistarEventItem = {
+  EventItemId: number;
+  EventItemGuid: string;
+  EventItemLastModifiedUtc: string;
+  EventItemRowVersion: string;
+  EventItemEventId: number;
+  EventItemAgendaSequence: number | null;
+  EventItemMinutesSequence: number | null;
+  EventItemAgendaNumber: string | null;
+  EventItemVideo: number | null;
+  EventItemVideoIndex: number | null;
+  EventItemVersion: string | null;
+  EventItemAgendaNote: string | null;
+  EventItemMinutesNote: string | null;
+  EventItemActionId: number | null;
+  EventItemActionName: string | null;
+  EventItemActionText: string | null;
+  EventItemPassedFlag: number | null;
+  EventItemPassedFlagName: string | null;
+  EventItemRollCallFlag: number | null;
+  EventItemFlagExtra: number | null;
+  EventItemTitle: string | null;
+  EventItemTally: string | null;
+  EventItemAccelaRecordId: string | null;
+  EventItemConsent: number | null;
+  EventItemMoverId: number | null;
+  EventItemMover: string | null;
+  EventItemSeconderId: number | null;
+  EventItemSeconder: string | null;
+  EventItemMatterId: number | null;
+  EventItemMatterGuid: string | null;
+  EventItemMatterFile: string | null;
+  EventItemMatterName: string | null;
+  EventItemMatterType: string | null;
+  EventItemMatterStatus: string | null;
+  // Element shape not verified against docs — left as unknown[] rather than guessed.
+  EventItemMatterAttachments: unknown[];
+};
+
 export type LegistarEvent = {
   EventId: number;
   EventGuid: string;
@@ -43,6 +89,11 @@ export type LegistarEvent = {
   EventAgendaFile: string | null;
   EventMinutesFile: string | null;
   EventInSiteURL: string | null;
+  // The /events list endpoint always returns this empty ([]); $expand=EventItems
+  // is silently ignored (verified live 2026-07-01). getUpcomingHearings populates
+  // it via a follow-up call to /events/{EventId}/eventitems unless agenda items
+  // are explicitly excluded.
+  EventItems: LegistarEventItem[];
 };
 
 export type LegistarPerson = {
@@ -179,9 +230,22 @@ export async function getBillHistory(token: string, matterId: number): Promise<L
   return legistarFetch<LegistarHistory[]>(url);
 }
 
+// Fetch the agenda items (bills/matters on the agenda) for a single event.
+// The /events list endpoint returns EventItems empty and ignores $expand
+// (verified live 2026-07-01), so the agenda must be pulled from this dedicated
+// endpoint per event:  GET /events/{EventId}/eventitems
+export async function getEventItems(
+  token: string,
+  eventId: number
+): Promise<LegistarEventItem[]> {
+  const url = buildUrl(`/events/${eventId}/eventitems`, token);
+  return legistarFetch<LegistarEventItem[]>(url);
+}
+
 export async function getUpcomingHearings(
   token: string,
-  daysAhead = 14
+  daysAhead = 14,
+  includeAgenda = true
 ): Promise<LegistarEvent[]> {
   const now = new Date();
   const future = new Date(now.getTime() + daysAhead * 24 * 60 * 60 * 1000);
@@ -192,7 +256,28 @@ export async function getUpcomingHearings(
     $orderby: "EventDate asc",
     $top: "50",
   });
-  return legistarFetch<LegistarEvent[]>(url);
+  const events = await legistarFetch<LegistarEvent[]>(url);
+
+  if (!includeAgenda) {
+    return events;
+  }
+
+  // The list response caps at 50 events ($top), so this is a bounded fan-out.
+  // Fetch agenda items for all events in parallel — no documented Legistar rate
+  // limit, and this is a user-facing tool where latency matters. If one event's
+  // /eventitems call fails, degrade gracefully: leave that event's EventItems as
+  // [] and keep the rest, rather than failing the whole hearings list.
+  await Promise.all(
+    events.map(async (event) => {
+      try {
+        event.EventItems = await getEventItems(token, event.EventId);
+      } catch {
+        event.EventItems = [];
+      }
+    })
+  );
+
+  return events;
 }
 
 export async function getCouncilMember(

@@ -47,13 +47,18 @@ const LIVE_TOOL_DEFS = [
   {
     name: "get_upcoming_hearings",
     description:
-      "List upcoming NYC Council committee hearings and Stated meetings. Real-time data — use this for scheduling, not the local index.",
+      "List upcoming NYC Council committee hearings and Stated meetings. Real-time data — use this for scheduling, not the local index. Each event's EventItems array is populated with its agenda items (the bills/matters on the agenda) via a follow-up call per event; pass include_agenda=false to skip that and return events faster with EventItems empty.",
     inputSchema: {
       type: "object",
       properties: {
         days_ahead: {
           type: "number",
           description: "How many days ahead to look (default 14, max 90)",
+        },
+        include_agenda: {
+          type: "boolean",
+          description:
+            "Whether to populate each event's EventItems (agenda items) via a per-event follow-up call (default true). Set false for a faster response when you only need the hearing schedule, not what's on each agenda.",
         },
       },
     },
@@ -133,10 +138,17 @@ export async function handleLiveTool(
       }
 
       case "get_upcoming_hearings": {
-        const { days_ahead } = z
-          .object({ days_ahead: z.number().max(90).optional() })
+        const { days_ahead, include_agenda } = z
+          .object({
+            days_ahead: z.number().max(90).optional(),
+            include_agenda: z.boolean().optional(),
+          })
           .parse(args ?? {});
-        const results = await getUpcomingHearings(token, days_ahead ?? 14);
+        const results = await getUpcomingHearings(
+          token,
+          days_ahead ?? 14,
+          include_agenda ?? true
+        );
         return { content: [{ type: "text", text: JSON.stringify(results, null, 2) }] };
       }
 
