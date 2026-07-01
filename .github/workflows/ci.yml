@@ -21,14 +21,23 @@ on:
     branches: [main]
     paths:
       - "**/*.ts"
+      - "**/*.mjs"
       - "package.json"
       - "package-lock.json"
+      - ".github/workflows/ci.yml"
   push:
     branches: [main]
     paths:
       - "**/*.ts"
+      - "**/*.mjs"
       - "package.json"
       - "package-lock.json"
+      - ".github/workflows/ci.yml"
+  # Manual trigger — lets us fire a run on any branch. Needed here because a
+  # path-scoped pull_request/push event does not fire on the very PR that
+  # introduces the workflow, so this gate never executed on its own PR (#6).
+  # Retained permanently as a low-cost affordance for on-demand re-runs.
+  workflow_dispatch:
 
 permissions:
   contents: read
