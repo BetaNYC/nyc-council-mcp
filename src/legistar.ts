@@ -1,4 +1,17 @@
+import { nyDateString } from "./dates.js";
+
 const BASE_URL = "https://webapi.legistar.com/v1/nyc";
+
+/**
+ * Escape a string for embedding inside an OData $filter string literal.
+ * Per OData, single quotes are escaped by doubling them. Do NOT
+ * percent-encode here — buildUrl's URLSearchParams does the single URL
+ * encoding pass. (Double-encoding was a bug: multi-word queries were sent
+ * as "public%2520housing" and matched nothing.)
+ */
+export function odataString(value: string): string {
+  return value.replace(/'/g, "''");
+}
 
 export type LegistarMatter = {
   MatterId: number;
@@ -206,7 +219,7 @@ export async function searchLegislation(
   query: string,
   limit = 20
 ): Promise<LegistarMatter[]> {
-  const filter = `substringof('${encodeURIComponent(query)}',MatterTitle) or substringof('${encodeURIComponent(query)}',MatterName)`;
+  const filter = `substringof('${odataString(query)}',MatterTitle) or substringof('${odataString(query)}',MatterName)`;
   const url = buildUrl("/matters", token, {
     $filter: filter,
     $top: String(limit),
@@ -215,12 +228,29 @@ export async function searchLegislation(
   return legistarFetch<LegistarMatter[]>(url);
 }
 
+// MatterFile values are type-prefixed in Legistar (verified live 2026-07-06:
+// "Int 0349-2024", not "0349-2024" — an exact match on the bare number returns
+// []). getBill first tries the string as given; if that finds nothing and the
+// input looks like a bare NNNN-YYYY number, it retries with the common type
+// prefixes in order.
+const MATTER_FILE_PREFIXES = ["Int", "Res", "LU"];
+
 export async function getBill(token: string, fileNumber: string): Promise<LegistarMatter[]> {
-  const url = buildUrl("/matters", token, {
-    $filter: `MatterFile eq '${fileNumber}'`,
-    $top: "1",
-  });
-  return legistarFetch<LegistarMatter[]>(url);
+  const candidates = [fileNumber];
+  if (/^\d{4}-\d{4}$/.test(fileNumber.trim())) {
+    for (const prefix of MATTER_FILE_PREFIXES) {
+      candidates.push(`${prefix} ${fileNumber.trim()}`);
+    }
+  }
+  for (const candidate of candidates) {
+    const url = buildUrl("/matters", token, {
+      $filter: `MatterFile eq '${odataString(candidate)}'`,
+      $top: "1",
+    });
+    const results = await legistarFetch<LegistarMatter[]>(url);
+    if (results.length > 0) return results;
+  }
+  return [];
 }
 
 export async function getBillHistory(token: string, matterId: number): Promise<LegistarHistory[]> {
@@ -249,8 +279,8 @@ export async function getUpcomingHearings(
 ): Promise<LegistarEvent[]> {
   const now = new Date();
   const future = new Date(now.getTime() + daysAhead * 24 * 60 * 60 * 1000);
-  const from = now.toISOString().split("T")[0];
-  const to = future.toISOString().split("T")[0];
+  const from = nyDateString(now);
+  const to = nyDateString(future);
   const url = buildUrl("/events", token, {
     $filter: `EventDate ge datetime'${from}' and EventDate le datetime'${to}'`,
     $orderby: "EventDate asc",
@@ -285,7 +315,7 @@ export async function getCouncilMember(
   name: string
 ): Promise<LegistarPerson[]> {
   const url = buildUrl("/persons", token, {
-    $filter: `substringof('${encodeURIComponent(name)}',PersonFullName) and PersonActiveFlag eq 1`,
+    $filter: `substringof('${odataString(name)}',PersonFullName) and PersonActiveFlag eq 1`,
     $top: "10",
   });
   return legistarFetch<LegistarPerson[]>(url);
@@ -296,7 +326,7 @@ export async function getCommittee(
   name: string
 ): Promise<LegistarBody[]> {
   const url = buildUrl("/bodies", token, {
-    $filter: `substringof('${encodeURIComponent(name)}',BodyName) and BodyActiveFlag eq 1`,
+    $filter: `substringof('${odataString(name)}',BodyName) and BodyActiveFlag eq 1`,
     $top: "10",
   });
   return legistarFetch<LegistarBody[]>(url);
