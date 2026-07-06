@@ -9,12 +9,20 @@ import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
-import { existsSync } from "fs";
+import { existsSync, readFileSync } from "fs";
 import Sqlite from "better-sqlite3";
 
 import { LIVE_TOOL_DEFS, LIVE_SEARCH_TOOL_DEF, handleLiveTool, handleLiveSearch } from "./tools/live.js";
 import { LOCAL_TOOL_DEFS, handleLocalTool } from "./tools/local.js";
 import { openDatabase } from "./db/indexer.js";
+
+// Read the version from package.json so the MCP server never drifts from the
+// published package version (it was previously hardcoded and had drifted).
+const PACKAGE_VERSION = (
+  JSON.parse(
+    readFileSync(new URL("../package.json", import.meta.url), "utf-8")
+  ) as { version: string }
+).version;
 
 // ---------------------------------------------------------------------------
 // Mode detection
@@ -91,7 +99,7 @@ See README for full setup instructions.
   ]);
 
   const server = new Server(
-    { name: "nyc-council-mcp", version: "2.0.0" },
+    { name: "nyc-council-mcp", version: PACKAGE_VERSION },
     { capabilities: { tools: {} } }
   );
 

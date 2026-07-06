@@ -49,10 +49,10 @@ These require `LEGISTAR_DB_PATH` and a built index (see [Setup](#setup)).
 | `recent_bills` | Bills introduced in the last N days |
 | `upcoming_events` | Scheduled events in the next N days |
 | `aggregate_bills` | Count bills grouped by status, type, committee, or year |
-| `vote_breakdown` | Every member's vote on a specific bill |
-| `get_voting_record` | All votes cast by a named council member |
+| `vote_breakdown` | Every member's vote on a specific bill — **currently returns empty; see caveat under [Local tools](#vote_breakdown)** |
+| `get_voting_record` | All votes cast by a named council member — **currently returns empty; see caveat** |
 | `co_sponsors` | Members who most often co-sponsor with a given member |
-| `get_bill_hearings` | Events where a bill appeared on the agenda |
+| `get_bill_hearings` | Events where a bill appeared on the agenda — **currently returns empty; see caveat** |
 | `get_event_bills` | Bills on a specific event's agenda |
 
 ### Confirm-path tools (live Legistar API)
@@ -270,6 +270,11 @@ aggregate_bills(group_by="status")
 aggregate_bills(group_by="year")
 ```
 
+> **⚠️ Caveat: `vote_breakdown`, `get_voting_record`, and `get_bill_hearings` currently return empty results.**
+> The local index does not yet ingest vote or event-item data (the `votes` and `event_items` tables are empty pending a data-source decision), so these three tools always return `[]`.
+> Worked example: `vote_breakdown("Int 0743-2024")` returns `[]` from the local index, even though the live Legistar API has the full 2024-06-06 Stated Meeting roll call at `GET /eventitems/409436/votes` (51 member votes).
+> Until this is resolved, get vote data from the live path: `get_upcoming_hearings` (or `GET /events/{EventId}/eventitems`) → take an `EventItemId` → `get_votes(event_item_id)`.
+
 ### `vote_breakdown`
 
 Every council member's vote on a specific bill.
@@ -349,10 +354,6 @@ You can also pass a full name: `agency="department of transportation"` or `agenc
 |---|---|---|
 | `LEGISTAR_TOKEN` | Live API tools | Register at [council.nyc.gov/legislation/api](https://council.nyc.gov/legislation/api/) |
 | `LEGISTAR_DB_PATH` | Local SQLite tools | Path to your built `legistar.db` |
-| `LEGISTAR_LINK_BILLS` | Agent formatting | Set to `true` to have the agent render bill numbers as Legistar hyperlinks (e.g. `[Int 0042-2024](https://legistar.council.nyc.gov/gateway.aspx?m=l&id=…)`). Adds a small token overhead per bill. Default: `false`. |
-
-**Token cost note:** Legistar links add roughly 70–90 tokens per bill reference. For bulk queries (20+ bills), consider leaving `LEGISTAR_LINK_BILLS` unset and only linking specific bills you want to follow up on.
-
 Do not commit tokens to version control.
 
 ---

@@ -20,11 +20,11 @@ const LIVE_TOOL_DEFS = [
   {
     name: "get_bill",
     description:
-      "Get a specific bill by its intro/file number (e.g. '0001-2024'). Returns the current authoritative record from the live Legistar API.",
+      "Get a specific bill by its intro/file number. Legistar file numbers are type-prefixed (e.g. 'Int 0349-2024', 'Res 0232-2024'); if you pass a bare 'NNNN-YYYY' number, the tool retries with the common prefixes (Int, Res, LU) automatically. Returns the current authoritative record from the live Legistar API.",
     inputSchema: {
       type: "object",
       properties: {
-        file_number: { type: "string", description: "Bill file number, e.g. '0001-2024'" },
+        file_number: { type: "string", description: "Bill file number, e.g. 'Int 0349-2024' or '0349-2024'" },
       },
       required: ["file_number"],
     },
@@ -88,13 +88,14 @@ const LIVE_TOOL_DEFS = [
   {
     name: "get_votes",
     description:
-      "Get the vote record for a specific agenda item by its event item ID. Shows how each member voted. Live API data.",
+      "Get the vote record for a specific agenda item by its EventItemId. Shows how each member voted. Live API data. EventItemIds come from an event's agenda items (GET /events/{EventId}/eventitems) — e.g. the EventItemId field inside each event returned by get_upcoming_hearings. Note: MatterHistoryEventId from get_bill_history is an EVENT id, not an event ITEM id; to go from bill history to votes, fetch that event's eventitems and pick the item matching the bill.",
     inputSchema: {
       type: "object",
       properties: {
         event_item_id: {
           type: "number",
-          description: "Event item ID (from bill history MatterHistoryEventId)",
+          description:
+            "EventItemId of the agenda item (from /events/{EventId}/eventitems, e.g. the EventItems array in get_upcoming_hearings results)",
         },
       },
       required: ["event_item_id"],

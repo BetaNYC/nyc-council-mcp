@@ -5,6 +5,36 @@
 
 import type Database from "better-sqlite3";
 import { resolveAgencyPhrases, extractSnippet } from "../agencies.js";
+import { nyDateString } from "../dates.js";
+
+// ---------------------------------------------------------------------------
+// Helper: build a safe FTS5 MATCH expression from user input
+// ---------------------------------------------------------------------------
+
+/**
+ * Tokenize a user query into AND-ed FTS5 terms.
+ *
+ * - Explicit quoted phrases in the input are preserved as phrase matches.
+ * - Bare words become individual quoted tokens (implicit AND in FTS5), so
+ *   "public housing" matches bills containing both words — the old behavior
+ *   wrapped the whole query in quotes, forcing an exact-phrase match.
+ * - Every term is wrapped in double quotes (with internal quotes doubled),
+ *   which neutralizes FTS5 operator/special characters so arbitrary user
+ *   input can't crash MATCH.
+ *
+ * Returns "" for an effectively empty query — callers should short-circuit.
+ */
+export function buildFtsQuery(query: string): string {
+  const terms: string[] = [];
+  const re = /"([^"]*)"|(\S+)/g;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(query)) !== null) {
+    const raw = (m[1] !== undefined ? m[1] : m[2]).trim();
+    if (!raw) continue;
+    terms.push(`"${raw.replace(/"/g, '""')}"`);
+  }
+  return terms.join(" ");
+}
 
 // ---------------------------------------------------------------------------
 // Types returned by query functions
@@ -93,8 +123,8 @@ export function searchBills(
   const limit = opts.limit ?? 25;
   const agencyPhrases = opts.agency ? resolveAgencyPhrases(opts.agency) : [];
 
-  // Build FTS query — escape single quotes and wrap in quotes for phrase match
-  const ftsQuery = query.replace(/"/g, '""');
+  const ftsQuery = buildFtsQuery(query);
+  if (!ftsQuery) return [];
 
   let sql = `
     SELECT b.matter_id, b.file_number, b.title, b.type_name, b.status_name,
@@ -104,7 +134,20 @@ export function searchBills(
     JOIN bills b ON bills_fts.rowid = b.rowid
     WHERE bills_fts MATCH ?
   `;
-  const params: (string | number)[] = [`"${ftsQuery}"`];
+  const params: (string | number)[] = [ftsQuery];
+
+  // The agency parameter filters results (as the tool description promises),
+  // not just snippet decoration: keep rows whose title or sponsor list
+  // mentions any of the agency's known phrases.
+  if (agencyPhrases.length > 0) {
+    const clause = agencyPhrases
+      .map(() => "(b.title LIKE ? OR b.sponsor_names LIKE ?)")
+      .join(" OR ");
+    sql += ` AND (${clause})`;
+    for (const phrase of agencyPhrases) {
+      params.push(`%${phrase}%`, `%${phrase}%`);
+    }
+  }
 
   if (opts.status) {
     sql += " AND b.status_name LIKE ?";
@@ -141,7 +184,8 @@ export function searchEvents(
   opts: { limit?: number; days_ahead?: number } = {}
 ): EventRow[] {
   const limit = opts.limit ?? 25;
-  const ftsQuery = query.replace(/"/g, '""');
+  const ftsQuery = buildFtsQuery(query);
+  if (!ftsQuery) return [];
 
   let sql = `
     SELECT e.event_id, e.date, e.time, e.body_name, e.location, e.agenda_status
@@ -149,13 +193,12 @@ export function searchEvents(
     JOIN events e ON events_fts.rowid = e.rowid
     WHERE events_fts MATCH ?
   `;
-  const params: (string | number)[] = [`"${ftsQuery}"`];
+  const params: (string | number)[] = [ftsQuery];
 
   if (opts.days_ahead !== undefined) {
-    const cutoff = new Date();
-    cutoff.setDate(cutoff.getDate() + opts.days_ahead);
+    const cutoff = new Date(Date.now() + opts.days_ahead * 24 * 60 * 60 * 1000);
     sql += " AND e.date <= ?";
-    params.push(cutoff.toISOString().slice(0, 10));
+    params.push(nyDateString(cutoff));
   }
 
   sql += " ORDER BY e.date DESC LIMIT ?";
@@ -196,8 +239,7 @@ export function recentBills(
 ): BillRow[] {
   const days = opts.days ?? 30;
   const limit = opts.limit ?? 50;
-  const cutoff = new Date();
-  cutoff.setDate(cutoff.getDate() - days);
+  const cutoff = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
 
   return db
     .prepare(
@@ -210,7 +252,7 @@ export function recentBills(
       LIMIT ?
     `
     )
-    .all(cutoff.toISOString().slice(0, 10), limit) as BillRow[];
+    .all(nyDateString(cutoff), limit) as BillRow[];
 }
 
 // ---------------------------------------------------------------------------
@@ -223,9 +265,8 @@ export function upcomingEvents(
 ): EventRow[] {
   const days = opts.days ?? 14;
   const limit = opts.limit ?? 50;
-  const today = new Date().toISOString().slice(0, 10);
-  const future = new Date();
-  future.setDate(future.getDate() + days);
+  const today = nyDateString();
+  const future = new Date(Date.now() + days * 24 * 60 * 60 * 1000);
 
   return db
     .prepare(
@@ -237,7 +278,7 @@ export function upcomingEvents(
       LIMIT ?
     `
     )
-    .all(today, future.toISOString().slice(0, 10), limit) as EventRow[];
+    .all(today, nyDateString(future), limit) as EventRow[];
 }
 
 // ---------------------------------------------------------------------------
