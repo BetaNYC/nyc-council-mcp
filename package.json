@@ -23,6 +23,10 @@
   "license": "MIT",
   "author": "BetaNYC",
   "homepage": "https://github.com/BetaNYC/nyc-council-mcp",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BetaNYC/nyc-council-mcp.git"
+  },
   "bugs": {
     "url": "https://github.com/BetaNYC/nyc-council-mcp/issues"
   },
