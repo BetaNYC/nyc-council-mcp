@@ -9,6 +9,7 @@
 
 import { existsSync } from "fs";
 import { resolve } from "path";
+import { parseArgs } from "util";
 
 const [, , subcommand, ...rest] = process.argv;
 
@@ -22,20 +23,19 @@ if (cmd === "serve") {
 } else {
   // --- index subcommand ---
   // Parse flags: --archive <path> --db <path> --full --verbose
-  const args = [subcommand, ...rest]; // subcommand might be a flag if `index` was explicit
-  // re-parse from rest since subcommand === "index"
-  const indexArgs = rest;
+  const { values } = parseArgs({
+    args: rest,
+    options: {
+      archive: { type: "string" },
+      db: { type: "string" },
+      full: { type: "boolean", default: false },
+      verbose: { type: "boolean", default: false },
+      help: { type: "boolean", short: "h", default: false },
+    },
+    strict: false,
+  });
 
-  function flag(name: string): string | null {
-    const idx = indexArgs.indexOf(name);
-    return idx !== -1 && idx + 1 < indexArgs.length ? indexArgs[idx + 1] : null;
-  }
-
-  function boolFlag(name: string): boolean {
-    return indexArgs.includes(name);
-  }
-
-  if (boolFlag("--help") || boolFlag("-h")) {
+  if (values.help) {
     console.log(`
 nyc-council-mcp index — build or update the local SQLite index
 
@@ -70,10 +70,13 @@ Automated daily updates (launchd / cron):
     process.exit(0);
   }
 
-  const archivePath = flag("--archive");
-  const dbPath = flag("--db") ?? process.env.LEGISTAR_DB_PATH ?? "./legistar.db";
-  const full = boolFlag("--full");
-  const verbose = boolFlag("--verbose");
+  const archivePath = typeof values.archive === "string" ? values.archive : null;
+  const dbPath =
+    (typeof values.db === "string" ? values.db : null) ??
+    process.env.LEGISTAR_DB_PATH ??
+    "./legistar.db";
+  const full = values.full === true;
+  const verbose = values.verbose === true;
 
   if (!archivePath) {
     console.error("Error: --archive <path> is required.\n");
@@ -93,12 +96,10 @@ Automated daily updates (launchd / cron):
 
   const resolvedDb = resolve(dbPath);
 
-  if (verbose || true) {
-    // Always print basic info — users need feedback for an 80s operation
-    console.error(`Archive: ${resolvedArchive}`);
-    console.error(`Database: ${resolvedDb}`);
-    console.error(`Mode: ${full ? "full rebuild" : "incremental"}`);
-  }
+  // Always print basic info — users need feedback for an 80s operation
+  console.error(`Archive: ${resolvedArchive}`);
+  console.error(`Database: ${resolvedDb}`);
+  console.error(`Mode: ${full ? "full rebuild" : "incremental"}`);
 
   const { buildIndex } = await import("./db/indexer.js");
 

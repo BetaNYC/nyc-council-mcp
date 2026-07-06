@@ -15,6 +15,7 @@ import {
   getVotes,
   listRecentLegislation,
 } from "../legistar.js";
+import { json } from "./util.js";
 
 const LIVE_TOOL_DEFS = [
   {
@@ -111,6 +112,21 @@ const LIVE_TOOL_DEFS = [
       },
     },
   },
+  {
+    // Live-API search alias (calls the Legistar search endpoint). Separate
+    // from the SQLite search_bills / search_legislation tools.
+    name: "search_legislation_live",
+    description:
+      "Search NYC Council legislation via the live Legistar API. Slower than search_bills but always current. Use when the local index may be stale.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        query: { type: "string", description: "Search term (title or file number)" },
+        limit: { type: "number", description: "Max results to return (default 20, max 50)" },
+      },
+      required: ["query"],
+    },
+  },
 ];
 
 export { LIVE_TOOL_DEFS };
@@ -128,13 +144,13 @@ export async function handleLiveTool(
         if (results.length === 0) {
           return { content: [{ type: "text", text: `No bill found with file number ${file_number}.` }] };
         }
-        return { content: [{ type: "text", text: JSON.stringify(results[0], null, 2) }] };
+        return json(results[0]);
       }
 
       case "get_bill_history": {
         const { matter_id } = z.object({ matter_id: z.number() }).parse(args);
         const results = await getBillHistory(token, matter_id);
-        return { content: [{ type: "text", text: JSON.stringify(results, null, 2) }] };
+        return json(results);
       }
 
       case "get_upcoming_hearings": {
@@ -149,25 +165,25 @@ export async function handleLiveTool(
           days_ahead ?? 14,
           include_agenda ?? true
         );
-        return { content: [{ type: "text", text: JSON.stringify(results, null, 2) }] };
+        return json(results);
       }
 
       case "get_council_member": {
         const { name: memberName } = z.object({ name: z.string() }).parse(args);
         const results = await getCouncilMember(token, memberName);
-        return { content: [{ type: "text", text: JSON.stringify(results, null, 2) }] };
+        return json(results);
       }
 
       case "get_committee": {
         const { name: committeeName } = z.object({ name: z.string() }).parse(args);
         const results = await getCommittee(token, committeeName);
-        return { content: [{ type: "text", text: JSON.stringify(results, null, 2) }] };
+        return json(results);
       }
 
       case "get_votes": {
         const { event_item_id } = z.object({ event_item_id: z.number() }).parse(args);
         const results = await getVotes(token, event_item_id);
-        return { content: [{ type: "text", text: JSON.stringify(results, null, 2) }] };
+        return json(results);
       }
 
       case "list_recent_legislation": {
@@ -175,7 +191,15 @@ export async function handleLiveTool(
           .object({ limit: z.number().max(50).optional() })
           .parse(args ?? {});
         const results = await listRecentLegislation(token, limit ?? 25);
-        return { content: [{ type: "text", text: JSON.stringify(results, null, 2) }] };
+        return json(results);
+      }
+
+      case "search_legislation_live": {
+        const { query, limit } = z
+          .object({ query: z.string(), limit: z.number().max(50).optional() })
+          .parse(args);
+        const results = await searchLegislation(token, query, limit ?? 20);
+        return json(results);
       }
 
       default:
@@ -185,31 +209,4 @@ export async function handleLiveTool(
     const message = err instanceof Error ? err.message : String(err);
     return { content: [{ type: "text", text: `Error: ${message}` }], isError: true };
   }
-}
-
-// Also keep search_legislation as a live-API alias (calls the Legistar search endpoint)
-// This is separate from the SQLite search_bills / search_legislation tools.
-export const LIVE_SEARCH_TOOL_DEF = {
-  name: "search_legislation_live",
-  description:
-    "Search NYC Council legislation via the live Legistar API. Slower than search_bills but always current. Use when the local index may be stale.",
-  inputSchema: {
-    type: "object",
-    properties: {
-      query: { type: "string", description: "Search term (title or file number)" },
-      limit: { type: "number", description: "Max results to return (default 20, max 50)" },
-    },
-    required: ["query"],
-  },
-};
-
-export async function handleLiveSearch(
-  args: Record<string, unknown>,
-  token: string
-): Promise<{ content: Array<{ type: string; text: string }> }> {
-  const { query, limit } = z
-    .object({ query: z.string(), limit: z.number().max(50).optional() })
-    .parse(args);
-  const results = await searchLegislation(token, query, limit ?? 20);
-  return { content: [{ type: "text", text: JSON.stringify(results, null, 2) }] };
 }

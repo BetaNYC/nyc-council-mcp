@@ -12,7 +12,7 @@ import {
 import { existsSync } from "fs";
 import Sqlite from "better-sqlite3";
 
-import { LIVE_TOOL_DEFS, LIVE_SEARCH_TOOL_DEF, handleLiveTool, handleLiveSearch } from "./tools/live.js";
+import { LIVE_TOOL_DEFS, handleLiveTool } from "./tools/live.js";
 import { LOCAL_TOOL_DEFS, handleLocalTool } from "./tools/local.js";
 import { openDatabase } from "./db/indexer.js";
 
@@ -80,15 +80,12 @@ See README for full setup instructions.
   // Build tool list
   const toolDefs = [
     ...(mode.hasLocal ? LOCAL_TOOL_DEFS : []),
-    ...(mode.hasLive ? [...LIVE_TOOL_DEFS, LIVE_SEARCH_TOOL_DEF] : []),
+    ...(mode.hasLive ? LIVE_TOOL_DEFS : []),
   ];
 
   // Build set of local and live tool names for routing
   const localNames = new Set(LOCAL_TOOL_DEFS.map((t) => t.name));
-  const liveNames = new Set([
-    ...LIVE_TOOL_DEFS.map((t) => t.name),
-    LIVE_SEARCH_TOOL_DEF.name,
-  ]);
+  const liveNames = new Set(LIVE_TOOL_DEFS.map((t) => t.name));
 
   const server = new Server(
     { name: "nyc-council-mcp", version: "2.0.0" },
@@ -104,11 +101,6 @@ See README for full setup instructions.
     // Route to local (SQLite) handler
     if (mode.hasLocal && db && localNames.has(name)) {
       return handleLocalTool(name, safeArgs, db);
-    }
-
-    // Route to live search alias
-    if (mode.hasLive && mode.token && name === LIVE_SEARCH_TOOL_DEF.name) {
-      return handleLiveSearch(safeArgs, mode.token);
     }
 
     // Route to live API handler

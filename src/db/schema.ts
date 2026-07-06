@@ -6,7 +6,10 @@
  * Snippets are built at query-time by reading source JSON from the bills/events tables.
  */
 
-export const SCHEMA_VERSION = 4;
+// v5: dropped the events_fts FTS5 table + its triggers — searchEvents now uses
+// a plain body_name LIKE filter. Existing local DBs keep working (the stale
+// events_fts objects are simply unused); re-run `index --full` to rebuild clean.
+export const SCHEMA_VERSION = 5;
 
 export const CREATE_TABLES = `
 PRAGMA journal_mode = WAL;
@@ -76,28 +79,6 @@ CREATE TABLE IF NOT EXISTS events (
 CREATE INDEX IF NOT EXISTS events_date      ON events (date);
 CREATE INDEX IF NOT EXISTS events_body_name ON events (body_name);
 
-CREATE VIRTUAL TABLE IF NOT EXISTS events_fts USING fts5(
-  body_name,
-  content     = 'events',
-  content_rowid = 'rowid',
-  tokenize    = 'porter ascii'
-);
-
-CREATE TRIGGER IF NOT EXISTS events_ai AFTER INSERT ON events BEGIN
-  INSERT INTO events_fts (rowid, body_name) VALUES (new.rowid, new.body_name);
-END;
-
-CREATE TRIGGER IF NOT EXISTS events_ad AFTER DELETE ON events BEGIN
-  INSERT INTO events_fts (events_fts, rowid, body_name)
-    VALUES ('delete', old.rowid, old.body_name);
-END;
-
-CREATE TRIGGER IF NOT EXISTS events_au AFTER UPDATE ON events BEGIN
-  INSERT INTO events_fts (events_fts, rowid, body_name)
-    VALUES ('delete', old.rowid, old.body_name);
-  INSERT INTO events_fts (rowid, body_name) VALUES (new.rowid, new.body_name);
-END;
-
 CREATE TABLE IF NOT EXISTS event_items (
   event_item_id INTEGER PRIMARY KEY,
   event_id      INTEGER NOT NULL,
@@ -142,16 +123,8 @@ CREATE INDEX IF NOT EXISTS votes_person     ON votes (person_id);
 CREATE INDEX IF NOT EXISTS votes_matter     ON votes (matter_id);
 `;
 
-export const GET_SCHEMA_VERSION = `
-  SELECT value FROM index_state WHERE key = 'schema_version'
-`;
-
 export const SET_SCHEMA_VERSION = `
   INSERT OR REPLACE INTO index_state (key, value) VALUES ('schema_version', ?)
-`;
-
-export const GET_ARCHIVE_ROOT = `
-  SELECT value FROM index_state WHERE key = 'archive_root'
 `;
 
 export const SET_ARCHIVE_ROOT = `

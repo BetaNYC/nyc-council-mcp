@@ -6,7 +6,8 @@
 # sibling nyc-charter-laws-rules MCP runs (test.yml), extended to this repo.
 # Owned by the software-engineer agent.
 #
-# Node matrix: 20.x and 22.x. package.json declares "engines.node >= 18", and
+# Node matrix: 20.x and 22.x. package.json declares "engines.node >= 18.17"
+# (floor set by fs.readdirSync's recursive option, used by the indexer), and
 # this matrix satisfies that floor while testing only actively-maintained LTS
 # releases. Node 18 reached End-of-Life on 2025-04-30 and is excluded on
 # purpose — the same call the sibling nyc-charter-laws-rules repo made — so CI
