@@ -138,30 +138,23 @@ export function searchBills(
 export function searchEvents(
   db: Database.Database,
   query: string,
-  opts: { limit?: number; days_ahead?: number } = {}
+  opts: { limit?: number } = {}
 ): EventRow[] {
   const limit = opts.limit ?? 25;
-  const ftsQuery = query.replace(/"/g, '""');
 
-  let sql = `
-    SELECT e.event_id, e.date, e.time, e.body_name, e.location, e.agenda_status
-    FROM events_fts
-    JOIN events e ON events_fts.rowid = e.rowid
-    WHERE events_fts MATCH ?
-  `;
-  const params: (string | number)[] = [`"${ftsQuery}"`];
-
-  if (opts.days_ahead !== undefined) {
-    const cutoff = new Date();
-    cutoff.setDate(cutoff.getDate() + opts.days_ahead);
-    sql += " AND e.date <= ?";
-    params.push(cutoff.toISOString().slice(0, 10));
-  }
-
-  sql += " ORDER BY e.date DESC LIMIT ?";
-  params.push(limit);
-
-  return db.prepare(sql).all(...params) as EventRow[];
+  // Events only carry a short body_name worth searching, so a plain LIKE
+  // substring match replaces the former events_fts FTS5 index (schema v5).
+  return db
+    .prepare(
+      `
+      SELECT event_id, date, time, body_name, location, agenda_status
+      FROM events
+      WHERE body_name LIKE ?
+      ORDER BY date DESC
+      LIMIT ?
+    `
+    )
+    .all(`%${query}%`, limit) as EventRow[];
 }
 
 // ---------------------------------------------------------------------------

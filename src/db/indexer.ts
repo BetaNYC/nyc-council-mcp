@@ -11,8 +11,7 @@
  */
 
 import Sqlite from "better-sqlite3";
-import fg from "fast-glob";
-import { readFileSync, statSync } from "fs";
+import { readFileSync, readdirSync, statSync } from "fs";
 import { join, basename } from "path";
 import {
   CREATE_TABLES,
@@ -119,6 +118,23 @@ function isoDate(raw: string | null | undefined): string | null {
   return raw.slice(0, 10) || null;
 }
 
+/**
+ * List all *.json files under `dir`, recursively, as absolute paths.
+ * Returns [] if the directory does not exist (matching the old glob behavior).
+ * Uses fs.readdirSync({ recursive: true }) — requires Node >= 18.17.
+ */
+function listJsonFiles(dir: string): string[] {
+  let entries: string[];
+  try {
+    entries = readdirSync(dir, { recursive: true }) as string[];
+  } catch {
+    return [];
+  }
+  return entries
+    .filter((entry) => entry.endsWith(".json"))
+    .map((entry) => join(dir, entry));
+}
+
 // ---------------------------------------------------------------------------
 // Index bills (introduction/{year}/*.json)
 // ---------------------------------------------------------------------------
@@ -218,8 +234,7 @@ function indexBills(
     }
   });
 
-  const pattern = join(archiveRoot, "introduction", "**", "*.json");
-  const files = fg.sync(pattern, { absolute: true });
+  const files = listJsonFiles(join(archiveRoot, "introduction"));
 
   // Process in chunks to avoid holding too many file handles
   const CHUNK = 500;
@@ -321,8 +336,7 @@ function indexEvents(
     }
   });
 
-  const pattern = join(archiveRoot, "events", "**", "*.json");
-  const files = fg.sync(pattern, { absolute: true });
+  const files = listJsonFiles(join(archiveRoot, "events"));
 
   const CHUNK = 200;
   for (let i = 0; i < files.length; i += CHUNK) {
@@ -371,8 +385,7 @@ function indexPeople(
     }
   });
 
-  const pattern = join(archiveRoot, "people", "*.json");
-  const files = fg.sync(pattern, { absolute: true });
+  const files = listJsonFiles(join(archiveRoot, "people"));
   insertPeopleBatch(files);
 }
 
