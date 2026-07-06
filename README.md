@@ -374,6 +374,19 @@ Thank you to Nathan Storey for including this project in the [Civic AI Tools Dir
 
 ---
 
+## Releases
+
+Publishing is automated. To cut a release:
+
+1. Bump `version` in `package.json` in a PR (with a matching [CHANGELOG.md](CHANGELOG.md) entry).
+2. Merge the PR.
+3. Push the matching tag: `git tag v<version> && git push origin v<version>`.
+4. The [release workflow](.github/workflows/release.yml) runs tests, verifies the tag matches `package.json`, publishes to npm with provenance, and creates a GitHub Release.
+
+Prerequisite: the `NPM_TOKEN` org secret (an npm automation token with publish rights on `@betanyc`) must be configured. Do not run `npm publish` by hand.
+
+---
+
 ## Contributing
 
 Issues and pull requests welcome at [github.com/BetaNYC/nyc-council-mcp](https://github.com/BetaNYC/nyc-council-mcp).

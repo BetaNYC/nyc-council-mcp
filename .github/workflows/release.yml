@@ -1,0 +1,77 @@
+# Release automation for @betanyc/nyc-council-mcp.
+#
+# Publishes the package to npm and creates a GitHub Release whenever a version
+# tag (v*) is pushed. This closes the release gap where fixes merged to main
+# but never reached npm: the release step is now a tag push, not a manual
+# `npm publish` someone has to remember to run. Part of the fleet-wide
+# release-hygiene rollout across the six BetaNYC MCP repos. Owned by the
+# software-engineer agent.
+#
+# Flow: bump the version in package.json via PR → merge → push the matching
+# tag (e.g. v2.2.0) → this workflow tests, verifies tag == package.json
+# version, publishes with npm provenance, and creates a GitHub Release with
+# generated notes.
+#
+# Prerequisite: the NPM_TOKEN org secret (an npm automation token with publish
+# rights on @betanyc) must be configured.
+
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  # contents: write — create the GitHub Release.
+  # id-token: write — mint the OIDC token npm provenance requires.
+  contents: write
+  id-token: write
+
+jobs:
+  release:
+    name: Publish to npm & create GitHub Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.x"
+          cache: "npm"
+          # registry-url makes setup-node write an .npmrc that reads the
+          # auth token from NODE_AUTH_TOKEN at publish time.
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test --if-present
+
+      # Guard: the pushed tag must match the version in package.json exactly
+      # (tag v2.2.0 ⇔ "version": "2.2.0"). Catches the classic mistake of
+      # tagging before merging the version-bump PR, which would otherwise
+      # publish the wrong version.
+      - name: Verify tag matches package.json version
+        run: |
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          PKG_VERSION="$(node -p "require('./package.json').version")"
+          if [ "$TAG_VERSION" != "$PKG_VERSION" ]; then
+            echo "::error::Tag ${GITHUB_REF_NAME} does not match package.json version ${PKG_VERSION}."
+            echo "Push a tag named v${PKG_VERSION}, or merge a version-bump PR first, then re-tag."
+            exit 1
+          fi
+
+      - name: Publish to npm
+        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create GitHub Release
+        run: gh release create "$GITHUB_REF_NAME" --generate-notes
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
