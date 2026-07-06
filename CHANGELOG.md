@@ -9,7 +9,36 @@ Dates are npm publish dates (`npm view @betanyc/nyc-council-mcp time`).
 
 ## [Unreleased]
 
-Nothing yet — v2.1.0 was published from the current tip of `main`.
+Nothing yet.
+
+## [2.1.1] - 2026-07-06
+
+### Fixed
+
+- Double-encoding broke multi-word live searches: `encodeURIComponent` inside
+  `$filter` was encoded again by `URLSearchParams`. New `odataString()` helper
+  handles OData quote escaping with a single encoding pass. Affected
+  `search_legislation_live`, `get_council_member`, `get_committee`, `get_bill`.
+- `get_bill` never matched bare file numbers (Legistar `MatterFile` is
+  type-prefixed); it now retries `NNNN-YYYY` with `Int`/`Res`/`LU` prefixes.
+- `search_bills` `agency` parameter now actually filters results (WHERE on
+  title/sponsors) instead of only decorating snippets.
+- FTS queries are tokenized into AND-ed quoted terms via `buildFtsQuery()` —
+  no more forced exact-phrase matching, and FTS operator characters can no
+  longer crash `MATCH`.
+- Date windows are built in America/New_York via shared `nyDateString()`
+  (`src/dates.ts`), fixing off-by-one-day windows after 8pm ET.
+- `get_votes` description corrected to EventItemId (from
+  `/events/{EventId}/eventitems`), not `MatterHistoryEventId`.
+- MCP server version is read from `package.json` instead of a hardcoded
+  string that had drifted (`2.0.0`).
+
+### Documentation
+
+- README: removed the unread `LEGISTAR_LINK_BILLS` env var; added a caveat
+  that `vote_breakdown`, `get_voting_record`, and `get_bill_hearings`
+  currently return empty results (local index lacks vote/event-item data,
+  pending a data-source decision), with a live-path workaround.
 
 ## [2.1.0] - 2026-07-01
 
@@ -50,7 +79,8 @@ Nothing yet — v2.1.0 was published from the current tip of `main`.
 - Initial public release: MCP server for NYC Council legislative data via the
   Legistar API — bills, hearings, votes, committees, and council members.
 
-[Unreleased]: https://github.com/BetaNYC/nyc-council-mcp/compare/v2.1.0...HEAD
+[Unreleased]: https://github.com/BetaNYC/nyc-council-mcp/compare/v2.1.1...HEAD
+[2.1.1]: https://github.com/BetaNYC/nyc-council-mcp/compare/v2.1.0...v2.1.1
 [2.1.0]: https://github.com/BetaNYC/nyc-council-mcp/compare/v1.0.0...v2.1.0
 [2.0.0]: https://github.com/BetaNYC/nyc-council-mcp/commit/6dc18f7
 [1.0.1]: https://github.com/BetaNYC/nyc-council-mcp/commit/c6f4de0
