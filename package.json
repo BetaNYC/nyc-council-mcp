@@ -1,6 +1,6 @@
 {
   "name": "@betanyc/nyc-council-mcp",
-  "version": "2.1.1",
+  "version": "2.2.0",
   "description": "MCP server for NYC Council legislative data — hybrid local SQLite index + live Legistar API",
   "keywords": [
     "mcp",

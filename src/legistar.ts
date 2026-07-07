@@ -214,16 +214,64 @@ async function legistarFetch<T>(url: string): Promise<T> {
   return res.json() as Promise<T>;
 }
 
+/**
+ * Build an OData v3 $filter for a free-text matter search.
+ *
+ * Legistar's WebAPI speaks OData v3: `substringof(substring, target)` — the
+ * substring is the FIRST argument — plus the logical `and`/`or` operators and
+ * parentheses for grouping (OData v3.0 URL Conventions §5.1.1.4 / §5.1.1.9,
+ * https://www.odata.org/documentation/odata-version-3-0/url-conventions/; and
+ * these primitives are already exercised live by getUpcomingHearings/
+ * getCouncilMember in this file).
+ *
+ * `substringof` matches a CONTIGUOUS substring. Passing the whole multi-word
+ * query as a single substringof — the pre-2.2.0 behavior — required the exact
+ * phrase to appear verbatim in a title, so queries like "section 254 capital
+ * budget" matched nothing while the single tokens "254" or "capital" worked.
+ * Instead we tokenize the query and AND one `(title OR name)` group per term,
+ * so a matter whose title contains all the words in any order is found.
+ *
+ * A double-quoted phrase in the input is preserved as a single
+ * contiguous-substring term, for callers who do want an exact phrase.
+ * Returns "" for an effectively empty query — callers should short-circuit.
+ */
+export function buildMatterSearchFilter(query: string): string {
+  const terms: string[] = [];
+  const re = /"([^"]*)"|(\S+)/g;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(query)) !== null) {
+    const raw = (m[1] !== undefined ? m[1] : m[2]).trim();
+    if (raw) terms.push(raw);
+  }
+  if (terms.length === 0) return "";
+  return terms
+    .map((term) => {
+      const esc = odataString(term);
+      return `(substringof('${esc}',MatterTitle) or substringof('${esc}',MatterName))`;
+    })
+    .join(" and ");
+}
+
+export type MatterSearchOrder = "date_desc" | "date_asc";
+
 export async function searchLegislation(
   token: string,
   query: string,
-  limit = 20
+  limit = 20,
+  order: MatterSearchOrder = "date_desc"
 ): Promise<LegistarMatter[]> {
-  const filter = `substringof('${odataString(query)}',MatterTitle) or substringof('${odataString(query)}',MatterName)`;
+  const filter = buildMatterSearchFilter(query);
+  // An empty query would otherwise build an empty $filter that matches every
+  // matter; treat it as "no results" (use list_recent_legislation to browse).
+  if (!filter) return [];
   const url = buildUrl("/matters", token, {
     $filter: filter,
     $top: String(limit),
-    $orderby: "MatterIntroDate desc",
+    // Legistar OData has no full-text relevance ranking (substringof is a
+    // boolean filter), so results are ordered by introduction date. asc
+    // surfaces the OLDEST matches first — the way to reach historical
+    // legislation without a very high limit.
+    $orderby: `MatterIntroDate ${order === "date_asc" ? "asc" : "desc"}`,
   });
   return legistarFetch<LegistarMatter[]>(url);
 }

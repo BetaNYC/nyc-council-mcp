@@ -193,12 +193,19 @@ export async function handleLiveTool(
 export const LIVE_SEARCH_TOOL_DEF = {
   name: "search_legislation_live",
   description:
-    "Search NYC Council legislation via the live Legistar API. Slower than search_bills but always current. Use when the local index may be stale.",
+    "Search NYC Council legislation via the live Legistar API. Slower than search_bills but always current — use when the local index may be stale. " +
+    "Multi-word queries match matters whose title contains ALL the words (in any order), so 'section 254 capital' works — you do NOT need a single generic token. Wrap a phrase in double quotes to require those words to be adjacent. " +
+    "Note: Legistar's OData API has no full-text relevance ranking, so results are ordered by introduction date, not by how well they match. To find OLDER legislation, set order='date_asc' (oldest first) rather than raising the limit.",
   inputSchema: {
     type: "object",
     properties: {
-      query: { type: "string", description: "Search term (title or file number)" },
+      query: { type: "string", description: "Search terms. Multiple words are AND-ed (all must appear in the title/name); quote a \"phrase\" to require adjacency." },
       limit: { type: "number", description: "Max results to return (default 20, max 50)" },
+      order: {
+        type: "string",
+        enum: ["date_desc", "date_asc"],
+        description: "Sort by introduction date: 'date_desc' (newest first, default) or 'date_asc' (oldest first — use to reach historical legislation).",
+      },
     },
     required: ["query"],
   },
@@ -208,9 +215,13 @@ export async function handleLiveSearch(
   args: Record<string, unknown>,
   token: string
 ): Promise<{ content: Array<{ type: string; text: string }> }> {
-  const { query, limit } = z
-    .object({ query: z.string(), limit: z.number().max(50).optional() })
+  const { query, limit, order } = z
+    .object({
+      query: z.string(),
+      limit: z.number().max(50).optional(),
+      order: z.enum(["date_desc", "date_asc"]).optional(),
+    })
     .parse(args);
-  const results = await searchLegislation(token, query, limit ?? 20);
+  const results = await searchLegislation(token, query, limit ?? 20, order ?? "date_desc");
   return { content: [{ type: "text", text: JSON.stringify(results, null, 2) }] };
 }

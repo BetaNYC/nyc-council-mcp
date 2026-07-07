@@ -68,7 +68,7 @@ These require `LEGISTAR_TOKEN`.
 | `get_committee` | Current membership count and details for a committee |
 | `get_votes` | Per-item vote breakdown by event item ID |
 | `list_recent_legislation` | Most recently introduced legislation (catches bills since last index) |
-| `search_legislation_live` | Live Legistar search (slower than local, always current) |
+| `search_legislation_live` | Live Legistar search (slower than local, always current). Multi-word queries match all words in any order; quote a `"phrase"` for adjacency. No relevance ranking upstream — results are ordered by intro date (`order='date_asc'` for oldest-first). |
 
 ---
 
@@ -241,7 +241,13 @@ Options:
 
 ### `search_bills` / `search_legislation`
 
-Full-text search across all bills using the local index.
+Full-text search across the local index, which covers Introductions,
+Resolutions, and Land Use Applications. Multi-word queries match matters
+containing all the words in any order; quote a `"phrase"` to require adjacency.
+
+> **Upgrading from ≤ 2.1.1:** Resolutions and Land Use matters were previously
+> absent from the index. Re-run `npx @betanyc/nyc-council-mcp index …` after
+> updating to pick them up.
 
 | Parameter | Type | Required | Default | Description |
 |---|---|---|---|---|
