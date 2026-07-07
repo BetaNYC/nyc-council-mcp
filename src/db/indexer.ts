@@ -3,7 +3,9 @@
  * Adapted from WillHsiaoNYC/legistar-mcp bulk.py and build.py.
  *
  * Walks jehiah/nyc_legislation archive directories:
- *   introduction/{year}/*.json  → bills
+ *   introduction/{year}/*.json  → bills (Introductions)
+ *   resolution/{year}/*.json    → bills (Resolutions)
+ *   land_use/{year}/*.json      → bills (Land Use Applications)
  *   events/{year}/*.json        → events + event_items + votes
  *   people/*.json               → people + sponsors
  *
@@ -119,8 +121,28 @@ function isoDate(raw: string | null | undefined): string | null {
   return raw.slice(0, 10) || null;
 }
 
+// Matter-type subdirectories in the jehiah/nyc_legislation archive. Each holds
+// individual matter JSON files with an identical shape (ID/File/Title/TypeName/
+// Sponsors/…), so all are indexed into the `bills` table. Verified 2026-07-07
+// against a local archive clone:
+//   introduction/{year}/*.json  → TypeName "Introduction"        (~12,900 files)
+//   resolution/{year}/*.json    → TypeName "Resolution"          (~6,000 files)
+//   land_use/{year}/*.json      → TypeName "Land Use Application" (~2,500 files)
+// Previously only `introduction` was walked, so every Resolution and Land Use
+// matter (~40% of all matters) was silently absent from the local index even
+// though the README advertised "all bills and resolutions". Full-text search
+// for text that appears only in resolutions (e.g. "designation", "budget")
+// therefore returned nothing.
+//
+// The archive's `resubmit/{year}.json` files are intentionally excluded: they
+// are not matters but a {"Resubmitted":[{"FromFile","ToFile"}]} cross-session
+// mapping. `events/`, `people/`, and `scripts/` are handled elsewhere or not
+// at all. A directory that does not exist yields no files (fast-glob returns
+// []), so this list is safe to extend and forward-compatible.
+const MATTER_DIRS = ["introduction", "resolution", "land_use"];
+
 // ---------------------------------------------------------------------------
-// Index bills (introduction/{year}/*.json)
+// Index bills / resolutions / land use (MATTER_DIRS/{year}/*.json)
 // ---------------------------------------------------------------------------
 
 function indexBills(
@@ -218,13 +240,14 @@ function indexBills(
     }
   });
 
-  const pattern = join(archiveRoot, "introduction", "**", "*.json");
-  const files = fg.sync(pattern, { absolute: true });
-
-  // Process in chunks to avoid holding too many file handles
+  // Process in chunks to avoid holding too many file handles.
   const CHUNK = 500;
-  for (let i = 0; i < files.length; i += CHUNK) {
-    insertBillBatch(files.slice(i, i + CHUNK));
+  for (const dir of MATTER_DIRS) {
+    const pattern = join(archiveRoot, dir, "**", "*.json");
+    const files = fg.sync(pattern, { absolute: true });
+    for (let i = 0; i < files.length; i += CHUNK) {
+      insertBillBatch(files.slice(i, i + CHUNK));
+    }
   }
 }
 
