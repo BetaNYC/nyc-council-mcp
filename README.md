@@ -392,6 +392,43 @@ Publishing is automated. To cut a release:
 
 Prerequisite: the `NPM_TOKEN` org secret (an npm automation token with publish rights on `@betanyc`) must be configured. Do not run `npm publish` by hand.
 
+## About BetaNYC
+
+This project is built and maintained by [BetaNYC](https://beta.nyc), New York's
+civic technology and open-data community. We work to improve lives in New York
+through civic design, technology, data, and public-interest technology.
+
+**Come do civic tech with us.** We run public events, meetups, and hands-on
+data classes throughout the year — including [NYC School of Data](https://www.schoolofdata.nyc/)
+and [CityCamp NYC](https://citycamp.nyc), and we host frequent civic-tech gatherings. See what's coming up on our
+[events calendar](https://www.beta.nyc/events/).
+
+**Sustain this work.** These MCP servers are free and open source. To help keep this work going and find BetaNYC's
+tools, please consider [donating and becoming a Beta
+Builder](https://beta.nyc/donate).
+
+## Building on this? Tell us!
+
+If you build something with this project, we'd love to hear about it. We can help other New Yorkers find it. BetaNYC publishes a weekly newsletter,
+*This Week in NYC's Civic Technology and Open Data*.
+
+- **[Subscribe to the newsletter](https://beta.nyc/newsletter)** to keep up with
+  NYC civic tech, open data, and public-interest technology.
+- **Built something, or found a story worth sharing?** [Submit a link for the
+  newsletter](https://www.beta.nyc/newsletter-inbox/) and we'll consider it for
+  an upcoming issue.
+
+## Related BetaNYC MCP servers
+
+BetaNYC maintains a suite of open-source MCP servers for NYC and NYS civic data.
+See the full directory, with install details for each, at
+**[beta.nyc/ai-tools](https://beta.nyc/ai-tools)**.
+
+This server pairs directly with:
+
+- **[nyc-charter-laws-rules](https://github.com/BetaNYC/nyc-charter-laws-rules)**: trace a bill through to the Charter, Administrative Code, and Rules text it amends.
+- **[nyc-budget-mcp](https://github.com/BetaNYC/New-York-City-Budget)**: connect Council members and legislation to the discretionary funding (Schedule C) they direct.
+
 ---
 
 ## Contributing
