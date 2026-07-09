@@ -418,6 +418,17 @@ If you build something with this project, we'd love to hear about it. We can hel
   newsletter](https://www.beta.nyc/newsletter-inbox/) and we'll consider it for
   an upcoming issue.
 
+## Related BetaNYC MCP servers
+
+BetaNYC maintains a suite of open-source MCP servers for NYC and NYS civic data.
+See the full directory, with install details for each, at
+**[beta.nyc/ai-tools](https://beta.nyc/ai-tools)**.
+
+This server pairs directly with:
+
+- **[nyc-charter-laws-rules](https://github.com/BetaNYC/nyc-charter-laws-rules)**: trace a bill through to the Charter, Administrative Code, and Rules text it amends.
+- **[nyc-budget-mcp](https://github.com/BetaNYC/New-York-City-Budget)**: connect Council members and legislation to the discretionary funding (Schedule C) they direct.
+
 ---
 
 ## Contributing
