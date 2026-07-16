@@ -14,7 +14,16 @@ import {
   getCommittee,
   getVotes,
   listRecentLegislation,
+  legistarUrl,
+  type LegistarMatter,
 } from "../legistar.js";
+
+// Add a human-openable legistar_url to a matter record (Introductions only;
+// null otherwise — see legistarUrl). get_bill_history returns MatterHistory
+// rows, which carry no MatterFile, so no URL is possible there.
+function withLegistarUrl(m: LegistarMatter): LegistarMatter & { legistar_url: string | null } {
+  return { ...m, legistar_url: legistarUrl(m.MatterFile) };
+}
 
 const LIVE_TOOL_DEFS = [
   {
@@ -129,7 +138,7 @@ export async function handleLiveTool(
         if (results.length === 0) {
           return { content: [{ type: "text", text: `No bill found with file number ${file_number}.` }] };
         }
-        return { content: [{ type: "text", text: JSON.stringify(results[0], null, 2) }] };
+        return { content: [{ type: "text", text: JSON.stringify(withLegistarUrl(results[0]), null, 2) }] };
       }
 
       case "get_bill_history": {
@@ -176,7 +185,7 @@ export async function handleLiveTool(
           .object({ limit: z.number().max(50).optional() })
           .parse(args ?? {});
         const results = await listRecentLegislation(token, limit ?? 25);
-        return { content: [{ type: "text", text: JSON.stringify(results, null, 2) }] };
+        return { content: [{ type: "text", text: JSON.stringify(results.map(withLegistarUrl), null, 2) }] };
       }
 
       default:
@@ -223,5 +232,5 @@ export async function handleLiveSearch(
     })
     .parse(args);
   const results = await searchLegislation(token, query, limit ?? 20, order ?? "date_desc");
-  return { content: [{ type: "text", text: JSON.stringify(results, null, 2) }] };
+  return { content: [{ type: "text", text: JSON.stringify(results.map(withLegistarUrl), null, 2) }] };
 }

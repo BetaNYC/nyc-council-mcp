@@ -70,6 +70,28 @@ These require `LEGISTAR_TOKEN`.
 | `list_recent_legislation` | Most recently introduced legislation (catches bills since last index) |
 | `search_legislation_live` | Live Legistar search (slower than local, always current). Multi-word queries match all words in any order; quote a `"phrase"` for adjacency. No relevance ranking upstream — results are ordered by intro date (`order='date_asc'` for oldest-first). |
 
+### `legistar_url` — the human-openable link, and why it's Introduction-only
+
+Bill/matter records include a `legistar_url` field: a link a person can click to
+open the matter on Legistar. It is populated **only for Introductions** and is
+`null` for every other type. Here's why — so nobody re-attempts the obvious-looking
+fix:
+
+- NYC runs **two independent Legistar backends with different ids.** The OData
+  WebAPI this server reads exposes `MatterId`/`MatterGuid`; the public
+  `LegislationDetail.aspx` page keys on a **separate** ID/GUID that appears
+  **nowhere** in the OData record. So `LegislationDetail.aspx?ID={MatterId}&GUID={MatterGuid}`
+  returns *"Invalid parameters!"* — there is no formula from the OData id to the
+  website id. (Verified 2026-07-16 for Int 0976-2026: OData `MatterId=78436` vs
+  website `ID=8138338`; both the number and the GUID differ.)
+- The one reliable bridge is **[intro.nyc](https://intro.nyc)** (Jehiah Czebotar's
+  redirector, built on the same `nyc_legislation` archive): `intro.nyc/{NNNN-YYYY}`
+  302-redirects to the correct Legistar page. But it keys on the **bare number and
+  assumes type = Introduction** — `intro.nyc/0052-2026` resolves to *Int* 0052-2026,
+  never the same-numbered *M* (Land Use Call-Up). There is no type-prefixed slug.
+- Therefore a link is emitted only when `MatterFile` starts with `Int `. Resolutions,
+  LU, M, T, Oversight, etc. get `null`, because a wrong link is worse than no link.
+
 ---
 
 ## Prerequisites
