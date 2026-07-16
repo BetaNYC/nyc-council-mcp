@@ -6,6 +6,7 @@
 import type Database from "better-sqlite3";
 import { resolveAgencyPhrases, extractSnippet } from "../agencies.js";
 import { nyDateString } from "../dates.js";
+import { legistarUrl } from "../legistar.js";
 
 // ---------------------------------------------------------------------------
 // Helper: build a safe FTS5 MATCH expression from user input
@@ -50,6 +51,8 @@ export interface BillRow {
   intro_date: string | null;
   passed_date: string | null;
   sponsor_names: string | null;
+  // Human-openable Legistar link (Introductions only; null otherwise) — see legistarUrl.
+  legistar_url: string | null;
   snippet?: string | null;
 }
 
@@ -80,6 +83,7 @@ export interface PersonVoteRow {
   intro_date: string | null;
   vote_value: string | null;
   event_item_id: number;
+  legistar_url: string | null;
 }
 
 export interface CoSponsorRow {
@@ -96,6 +100,7 @@ export interface EventItemRow {
   action_name: string | null;
   date: string | null;
   body_name: string | null;
+  legistar_url: string | null;
 }
 
 // ---------------------------------------------------------------------------
@@ -170,7 +175,7 @@ export function searchBills(
       snippet = extractSnippet(text, agencyPhrases);
     }
     const { source_json: _src, ...rest } = row;
-    return { ...rest, snippet };
+    return { ...rest, legistar_url: legistarUrl(rest.file_number), snippet };
   });
 }
 
@@ -241,7 +246,7 @@ export function recentBills(
   const limit = opts.limit ?? 50;
   const cutoff = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
 
-  return db
+  const rows = db
     .prepare(
       `
       SELECT matter_id, file_number, title, type_name, status_name, body_name,
@@ -252,7 +257,8 @@ export function recentBills(
       LIMIT ?
     `
     )
-    .all(nyDateString(cutoff), limit) as BillRow[];
+    .all(nyDateString(cutoff), limit) as Omit<BillRow, "legistar_url">[];
+  return rows.map((r) => ({ ...r, legistar_url: legistarUrl(r.file_number) }));
 }
 
 // ---------------------------------------------------------------------------
@@ -343,7 +349,7 @@ export function getVotingRecord(
   opts: { limit?: number } = {}
 ): PersonVoteRow[] {
   const limit = opts.limit ?? 50;
-  return db
+  const rows = db
     .prepare(
       `
       SELECT ei.file_number, ei.title, b.intro_date, v.vote_value, v.event_item_id
@@ -355,7 +361,8 @@ export function getVotingRecord(
       LIMIT ?
     `
     )
-    .all(`%${memberName}%`, limit) as PersonVoteRow[];
+    .all(`%${memberName}%`, limit) as Omit<PersonVoteRow, "legistar_url">[];
+  return rows.map((r) => ({ ...r, legistar_url: legistarUrl(r.file_number) }));
 }
 
 // ---------------------------------------------------------------------------
@@ -400,7 +407,7 @@ export function getBillHearings(
   db: Database.Database,
   fileNumber: string
 ): EventItemRow[] {
-  return db
+  const rows = db
     .prepare(
       `
       SELECT ei.event_item_id, ei.event_id, ei.file_number, ei.title, ei.action_name,
@@ -411,7 +418,8 @@ export function getBillHearings(
       ORDER BY e.date DESC
     `
     )
-    .all(fileNumber) as EventItemRow[];
+    .all(fileNumber) as Omit<EventItemRow, "legistar_url">[];
+  return rows.map((r) => ({ ...r, legistar_url: legistarUrl(r.file_number) }));
 }
 
 // ---------------------------------------------------------------------------
@@ -424,13 +432,14 @@ export interface EventBillRow {
   title: string | null;
   action_name: string | null;
   status_name: string | null;
+  legistar_url: string | null;
 }
 
 export function getEventBills(
   db: Database.Database,
   eventId: number
 ): EventBillRow[] {
-  return db
+  const rows = db
     .prepare(
       `
       SELECT ei.event_item_id, ei.file_number, ei.title, ei.action_name,
@@ -441,5 +450,6 @@ export function getEventBills(
       ORDER BY ei.event_item_id
     `
     )
-    .all(eventId) as EventBillRow[];
+    .all(eventId) as Omit<EventBillRow, "legistar_url">[];
+  return rows.map((r) => ({ ...r, legistar_url: legistarUrl(r.file_number) }));
 }

@@ -13,6 +13,34 @@ export function odataString(value: string): string {
   return value.replace(/'/g, "''");
 }
 
+/**
+ * Build a human-openable Legistar URL for a matter, from its file number
+ * (e.g. "Int 0976-2026"). Returns null when no safe link can be built.
+ *
+ * WHY intro.nyc and NOT LegislationDetail.aspx: NYC runs two independent
+ * Legistar backends with DIFFERENT ids. The OData WebAPI this server reads
+ * exposes MatterId/MatterGuid; the public LegislationDetail.aspx page keys on a
+ * SEPARATE ID/GUID that appears nowhere in the OData record. So
+ * `LegislationDetail.aspx?ID={MatterId}&GUID={MatterGuid}` returns "Invalid
+ * parameters!" — there is no formula from the OData id to the website id.
+ * (Verified 2026-07-16 for Int 0976-2026: OData MatterId=78436 vs website
+ * ID=8138338; both the numeric id and the GUID differ.)
+ *
+ * intro.nyc (Jehiah Czebotar's redirector, built on the same nyc_legislation
+ * archive) 302-redirects `/{NNNN-YYYY}` to the correct Legistar page — but it
+ * keys on the bare number and ASSUMES type = Introduction. Verified 2026-07-16:
+ * intro.nyc/0232-2024.json returns File "Int 0232-2024", i.e. it has exactly
+ * one record per number, the Introduction. So `/0052-2026` resolves to Int
+ * 0052-2026, never the same-numbered M (Land Use Call-Up). We therefore emit a
+ * link ONLY for Introductions (MatterFile prefix "Int "); Resolutions, LU, M,
+ * T, Oversight, etc. return null, because a wrong link is worse than no link.
+ */
+export function legistarUrl(matterFile: string | null | undefined): string | null {
+  if (!matterFile) return null;
+  const m = /^Int\s+(\d{4}-\d{4})$/i.exec(matterFile.trim());
+  return m ? `https://intro.nyc/${m[1]}` : null;
+}
+
 export type LegistarMatter = {
   MatterId: number;
   MatterGuid: string;
