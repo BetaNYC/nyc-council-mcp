@@ -426,3 +426,5 @@ export async function listRecentLegislation(
   });
   return legistarFetch<LegistarMatter[]>(url);
 }
+
+// version-guard fail-case proof: touches a shipped file with no version bump (throwaway branch, do not merge)
