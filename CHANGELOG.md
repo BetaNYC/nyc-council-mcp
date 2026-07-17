@@ -11,6 +11,23 @@ Dates are npm publish dates (`npm view @betanyc/nyc-council-mcp time`).
 
 Nothing yet.
 
+## [2.3.0] - 2026-07-17
+
+Merged in [#13](https://github.com/BetaNYC/nyc-council-mcp/pull/13); this release ships it
+(the PR landed without a version bump, so 2.2.0 on npm predates the feature).
+
+### Added
+- **`legistar_url` on matter/legislation records** — a link a person can actually open.
+  Populated only for Introductions via the [intro.nyc](https://intro.nyc) redirector
+  (`https://intro.nyc/{NNNN-YYYY}`); `null` for every other type. Hand-building
+  `LegislationDetail.aspx?ID={MatterId}&GUID={MatterGuid}` does not work — NYC runs two
+  Legistar backends and the OData ids are not the public site's ids ("Invalid parameters!").
+  intro.nyc keys on the bare number and assumes Introduction, so non-Int types get no link
+  rather than a wrong one. Applied via one shared `legistarUrl()` helper across live tools
+  (`get_bill`, `search_legislation_live`, `list_recent_legislation`) and local index tools
+  (`search_bills`/`search_legislation`, `recent_bills`, `get_voting_record`,
+  `get_bill_hearings`, `get_event_bills`). README documents the two-backends trap.
+
 ## [2.2.0] - 2026-07-07
 
 Surfaced by real-world use searching for historical NYC budget legislation
