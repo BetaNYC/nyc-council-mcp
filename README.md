@@ -49,8 +49,8 @@ These require `LEGISTAR_DB_PATH` and a built index (see [Setup](#setup)).
 | `recent_bills` | Bills introduced in the last N days |
 | `upcoming_events` | Scheduled events in the next N days |
 | `aggregate_bills` | Count bills grouped by status, type, committee, or year |
-| `vote_breakdown` | Every member's vote on a specific bill — **currently returns empty; see caveat under [Local tools](#vote_breakdown)** |
-| `get_voting_record` | All votes cast by a named council member — **currently returns empty; see caveat** |
+| `vote_breakdown` | Every member's vote on a specific bill — **not indexed locally; raises a named error, see caveat under [Local tools](#vote_breakdown)** |
+| `get_voting_record` | All votes cast by a named council member — **not indexed locally; raises a named error, see caveat** |
 | `co_sponsors` | Members who most often co-sponsor with a given member |
 | `get_bill_hearings` | Events where a bill appeared on the agenda — **currently returns empty; see caveat** |
 | `get_event_bills` | Bills on a specific event's agenda |
@@ -298,10 +298,11 @@ aggregate_bills(group_by="status")
 aggregate_bills(group_by="year")
 ```
 
-> **⚠️ Caveat: `vote_breakdown`, `get_voting_record`, and `get_bill_hearings` currently return empty results.**
-> The local index does not yet ingest vote or event-item data (the `votes` and `event_items` tables are empty pending a data-source decision), so these three tools always return `[]`.
-> Worked example: `vote_breakdown("Int 0743-2024")` returns `[]` from the local index, even though the live Legistar API has the full 2024-06-06 Stated Meeting roll call at `GET /eventitems/409436/votes` (51 member votes).
-> Until this is resolved, get vote data from the live path: `get_upcoming_hearings` (or `GET /events/{EventId}/eventitems`) → take an `EventItemId` → `get_votes(event_item_id)`.
+> **⚠️ Caveat: `vote_breakdown` and `get_voting_record` return an explicit error, not vote data.**
+> The local index does not ingest vote data — the `votes` table is empty, pending a data-source decision. Rather than return `[]`, which is indistinguishable from a member who genuinely cast no votes, these two tools raise a named error explaining the gap ([#19](https://github.com/BetaNYC/nyc-council-mcp/issues/19)).
+> Per-member aye/nay positions are not merely un-indexed: they are **absent from the source archive entirely**. Its `RollCall` arrays record roll-call *attendance* (Present, Absent, Excused, Medical, Conflict …) with no Affirmative/Negative value.
+> Worked example: `vote_breakdown("Int 0743-2024")` has nothing local to read, even though the live Legistar API has the full 2024-06-06 Stated Meeting roll call at `GET /eventitems/409436/votes` (51 member votes).
+> Get vote positions from the live path: `get_upcoming_hearings` (or `GET /events/{EventId}/eventitems`) → take an `EventItemId` → `get_votes(event_item_id)`.
 
 ### `vote_breakdown`
 
