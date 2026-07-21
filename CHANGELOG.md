@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Dates are npm publish dates (`npm view @betanyc/nyc-council-mcp time`).
 
-## [Unreleased]
+## [2.4.0] - unreleased
 
 ### Fixed
 - **Unknown tool parameters are rejected instead of silently dropped**
