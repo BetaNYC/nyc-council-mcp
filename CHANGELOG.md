@@ -9,7 +9,15 @@ Dates are npm publish dates (`npm view @betanyc/nyc-council-mcp time`).
 
 ## [Unreleased]
 
-Nothing yet.
+### Fixed
+- **Unknown tool parameters are rejected instead of silently dropped**
+  ([#20](https://github.com/BetaNYC/nyc-council-mcp/issues/20)). Every advertised
+  `inputSchema` now sets `additionalProperties: false`, and every zod object that parses
+  tool arguments is `.strict()`. Previously
+  `search_legislation(query="broadband", bogus_unknown_param="x")` returned a normal
+  result row: real, correctly-sourced data answering a *different* question, with nothing
+  signalling that a filter had been dropped. The refusal names the offending key and lists
+  the parameters that tool does accept.
 
 ## [2.3.0] - 2026-07-17
 

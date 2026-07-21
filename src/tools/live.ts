@@ -17,6 +17,7 @@ import {
   legistarUrl,
   type LegistarMatter,
 } from "../legistar.js";
+import { unknownParamMessage } from "./unknown-param.js";
 
 // Add a human-openable legistar_url to a matter record (Introductions only;
 // null otherwise — see legistarUrl). get_bill_history returns MatterHistory
@@ -32,6 +33,7 @@ const LIVE_TOOL_DEFS = [
       "Get a specific bill by its intro/file number. Legistar file numbers are type-prefixed (e.g. 'Int 0349-2024', 'Res 0232-2024'); if you pass a bare 'NNNN-YYYY' number, the tool retries with the common prefixes (Int, Res, LU) automatically. Returns the current authoritative record from the live Legistar API.",
     inputSchema: {
       type: "object",
+      additionalProperties: false,
       properties: {
         file_number: { type: "string", description: "Bill file number, e.g. 'Int 0349-2024' or '0349-2024'" },
       },
@@ -44,6 +46,7 @@ const LIVE_TOOL_DEFS = [
       "Get the full legislative history of a bill — hearings, referrals, votes, and status changes. Live API data, authoritative.",
     inputSchema: {
       type: "object",
+      additionalProperties: false,
       properties: {
         matter_id: {
           type: "number",
@@ -59,6 +62,7 @@ const LIVE_TOOL_DEFS = [
       "List upcoming NYC Council committee hearings and Stated meetings. Real-time data — use this for scheduling, not the local index. Each event's EventItems array is populated with its agenda items (the bills/matters on the agenda) via a follow-up call per event; pass include_agenda=false to skip that and return events faster with EventItems empty.",
     inputSchema: {
       type: "object",
+      additionalProperties: false,
       properties: {
         days_ahead: {
           type: "number",
@@ -77,6 +81,7 @@ const LIVE_TOOL_DEFS = [
     description: "Look up an NYC Council member by name. Returns current contact info and active status.",
     inputSchema: {
       type: "object",
+      additionalProperties: false,
       properties: {
         name: { type: "string", description: "Full or partial name of the council member" },
       },
@@ -88,6 +93,7 @@ const LIVE_TOOL_DEFS = [
     description: "Look up an NYC Council committee by name. Returns current membership count and details.",
     inputSchema: {
       type: "object",
+      additionalProperties: false,
       properties: {
         name: { type: "string", description: "Full or partial committee name" },
       },
@@ -100,6 +106,7 @@ const LIVE_TOOL_DEFS = [
       "Get the vote record for a specific agenda item by its EventItemId. Shows how each member voted. Live API data. EventItemIds come from an event's agenda items (GET /events/{EventId}/eventitems) — e.g. the EventItemId field inside each event returned by get_upcoming_hearings. Note: MatterHistoryEventId from get_bill_history is an EVENT id, not an event ITEM id; to go from bill history to votes, fetch that event's eventitems and pick the item matching the bill.",
     inputSchema: {
       type: "object",
+      additionalProperties: false,
       properties: {
         event_item_id: {
           type: "number",
@@ -116,6 +123,7 @@ const LIVE_TOOL_DEFS = [
       "List the most recently introduced NYC Council legislation. Use this to catch bills introduced since the last index update.",
     inputSchema: {
       type: "object",
+      additionalProperties: false,
       properties: {
         limit: { type: "number", description: "Number of items to return (default 25, max 50)" },
       },
@@ -133,7 +141,7 @@ export async function handleLiveTool(
   try {
     switch (name) {
       case "get_bill": {
-        const { file_number } = z.object({ file_number: z.string() }).parse(args);
+        const { file_number } = z.object({ file_number: z.string() }).strict().parse(args);
         const results = await getBill(token, file_number);
         if (results.length === 0) {
           return { content: [{ type: "text", text: `No bill found with file number ${file_number}.` }] };
@@ -142,7 +150,7 @@ export async function handleLiveTool(
       }
 
       case "get_bill_history": {
-        const { matter_id } = z.object({ matter_id: z.number() }).parse(args);
+        const { matter_id } = z.object({ matter_id: z.number() }).strict().parse(args);
         const results = await getBillHistory(token, matter_id);
         return { content: [{ type: "text", text: JSON.stringify(results, null, 2) }] };
       }
@@ -153,7 +161,7 @@ export async function handleLiveTool(
             days_ahead: z.number().max(90).optional(),
             include_agenda: z.boolean().optional(),
           })
-          .parse(args ?? {});
+          .strict().parse(args ?? {});
         const results = await getUpcomingHearings(
           token,
           days_ahead ?? 14,
@@ -163,19 +171,19 @@ export async function handleLiveTool(
       }
 
       case "get_council_member": {
-        const { name: memberName } = z.object({ name: z.string() }).parse(args);
+        const { name: memberName } = z.object({ name: z.string() }).strict().parse(args);
         const results = await getCouncilMember(token, memberName);
         return { content: [{ type: "text", text: JSON.stringify(results, null, 2) }] };
       }
 
       case "get_committee": {
-        const { name: committeeName } = z.object({ name: z.string() }).parse(args);
+        const { name: committeeName } = z.object({ name: z.string() }).strict().parse(args);
         const results = await getCommittee(token, committeeName);
         return { content: [{ type: "text", text: JSON.stringify(results, null, 2) }] };
       }
 
       case "get_votes": {
-        const { event_item_id } = z.object({ event_item_id: z.number() }).parse(args);
+        const { event_item_id } = z.object({ event_item_id: z.number() }).strict().parse(args);
         const results = await getVotes(token, event_item_id);
         return { content: [{ type: "text", text: JSON.stringify(results, null, 2) }] };
       }
@@ -183,7 +191,7 @@ export async function handleLiveTool(
       case "list_recent_legislation": {
         const { limit } = z
           .object({ limit: z.number().max(50).optional() })
-          .parse(args ?? {});
+          .strict().parse(args ?? {});
         const results = await listRecentLegislation(token, limit ?? 25);
         return { content: [{ type: "text", text: JSON.stringify(results.map(withLegistarUrl), null, 2) }] };
       }
@@ -192,7 +200,9 @@ export async function handleLiveTool(
         return { content: [{ type: "text", text: `Unknown live tool: ${name}` }], isError: true };
     }
   } catch (err) {
-    const message = err instanceof Error ? err.message : String(err);
+    const message =
+      unknownParamMessage(err, name, LIVE_TOOL_DEFS) ??
+      (err instanceof Error ? err.message : String(err));
     return { content: [{ type: "text", text: `Error: ${message}` }], isError: true };
   }
 }
@@ -207,6 +217,7 @@ export const LIVE_SEARCH_TOOL_DEF = {
     "Note: Legistar's OData API has no full-text relevance ranking, so results are ordered by introduction date, not by how well they match. To find OLDER legislation, set order='date_asc' (oldest first) rather than raising the limit.",
   inputSchema: {
     type: "object",
+    additionalProperties: false,
     properties: {
       query: { type: "string", description: "Search terms. Multiple words are AND-ed (all must appear in the title/name); quote a \"phrase\" to require adjacency." },
       limit: { type: "number", description: "Max results to return (default 20, max 50)" },
@@ -223,14 +234,22 @@ export const LIVE_SEARCH_TOOL_DEF = {
 export async function handleLiveSearch(
   args: Record<string, unknown>,
   token: string
-): Promise<{ content: Array<{ type: string; text: string }> }> {
-  const { query, limit, order } = z
-    .object({
-      query: z.string(),
-      limit: z.number().max(50).optional(),
-      order: z.enum(["date_desc", "date_asc"]).optional(),
-    })
-    .parse(args);
+): Promise<{ content: Array<{ type: string; text: string }>; isError?: boolean }> {
+  let parsed;
+  try {
+    parsed = z
+      .object({
+        query: z.string(),
+        limit: z.number().max(50).optional(),
+        order: z.enum(["date_desc", "date_asc"]).optional(),
+      })
+      .strict().parse(args);
+  } catch (err) {
+    const message = unknownParamMessage(err, LIVE_SEARCH_TOOL_DEF.name, [LIVE_SEARCH_TOOL_DEF]);
+    if (!message) throw err;
+    return { content: [{ type: "text", text: `Error: ${message}` }], isError: true };
+  }
+  const { query, limit, order } = parsed;
   const results = await searchLegislation(token, query, limit ?? 20, order ?? "date_desc");
   return { content: [{ type: "text", text: JSON.stringify(results.map(withLegistarUrl), null, 2) }] };
 }
