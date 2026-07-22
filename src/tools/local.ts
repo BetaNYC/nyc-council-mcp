@@ -19,6 +19,7 @@ import {
   getBillHearings,
   getEventBills,
 } from "../db/queries.js";
+import { unknownParamMessage } from "./unknown-param.js";
 
 export const LOCAL_TOOL_DEFS = [
   {
@@ -29,6 +30,7 @@ export const LOCAL_TOOL_DEFS = [
       "Optionally filter by agency (uses role-context snippets), status, or committee.",
     inputSchema: {
       type: "object",
+      additionalProperties: false,
       properties: {
         query: { type: "string", description: "Search terms (full-text)" },
         limit: { type: "number", description: "Max results (default 25, max 100)" },
@@ -50,6 +52,7 @@ export const LOCAL_TOOL_DEFS = [
       "Alias for search_bills. Full-text search across NYC Council legislation using the local index.",
     inputSchema: {
       type: "object",
+      additionalProperties: false,
       properties: {
         query: { type: "string", description: "Search terms (full-text)" },
         limit: { type: "number", description: "Max results (default 25, max 100)" },
@@ -66,6 +69,7 @@ export const LOCAL_TOOL_DEFS = [
       "Full-text search across committee hearings and events in the local index.",
     inputSchema: {
       type: "object",
+      additionalProperties: false,
       properties: {
         query: { type: "string", description: "Search terms" },
         limit: { type: "number", description: "Max results (default 25)" },
@@ -77,7 +81,7 @@ export const LOCAL_TOOL_DEFS = [
     name: "list_committees",
     description:
       "List all NYC Council committees with bill counts and event counts from the local index.",
-    inputSchema: { type: "object", properties: {} },
+    inputSchema: { type: "object", additionalProperties: false, properties: {} },
   },
   {
     name: "recent_bills",
@@ -85,6 +89,7 @@ export const LOCAL_TOOL_DEFS = [
       "Bills introduced in the last N days, sorted newest first.",
     inputSchema: {
       type: "object",
+      additionalProperties: false,
       properties: {
         days: { type: "number", description: "Look-back window in days (default 30)" },
         limit: { type: "number", description: "Max results (default 50)" },
@@ -98,6 +103,7 @@ export const LOCAL_TOOL_DEFS = [
       "Note: the index may be 1–7 days stale. Use get_upcoming_hearings for real-time data.",
     inputSchema: {
       type: "object",
+      additionalProperties: false,
       properties: {
         days: { type: "number", description: "Days ahead to look (default 14)" },
         limit: { type: "number", description: "Max results (default 50)" },
@@ -110,6 +116,7 @@ export const LOCAL_TOOL_DEFS = [
       "Count bills grouped by status, type, committee, or year. Useful for trend analysis.",
     inputSchema: {
       type: "object",
+      additionalProperties: false,
       properties: {
         group_by: {
           type: "string",
@@ -126,6 +133,7 @@ export const LOCAL_TOOL_DEFS = [
       "Every council member's vote on a specific bill, identified by file number (e.g. '0001-2024').",
     inputSchema: {
       type: "object",
+      additionalProperties: false,
       properties: {
         file_number: { type: "string", description: "Bill file number" },
       },
@@ -138,6 +146,7 @@ export const LOCAL_TOOL_DEFS = [
       "All votes cast by a named council member, newest first.",
     inputSchema: {
       type: "object",
+      additionalProperties: false,
       properties: {
         member_name: { type: "string", description: "Full or partial council member name" },
         limit: { type: "number", description: "Max results (default 50)" },
@@ -151,6 +160,7 @@ export const LOCAL_TOOL_DEFS = [
       "Council members who most frequently co-sponsor bills with a given member.",
     inputSchema: {
       type: "object",
+      additionalProperties: false,
       properties: {
         member_name: { type: "string", description: "Full or partial council member name" },
         limit: { type: "number", description: "Number of top co-sponsors to return (default 20)" },
@@ -164,6 +174,7 @@ export const LOCAL_TOOL_DEFS = [
       "Events where a bill appeared on the agenda, identified by file number.",
     inputSchema: {
       type: "object",
+      additionalProperties: false,
       properties: {
         file_number: { type: "string", description: "Bill file number" },
       },
@@ -176,6 +187,7 @@ export const LOCAL_TOOL_DEFS = [
       "All bills on a specific event's agenda, identified by event ID.",
     inputSchema: {
       type: "object",
+      additionalProperties: false,
       properties: {
         event_id: { type: "number", description: "Legistar event ID" },
       },
@@ -201,7 +213,7 @@ export function handleLocalTool(
             status: z.string().optional(),
             committee: z.string().optional(),
           })
-          .parse(args);
+          .strict().parse(args);
         const results = searchBills(db, query, { limit, agency, status, committee });
         return { content: [{ type: "text", text: JSON.stringify(results, null, 2) }] };
       }
@@ -209,12 +221,13 @@ export function handleLocalTool(
       case "search_events": {
         const { query, limit } = z
           .object({ query: z.string(), limit: z.number().optional() })
-          .parse(args);
+          .strict().parse(args);
         const results = searchEvents(db, query, { limit });
         return { content: [{ type: "text", text: JSON.stringify(results, null, 2) }] };
       }
 
       case "list_committees": {
+        z.object({}).strict().parse(args ?? {});
         const results = listCommittees(db);
         return { content: [{ type: "text", text: JSON.stringify(results, null, 2) }] };
       }
@@ -222,7 +235,7 @@ export function handleLocalTool(
       case "recent_bills": {
         const { days, limit } = z
           .object({ days: z.number().optional(), limit: z.number().optional() })
-          .parse(args ?? {});
+          .strict().parse(args ?? {});
         const results = recentBills(db, { days, limit });
         return { content: [{ type: "text", text: JSON.stringify(results, null, 2) }] };
       }
@@ -230,7 +243,7 @@ export function handleLocalTool(
       case "upcoming_events": {
         const { days, limit } = z
           .object({ days: z.number().optional(), limit: z.number().optional() })
-          .parse(args ?? {});
+          .strict().parse(args ?? {});
         const results = upcomingEvents(db, { days, limit });
         return { content: [{ type: "text", text: JSON.stringify(results, null, 2) }] };
       }
@@ -238,13 +251,13 @@ export function handleLocalTool(
       case "aggregate_bills": {
         const { group_by } = z
           .object({ group_by: z.enum(["status", "type", "committee", "year"]) })
-          .parse(args);
+          .strict().parse(args);
         const results = aggregateBills(db, group_by);
         return { content: [{ type: "text", text: JSON.stringify(results, null, 2) }] };
       }
 
       case "vote_breakdown": {
-        const { file_number } = z.object({ file_number: z.string() }).parse(args);
+        const { file_number } = z.object({ file_number: z.string() }).strict().parse(args);
         const results = voteBreakdown(db, file_number);
         return { content: [{ type: "text", text: JSON.stringify(results, null, 2) }] };
       }
@@ -252,7 +265,7 @@ export function handleLocalTool(
       case "get_voting_record": {
         const { member_name, limit } = z
           .object({ member_name: z.string(), limit: z.number().optional() })
-          .parse(args);
+          .strict().parse(args);
         const results = getVotingRecord(db, member_name, { limit });
         return { content: [{ type: "text", text: JSON.stringify(results, null, 2) }] };
       }
@@ -260,19 +273,19 @@ export function handleLocalTool(
       case "co_sponsors": {
         const { member_name, limit } = z
           .object({ member_name: z.string(), limit: z.number().optional() })
-          .parse(args);
+          .strict().parse(args);
         const results = coSponsors(db, member_name, { limit });
         return { content: [{ type: "text", text: JSON.stringify(results, null, 2) }] };
       }
 
       case "get_bill_hearings": {
-        const { file_number } = z.object({ file_number: z.string() }).parse(args);
+        const { file_number } = z.object({ file_number: z.string() }).strict().parse(args);
         const results = getBillHearings(db, file_number);
         return { content: [{ type: "text", text: JSON.stringify(results, null, 2) }] };
       }
 
       case "get_event_bills": {
-        const { event_id } = z.object({ event_id: z.number() }).parse(args);
+        const { event_id } = z.object({ event_id: z.number() }).strict().parse(args);
         const results = getEventBills(db, event_id);
         return { content: [{ type: "text", text: JSON.stringify(results, null, 2) }] };
       }
@@ -281,7 +294,9 @@ export function handleLocalTool(
         return { content: [{ type: "text", text: `Unknown local tool: ${name}` }], isError: true };
     }
   } catch (err) {
-    const message = err instanceof Error ? err.message : String(err);
+    const message =
+      unknownParamMessage(err, name, LOCAL_TOOL_DEFS) ??
+      (err instanceof Error ? err.message : String(err));
     return { content: [{ type: "text", text: `Error: ${message}` }], isError: true };
   }
 }

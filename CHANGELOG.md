@@ -20,6 +20,17 @@ Dates are npm publish dates (`npm view @betanyc/nyc-council-mcp time`).
   works normally without a restart. Indexing the archive's `RollCall` data is deliberately
   **not** done here: it is attendance (Present / Absent / Excused / Medical / Conflict),
   not aye/nay, and whether it belongs in a table called `votes` is an open naming decision.
+## [2.4.0] - unreleased
+
+### Fixed
+- **Unknown tool parameters are rejected instead of silently dropped**
+  ([#20](https://github.com/BetaNYC/nyc-council-mcp/issues/20)). Every advertised
+  `inputSchema` now sets `additionalProperties: false`, and every zod object that parses
+  tool arguments is `.strict()`. Previously
+  `search_legislation(query="broadband", bogus_unknown_param="x")` returned a normal
+  result row: real, correctly-sourced data answering a *different* question, with nothing
+  signalling that a filter had been dropped. The refusal names the offending key and lists
+  the parameters that tool does accept.
 
 ## [2.3.0] - 2026-07-17
 
