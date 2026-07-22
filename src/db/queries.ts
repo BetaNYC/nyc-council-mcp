@@ -322,10 +322,56 @@ export function aggregateBills(
 }
 
 // ---------------------------------------------------------------------------
+// votes table guard (issue #19)
+// ---------------------------------------------------------------------------
+
+/**
+ * Guidance returned when a vote tool is asked a question the local corpus
+ * cannot answer.
+ *
+ * The `votes` table is never populated: the indexer prepares an `upsertVote`
+ * statement and never calls it. Every vote tool therefore returned `[]` for
+ * every member — indistinguishable from a true negative, and read by a caller
+ * as "this member cast no votes." Rather than answer a vote question with an
+ * empty list, the query functions stop and explain what is and is not there.
+ *
+ * Be precise about provenance: per-member aye/nay positions are not merely
+ * un-indexed, they are absent from the source archive entirely. Its `RollCall`
+ * arrays carry attendance (Present / Absent / Excused / Medical / Conflict / …)
+ * with no Affirmative or Negative value, so indexing more of the archive would
+ * not produce vote positions. Those come only from the live Legistar API.
+ */
+export const VOTES_NOT_INDEXED_MESSAGE =
+  "Vote data is not indexed in the local corpus: the 'votes' table is empty, so " +
+  "vote_breakdown and get_voting_record have nothing to read. They stop here rather " +
+  "than return an empty list, which is indistinguishable from a member who cast no " +
+  "votes. Note that per-member aye/nay positions are not in the source archive at " +
+  "all — it records roll-call attendance (Present, Absent, Excused, Medical, " +
+  "Conflict) with no Affirmative/Negative value — so they would have to come from " +
+  "the live Legistar API. Options: (1) get_votes with an EventItemId returns " +
+  "per-member positions from the live API (requires LEGISTAR_TOKEN); (2) " +
+  "get_bill_history returns a bill's recorded actions and status changes; (3) " +
+  "co_sponsors and search_bills cover sponsorship, which is fully indexed.";
+
+// ponytail: only the populated result is cached, so an empty table is re-checked
+// (a LIMIT 1 probe, not a COUNT) and a later re-index starts working without a
+// server restart. WeakSet so a closed db is not retained.
+const votesKnownPopulated = new WeakSet<Database.Database>();
+
+function assertVotesIndexed(db: Database.Database): void {
+  if (votesKnownPopulated.has(db)) return;
+  if (!db.prepare("SELECT 1 FROM votes LIMIT 1").get()) {
+    throw new Error(VOTES_NOT_INDEXED_MESSAGE);
+  }
+  votesKnownPopulated.add(db);
+}
+
+// ---------------------------------------------------------------------------
 // vote_breakdown
 // ---------------------------------------------------------------------------
 
 export function voteBreakdown(db: Database.Database, fileNumber: string): VoteRow[] {
+  assertVotesIndexed(db);
   return db
     .prepare(
       `
@@ -348,6 +394,7 @@ export function getVotingRecord(
   memberName: string,
   opts: { limit?: number } = {}
 ): PersonVoteRow[] {
+  assertVotesIndexed(db);
   const limit = opts.limit ?? 50;
   const rows = db
     .prepare(

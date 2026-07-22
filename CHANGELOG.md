@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Dates are npm publish dates (`npm view @betanyc/nyc-council-mcp time`).
 
+## [2.5.0] - unreleased
+
+### Fixed
+- **`vote_breakdown` and `get_voting_record` no longer answer a vote question with `[]`**
+  ([#19](https://github.com/BetaNYC/nyc-council-mcp/issues/19)). The `votes` table is never
+  populated, so both returned an empty array for every member, including four-year
+  incumbents — indistinguishable from a true negative, and read by a caller as "this member
+  cast no votes." Both now raise a named error naming the gap and the live-API path that
+  does have per-member positions. One guard in `src/db/queries.ts` covers both callers and
+  any future one; it fires only while the table is genuinely empty, so a later re-index
+  works normally without a restart. Indexing the archive's `RollCall` data is deliberately
+  **not** done here: it is attendance (Present / Absent / Excused / Medical / Conflict),
+  not aye/nay, and whether it belongs in a table called `votes` is an open naming decision.
 ## [2.4.0] - unreleased
 
 ### Fixed
