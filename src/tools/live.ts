@@ -30,7 +30,7 @@ const LIVE_TOOL_DEFS = [
   {
     name: "get_bill",
     description:
-      "Get a specific bill by its intro/file number. Legistar file numbers are type-prefixed (e.g. 'Int 0349-2024', 'Res 0232-2024'); if you pass a bare 'NNNN-YYYY' number, the tool retries with the common prefixes (Int, Res, LU) automatically. Returns the current authoritative record from the live Legistar API.",
+      "Get a specific bill by its intro/file number from the live Legistar API. Legistar file numbers are type-prefixed (e.g. 'Int 0349-2024', 'Res 0232-2024'). A type-prefixed number returns that one matter. A bare 'NNNN-YYYY' number is AMBIGUOUS — the same number can be both an Introduction and a Resolution; if it matches more than one matter the call is REJECTED with an error naming every match, and you re-call with the exact type-prefixed file number. A single match returns the authoritative record.",
     inputSchema: {
       type: "object",
       additionalProperties: false,
@@ -145,6 +145,20 @@ export async function handleLiveTool(
         const results = await getBill(token, file_number);
         if (results.length === 0) {
           return { content: [{ type: "text", text: `No bill found with file number ${file_number}.` }] };
+        }
+        if (results.length > 1) {
+          // A bare NNNN-YYYY is ambiguous: the same number can exist as several
+          // matter types (e.g. Int 0540-2026 AND Res 0540-2026). Reject and name
+          // every match rather than silently pick one (#27) — the caller re-calls
+          // with the exact type-prefixed file number.
+          const files = results.map((m) => m.MatterFile).join(", ");
+          return {
+            isError: true,
+            content: [{
+              type: "text",
+              text: `Ambiguous file number "${file_number}": it matches ${results.length} matters — ${files}. Re-call get_bill with the exact type-prefixed file number (e.g. "${results[0].MatterFile}").`,
+            }],
+          };
         }
         return { content: [{ type: "text", text: JSON.stringify(withLegistarUrl(results[0]), null, 2) }] };
       }

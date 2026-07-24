@@ -10,6 +10,19 @@ Dates are npm publish dates (`npm view @betanyc/nyc-council-mcp time`).
 ## [2.5.0] - unreleased
 
 ### Fixed
+- **`get_bill` with a bare file number no longer hides matters of another type**
+  ([#27](https://github.com/BetaNYC/nyc-council-mcp/issues/27)). Legistar's `MatterFile`
+  values are type-prefixed, so a bare `NNNN-YYYY` was probed against `Int`, `Res`, `LU` in
+  order and the **first** hit was returned. A number that exists as more than one type
+  resolved to whichever prefix was tried first: `0540-2026` returned `Int 0540-2026` (an
+  Introduction still in committee) and silently hid `Res 0540-2026` (the *adopted* FY2027
+  contract-budget resolution) — the wrong matter, with nothing signalling the other exists.
+  A bare number now probes every prefix in parallel; a single match returns that matter,
+  and an ambiguous one (more than one match) is **rejected** with an error naming every
+  match, so the caller re-calls with the exact type-prefixed file number. A type-prefixed
+  input is unambiguous and still costs exactly one request. The success shape is unchanged
+  from before this fix (a single matter object); only the previously-wrong ambiguous case
+  now errors instead of silently returning one — so this is not a breaking change.
 - **`vote_breakdown` and `get_voting_record` no longer answer a vote question with `[]`**
   ([#19](https://github.com/BetaNYC/nyc-council-mcp/issues/19)). The `votes` table is never
   populated, so both returned an empty array for every member, including four-year

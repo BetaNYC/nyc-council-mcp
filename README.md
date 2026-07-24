@@ -61,7 +61,7 @@ These require `LEGISTAR_TOKEN`.
 
 | Tool | Description |
 |---|---|
-| `get_bill` | Current status and record for a specific bill |
+| `get_bill` | Current status and record for a bill. A bare `NNNN-YYYY` number is ambiguous (it can be both an `Int` and a `Res`); an ambiguous match is rejected with an error naming every candidate, so re-call with the exact type-prefixed number |
 | `get_bill_history` | Authoritative action trail — hearings, referrals, votes |
 | `get_upcoming_hearings` | Real-time upcoming committee hearings and Stated meetings, each with its agenda items (bills/matters) in `EventItems` |
 | `get_council_member` | Current contact info and active status for a council member |

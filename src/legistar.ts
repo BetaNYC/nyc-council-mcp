@@ -306,27 +306,36 @@ export async function searchLegislation(
 
 // MatterFile values are type-prefixed in Legistar (verified live 2026-07-06:
 // "Int 0349-2024", not "0349-2024" — an exact match on the bare number returns
-// []). getBill first tries the string as given; if that finds nothing and the
-// input looks like a bare NNNN-YYYY number, it retries with the common type
-// prefixes in order.
+// []). A file number is therefore unique only WITH its prefix: 0540-2026 is
+// both "Int 0540-2026" (an Introduction in committee) and "Res 0540-2026" (the
+// adopted FY2027 contract budget). Probing prefixes in order and returning the
+// first hit silently hid the other matters (#27), so a bare number probes every
+// prefix and returns all of them. A prefixed input already names one matter and
+// stays a single query.
 const MATTER_FILE_PREFIXES = ["Int", "Res", "LU"];
 
 export async function getBill(token: string, fileNumber: string): Promise<LegistarMatter[]> {
-  const candidates = [fileNumber];
-  if (/^\d{4}-\d{4}$/.test(fileNumber.trim())) {
-    for (const prefix of MATTER_FILE_PREFIXES) {
-      candidates.push(`${prefix} ${fileNumber.trim()}`);
-    }
-  }
-  for (const candidate of candidates) {
-    const url = buildUrl("/matters", token, {
-      $filter: `MatterFile eq '${odataString(candidate)}'`,
-      $top: "1",
-    });
-    const results = await legistarFetch<LegistarMatter[]>(url);
-    if (results.length > 0) return results;
-  }
-  return [];
+  const trimmed = fileNumber.trim();
+  const candidates = /^\d{4}-\d{4}$/.test(trimmed)
+    ? [fileNumber, ...MATTER_FILE_PREFIXES.map((prefix) => `${prefix} ${trimmed}`)]
+    : [fileNumber];
+  // At most 4 requests, so the same bounded parallel fan-out getUpcomingHearings
+  // uses: one round trip of latency instead of four. Unlike that fan-out this one
+  // does NOT swallow a failed probe — a dropped Res response would reproduce
+  // exactly the hidden-matter bug, so an error is surfaced rather than a
+  // silently partial answer.
+  const batches = await Promise.all(
+    candidates.map((candidate) =>
+      legistarFetch<LegistarMatter[]>(
+        buildUrl("/matters", token, {
+          $filter: `MatterFile eq '${odataString(candidate)}'`,
+          $top: "1",
+        })
+      )
+    )
+  );
+  // Dedupe by MatterId: the bare probe and a prefixed probe can name the same matter.
+  return [...new Map(batches.flat().map((m) => [m.MatterId, m])).values()];
 }
 
 export async function getBillHistory(token: string, matterId: number): Promise<LegistarHistory[]> {
