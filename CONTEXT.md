@@ -33,16 +33,23 @@ _Avoid_: agenda item id, item
 
 ### Positions and presence
 
-**Vote**:
-One member's recorded position on an event item — Affirmative or Negative.
-_Avoid_: roll call (that means attendance)
+**Roll call**:
+The complete set of member entries for a single event item — one entry per member. Every entry carries a value, but not every value is a position.
 
-**Roll-call attendance**:
-Whether a member was Present, Absent, Excused, Medical, or Conflict at an event. A distinct dataset from a vote, carrying no Affirmative/Negative value. Attendance and votes must never be merged or presented as one thing.
-_Avoid_: roll call vote, attendance vote
+**Vote**:
+One member's entry in a roll call. Its value is either a position or a non-position reason for not casting one.
+_Avoid_: assuming every vote row is a cast position
+
+**Position**:
+A vote value that counts toward a tally: Affirmative, Negative, or Abstain.
+_Avoid_: aye/nay as a field value (fine in prose)
+
+**Non-position**:
+A vote value recording why no position was cast: Absent, Excused, Medical, Non-voting, Maternity, Parental, Paternity, Bereavement, Suspended, Conflict. These occupy the *same field* as positions, so any count must filter by value rather than count rows.
+_Avoid_: attendance (implies a separate dataset; it is the same field)
 
 **Tally**:
-The aggregate Affirmative/Negative counts for a matter. Always derived by counting votes — Legistar's own tally field is not populated.
+The aggregate of positions for one roll call. Always derived by filtering to positions and counting — Legistar's own tally field is not populated.
 _Avoid_: result, score, outcome
 
 ### Data sources
