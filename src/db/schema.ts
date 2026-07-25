@@ -6,7 +6,7 @@
  * Snippets are built at query-time by reading source JSON from the bills/events tables.
  */
 
-export const SCHEMA_VERSION = 4;
+export const SCHEMA_VERSION = 5;
 
 export const CREATE_TABLES = `
 PRAGMA journal_mode = WAL;
@@ -128,18 +128,63 @@ CREATE TABLE IF NOT EXISTS sponsors (
 
 CREATE INDEX IF NOT EXISTS sponsors_person ON sponsors (person_id);
 
+-- One row per member entry in a roll call, sourced from a matter's
+-- History[].Votes (issue #30). The natural key is (event_item_id, person_id):
+-- unique within a roll call, and idempotent on re-index. The archive has no
+-- per-vote row id — History[].Votes[].VoteID is a VALUE id (15 = Affirmative),
+-- not a row id — so the previous vote_id PRIMARY KEY had no source and is gone.
+-- A member appears once per roll call but across several roll calls of the same
+-- matter (e.g. committee then full Council), so person_id alone is not unique.
 CREATE TABLE IF NOT EXISTS votes (
-  vote_id       INTEGER PRIMARY KEY,
-  event_item_id INTEGER NOT NULL,
-  person_id     INTEGER,
-  person_name   TEXT,
-  vote_value    TEXT,
-  matter_id     INTEGER
+  event_item_id INTEGER NOT NULL,   -- History[].ID (the Legistar EventItemId)
+  person_id     INTEGER NOT NULL,   -- History[].Votes[].ID (the VotePersonId)
+  person_name   TEXT,               -- FullName as recorded, for historical members
+  vote_value    TEXT,               -- position OR non-position reason (see CONTEXT.md)
+  matter_id     INTEGER,            -- link to bills.matter_id (no event_items dependency)
+  PRIMARY KEY (event_item_id, person_id)
 );
 
-CREATE INDEX IF NOT EXISTS votes_event_item ON votes (event_item_id);
-CREATE INDEX IF NOT EXISTS votes_person     ON votes (person_id);
-CREATE INDEX IF NOT EXISTS votes_matter     ON votes (matter_id);
+CREATE INDEX IF NOT EXISTS votes_person ON votes (person_id);
+CREATE INDEX IF NOT EXISTS votes_matter ON votes (matter_id);
+
+-- One row per action in a matter's History[] (issue #30) — the matter's
+-- timeline. Most actions carry no roll call; those still get a row here with no
+-- corresponding votes. event_item_id is History[].ID (nullable: a few procedural
+-- actions carry none). passed_flag is History[].PassedFlagName ('Pass'/'Fail'),
+-- absent on non-outcome actions (hearings, referrals) and therefore nullable.
+CREATE TABLE IF NOT EXISTS matter_history (
+  matter_id     INTEGER NOT NULL,
+  event_item_id INTEGER,
+  action_name   TEXT,
+  action_date   TEXT,               -- full ISO timestamp, so same-day actions order correctly
+  body_name     TEXT,               -- the acting body (Council vs a committee)
+  event_id      INTEGER,
+  passed_flag   TEXT,
+  PRIMARY KEY (matter_id, event_item_id)
+);
+
+CREATE INDEX IF NOT EXISTS matter_history_matter ON matter_history (matter_id);
+`;
+
+// Data tables dropped-and-recreated on a full rebuild. CREATE_TABLES uses
+// CREATE TABLE IF NOT EXISTS, so a DDL change to an existing table (e.g. the
+// votes primary-key change in schema v5) is otherwise silently ignored on a
+// corpus that already has the old table. buildIndex runs these DROPs before
+// re-running CREATE_TABLES whenever it forces a full rebuild, so the current
+// schema is actually applied. index_state is intentionally NOT dropped — it
+// holds schema_version / indexed_sources, which the full-rebuild decision reads.
+// FTS virtual tables are dropped explicitly; SQLite drops a base table's
+// triggers with it.
+export const DROP_DATA_TABLES = `
+DROP TABLE IF EXISTS votes;
+DROP TABLE IF EXISTS matter_history;
+DROP TABLE IF EXISTS event_items;
+DROP TABLE IF EXISTS sponsors;
+DROP TABLE IF EXISTS people;
+DROP TABLE IF EXISTS bills_fts;
+DROP TABLE IF EXISTS bills;
+DROP TABLE IF EXISTS events_fts;
+DROP TABLE IF EXISTS events;
 `;
 
 export const GET_SCHEMA_VERSION = `

@@ -9,6 +9,38 @@ Dates are npm publish dates (`npm view @betanyc/nyc-council-mcp time`).
 
 ## [2.5.0] - unreleased
 
+### Added
+- **Roll-call votes and matter history are indexed from the archive**
+  ([#30](https://github.com/BetaNYC/nyc-council-mcp/issues/30)). One traversal of each
+  matter's `History[]` now populates two tables: `votes` (one row per member entry in a
+  roll call, from `History[].Votes`) and a new `matter_history` (one row per action — the
+  matter's timeline). Both come from the local archive, so no network and no
+  `LEGISTAR_TOKEN` are involved, and indexing covers all three matter trees —
+  `introduction`, `resolution`, and `land_use` (the densest vote source, ~80–98% of Land
+  Use matters carry a roll call). `History[].ID` is the `EventItemId` and each
+  `Votes[].ID` is the `PersonId`, both verified against the live endpoints.
+- **`get_bill_history` now has a local path** and, like every sibling tool, accepts a
+  type-prefixed **file number** (e.g. `Int 1122-2024`) instead of demanding a numeric
+  matter id. It answers from `matter_history` in chronological order with no token. The
+  live variant remains for live-only mode and freshness.
+
+### Changed
+- **`vote_breakdown` returns roll calls grouped by event item, each with a positions-only
+  tally.** A matter decided in committee and then in full Council returns both roll calls
+  separately; the tally counts positions (Affirmative / Negative / Abstain) and **never**
+  `COUNT(*)`s the rows, so an Absent member is not scored as a vote (the `Res 0540-2026`
+  committee roll call tallies 14–1 across 17 recorded entries). `vote_breakdown` and
+  `get_voting_record` now join `votes.matter_id` to `bills.matter_id` instead of
+  `event_items.file_number` (NULL in every row), removing the dependency on #26. A bare
+  file number that matches both an `Int` and a `Res` is rejected, naming each (as #27 did
+  for `get_bill`).
+- **`SCHEMA_VERSION` is now 5.** The `votes` primary key changed from a source-less
+  `vote_id` to the natural `(event_item_id, person_id)` (unique within a roll call, and
+  idempotent on re-index). A full rebuild now drops and recreates the data tables before
+  indexing, so the new DDL is actually applied to an existing corpus — `CREATE TABLE IF NOT
+  EXISTS` alone would have silently kept the old `votes` table. A corpus built under schema
+  4 is detected as stale and rebuilt automatically on the next index run.
+
 ### Fixed
 - **`get_bill` with a bare file number no longer hides matters of another type**
   ([#27](https://github.com/BetaNYC/nyc-council-mcp/issues/27)). Legistar's `MatterFile`
@@ -30,9 +62,10 @@ Dates are npm publish dates (`npm view @betanyc/nyc-council-mcp time`).
   cast no votes." Both now raise a named error naming the gap and the live-API path that
   does have per-member positions. One guard in `src/db/queries.ts` covers both callers and
   any future one; it fires only while the table is genuinely empty, so a later re-index
-  works normally without a restart. Indexing the archive's `RollCall` data is deliberately
-  **not** done here: it is attendance (Present / Absent / Excused / Medical / Conflict),
-  not aye/nay, and whether it belongs in a table called `votes` is an open naming decision.
+  works normally without a restart. (The `votes` table is now populated from the archive —
+  see the #30 entry below, which corrects this fix's original belief that the archive held
+  only attendance; each matter's `History[].Votes` carries the aye/nay roll call.)
+
 ## [2.4.0] - unreleased
 
 ### Fixed

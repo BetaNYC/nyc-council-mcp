@@ -49,8 +49,9 @@ These require `LEGISTAR_DB_PATH` and a built index (see [Setup](#setup)).
 | `recent_bills` | Bills introduced in the last N days |
 | `upcoming_events` | Scheduled events in the next N days |
 | `aggregate_bills` | Count bills grouped by status, type, committee, or year |
-| `vote_breakdown` | Every member's vote on a specific bill — **not indexed locally; raises a named error, see caveat under [Local tools](#vote_breakdown)** |
-| `get_voting_record` | All votes cast by a named council member — **not indexed locally; raises a named error, see caveat** |
+| `vote_breakdown` | Every member's vote on a bill (by type-prefixed file number), grouped by roll call — committee and full Council — each with a positions-only tally. Indexed from the archive's `History[].Votes` |
+| `get_voting_record` | All votes cast by a named council member, newest first |
+| `get_bill_history` | A matter's action trail — hearings, referrals, committee/Council actions, outcomes — in chronological order, by file number. No token required |
 | `co_sponsors` | Members who most often co-sponsor with a given member |
 | `get_bill_hearings` | Events where a bill appeared on the agenda — **currently returns empty; see caveat** |
 | `get_event_bills` | Bills on a specific event's agenda |
@@ -62,7 +63,7 @@ These require `LEGISTAR_TOKEN`.
 | Tool | Description |
 |---|---|
 | `get_bill` | Current status and record for a bill. A bare `NNNN-YYYY` number is ambiguous (it can be both an `Int` and a `Res`); an ambiguous match is rejected with an error naming every candidate, so re-call with the exact type-prefixed number |
-| `get_bill_history` | Authoritative action trail — hearings, referrals, votes |
+| `get_bill_history` | *Local by default* (served from the index, no token; takes a file number). In **live-only** mode this live variant answers instead — authoritative action trail by numeric matter id |
 | `get_upcoming_hearings` | Real-time upcoming committee hearings and Stated meetings, each with its agenda items (bills/matters) in `EventItems` |
 | `get_council_member` | Current contact info and active status for a council member |
 | `get_committee` | Current membership count and details for a committee |
@@ -298,19 +299,26 @@ aggregate_bills(group_by="status")
 aggregate_bills(group_by="year")
 ```
 
-> **⚠️ Caveat: `vote_breakdown` and `get_voting_record` return an explicit error, not vote data.**
-> The local index does not ingest vote data — the `votes` table is empty, pending a data-source decision. Rather than return `[]`, which is indistinguishable from a member who genuinely cast no votes, these two tools raise a named error explaining the gap ([#19](https://github.com/BetaNYC/nyc-council-mcp/issues/19)).
-> Per-member aye/nay positions are not merely un-indexed: they are **absent from the source archive entirely**. Its `RollCall` arrays record roll-call *attendance* (Present, Absent, Excused, Medical, Conflict …) with no Affirmative/Negative value.
-> Worked example: `vote_breakdown("Int 0743-2024")` has nothing local to read, even though the live Legistar API has the full 2024-06-06 Stated Meeting roll call at `GET /eventitems/409436/votes` (51 member votes).
-> Get vote positions from the live path: `get_upcoming_hearings` (or `GET /events/{EventId}/eventitems`) → take an `EventItemId` → `get_votes(event_item_id)`.
+> **Roll calls are indexed locally** ([#30](https://github.com/BetaNYC/nyc-council-mcp/issues/30)).
+> Each matter's `History[].Votes` is indexed into a `votes` table, so `vote_breakdown`,
+> `get_voting_record`, and `get_bill_history` answer from the corpus with no token.
+> A member's entry is a *position* (Affirmative / Negative / Abstain) or a *non-position*
+> reason for not casting one (Absent, Excused, Medical …); both are stored, but a **tally
+> counts positions only** — an Absent member is never scored as a vote.
+> If the `votes` table is empty the tools still raise a named error rather than return `[]`
+> (which reads as "cast no votes"); that means the corpus predates roll-call indexing and
+> needs a `nyc-council-mcp index` rebuild. `get_votes` remains for live per-item positions.
 
 ### `vote_breakdown`
 
-Every council member's vote on a specific bill.
+Every member's vote on a matter, grouped by roll call (committee and full Council
+appear separately), each with a positions-only tally. `Res 0540-2026` returns its
+Council roll call (45–6, 51 recorded) and its Committee on Finance roll call (14–1,
+17 recorded — the tally is 14–1, not 17).
 
 | Parameter | Type | Required | Description |
 |---|---|---|---|
-| `file_number` | string | yes | Bill file number, e.g. `0042-2024` |
+| `file_number` | string | yes | Type-prefixed file number, e.g. `Res 0540-2026`. A bare `NNNN-YYYY` that matches both an `Int` and a `Res` is rejected, naming each |
 
 ### `get_voting_record`
 
@@ -338,9 +346,9 @@ Members who most frequently co-sponsor bills with a given member.
 
 ```
 1. search_bills("e-bike")              → sub-second results from local index
-2. get_bill("0042-2024")               → authoritative current status from live API
-3. get_bill_history(matter_id)         → full action trail from live API
-4. get_votes(event_item_id)            → how each member voted
+2. get_bill("Int 0042-2024")           → authoritative current status from live API
+3. get_bill_history("Int 0042-2024")   → full action trail from the local index (no token)
+4. vote_breakdown("Int 0042-2024")     → how each member voted, per roll call, from the local index
 ```
 
 ### Analyze a council member's record

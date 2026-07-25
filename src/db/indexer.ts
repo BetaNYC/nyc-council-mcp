@@ -18,6 +18,7 @@ import { readFileSync, statSync } from "fs";
 import { join, basename } from "path";
 import {
   CREATE_TABLES,
+  DROP_DATA_TABLES,
   SCHEMA_VERSION,
   SET_SCHEMA_VERSION,
   GET_SCHEMA_VERSION,
@@ -31,6 +32,38 @@ import {
 // ---------------------------------------------------------------------------
 // Types matching jehiah/nyc_legislation JSON shape
 // ---------------------------------------------------------------------------
+
+// One member's entry in a roll call, from a matter's History[].Votes[].
+// Field shape verified 2026-07-24 against resolution/2026/0540.json:
+//   {ID, Slug, FullName, VoteID, Vote, Result, Sort}
+// ID is the person_id (7814 = Linda Lee). VoteID is a VALUE id (15 = Affirmative),
+// NOT a row id. Vote is the value string used for tallies/attendance.
+interface MatterVoteJson {
+  ID?: number;         // person_id
+  Slug?: string;
+  FullName?: string;
+  VoteID?: number;     // value-id (15 = Affirmative) — not a unique row id
+  Vote?: string;       // "Affirmative" | "Negative" | "Absent" | … (see CONTEXT.md)
+  Result?: number;
+  Sort?: number;
+}
+
+// One action in a matter's History[]. Verified 2026-07-24 against
+// resolution/2026/0540.json: ID is the EventItemId the live /eventitems/{ID}/votes
+// endpoint uses (History record 440128 == that endpoint's id). PassedFlag/
+// PassedFlagName are present only on outcome actions (a committee/Council
+// approval), absent on procedural ones (hearing, introduce). Votes is present on
+// roll-call actions only (~80% of Land Use matters, ~18% of Introductions).
+interface MatterHistoryJson {
+  ID?: number;              // event_item_id
+  Action?: string;
+  Date?: string;
+  BodyName?: string;
+  EventID?: number;
+  PassedFlag?: number;
+  PassedFlagName?: string;  // 'Pass' | 'Fail' | absent
+  Votes?: MatterVoteJson[];
+}
 
 // jehiah/nyc_legislation archive uses plain field names (no Matter/Event/Person prefix)
 interface MatterJson {
@@ -50,6 +83,7 @@ interface MatterJson {
     FullName?: string;
     Slug?: string;
   }>;
+  History?: MatterHistoryJson[];
 }
 
 interface EventJson {
@@ -89,6 +123,8 @@ export interface IndexStats {
   bills: number;
   events: number;
   people: number;
+  votes: number;
+  matterHistory: number;
   skipped: number;
   errors: number;
 }
@@ -195,6 +231,22 @@ function indexBills(
     INSERT OR IGNORE INTO sponsors (matter_id, person_id, is_primary) VALUES (?, ?, ?)
   `);
 
+  // History[] → matter_history (timeline) + votes (roll calls). Delete-then-insert
+  // per matter (below) keeps re-indexing idempotent; INSERT OR REPLACE guards the
+  // rest (a roll call re-read within one run, a null-id history row).
+  const insertHistory = db.prepare(`
+    INSERT OR REPLACE INTO matter_history
+      (matter_id, event_item_id, action_name, action_date, body_name, event_id, passed_flag)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+  `);
+  const insertVote = db.prepare(`
+    INSERT OR REPLACE INTO votes
+      (event_item_id, person_id, person_name, vote_value, matter_id)
+    VALUES (?, ?, ?, ?, ?)
+  `);
+  const deleteHistory = db.prepare(`DELETE FROM matter_history WHERE matter_id = ?`);
+  const deleteVotes = db.prepare(`DELETE FROM votes WHERE matter_id = ?`);
+
   const insertBillBatch = db.transaction((files: string[]) => {
     for (const filePath of files) {
       if (since) {
@@ -255,6 +307,36 @@ function indexBills(
           }
         }
 
+        // Index History[] → matter_history + votes (issue #30). Clear this
+        // matter's prior rows first so a re-index is idempotent regardless of
+        // null event_item_ids or a roll call that changed upstream. Most actions
+        // carry no Votes — that is normal: write the history row, no vote rows.
+        if (Array.isArray(matter.History)) {
+          deleteHistory.run(matter.ID);
+          deleteVotes.run(matter.ID);
+          for (const action of matter.History) {
+            insertHistory.run(
+              matter.ID,
+              action.ID ?? null,
+              action.Action ?? null,
+              action.Date ?? null,
+              action.BodyName ?? null,
+              action.EventID ?? null,
+              action.PassedFlagName ?? null,
+            );
+            stats.matterHistory++;
+            // Votes key on event_item_id (action.ID); a roll call with no id
+            // cannot be stored and is skipped. Each entry's ID is the person_id.
+            if (Array.isArray(action.Votes) && action.ID != null) {
+              for (const vote of action.Votes) {
+                if (vote.ID == null) continue;
+                insertVote.run(action.ID, vote.ID, vote.FullName ?? null, vote.Vote ?? null, matter.ID);
+                stats.votes++;
+              }
+            }
+          }
+        }
+
         stats.bills++;
       } catch {
         stats.errors++;
@@ -302,11 +384,8 @@ function indexEvents(
     VALUES (?, ?, ?, ?, ?, ?)
   `);
 
-  const upsertVote = db.prepare(`
-    INSERT OR IGNORE INTO votes
-      (vote_id, event_item_id, person_id, person_name, vote_value, matter_id)
-    VALUES (?, ?, ?, ?, ?, ?)
-  `);
+  // Note: votes are NOT indexed here — they come from matter History[] in
+  // indexBills (issue #30). Event files carry no per-member roll call.
 
   const insertEventBatch = db.transaction((files: string[]) => {
     for (const filePath of files) {
@@ -434,7 +513,7 @@ export interface IndexOptions {
 }
 
 export async function buildIndex(opts: IndexOptions): Promise<IndexStats> {
-  const stats: IndexStats = { bills: 0, events: 0, people: 0, skipped: 0, errors: 0 };
+  const stats: IndexStats = { bills: 0, events: 0, people: 0, votes: 0, matterHistory: 0, skipped: 0, errors: 0 };
 
   const db = openDatabase(opts.dbPath);
 
@@ -470,6 +549,19 @@ export async function buildIndex(opts: IndexOptions): Promise<IndexStats> {
         `indexed source set changed (${storedSources ?? "unset"} → ${CURRENT_SOURCE_SET}), forcing full rebuild`
       );
     }
+  }
+
+  // On a full rebuild, drop and recreate the data tables so the CURRENT schema
+  // is actually applied. CREATE_TABLES (run in openDatabase) uses CREATE TABLE
+  // IF NOT EXISTS, so a DDL change to an existing table — e.g. the v5 votes
+  // primary-key change — would otherwise be silently ignored on a corpus that
+  // already had the old table, and this rebuild would repopulate the OLD shape.
+  // Dropping first also removes rows for matters deleted upstream. index_state
+  // (schema_version / indexed_sources, already read above) is left intact.
+  if (forceFull) {
+    db.exec(DROP_DATA_TABLES);
+    db.exec(CREATE_TABLES);
+    if (opts.verbose) console.error("full rebuild: dropped and recreated data tables under current schema");
   }
 
   // Determine incremental cutoff (skipped entirely when doing a full rebuild)
@@ -520,6 +612,11 @@ export async function buildIndex(opts: IndexOptions): Promise<IndexStats> {
       .all() as Array<{ t: string | null; n: number }>;
     const summary = coverage.map((r) => `${r.t ?? "(untyped)"}=${r.n}`).join(" ") || "(none)";
     console.error(`Coverage by matter type: ${summary}`);
+    // Roll-call coverage. A build that produced 0 votes despite bills present is
+    // an under-populated corpus (issue #30) and should be visible, not silent.
+    const voteRows = (db.prepare(`SELECT COUNT(*) AS n FROM votes`).get() as { n: number }).n;
+    const historyRows = (db.prepare(`SELECT COUNT(*) AS n FROM matter_history`).get() as { n: number }).n;
+    console.error(`History coverage: matter_history=${historyRows} rows, votes=${voteRows} rows`);
   }
 
   // Stamp the conditions this successful index ran under, so the next run can

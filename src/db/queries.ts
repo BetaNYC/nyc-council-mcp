@@ -71,10 +71,60 @@ export interface CommitteeRow {
   event_count: number;
 }
 
+// One member's entry in a roll call. vote_value is a position (Affirmative /
+// Negative / Abstain) OR a non-position reason for not casting one (Absent,
+// Excused, Medical, …) — see CONTEXT.md. Stored faithfully; only tallies filter.
 export interface VoteRow {
-  person_name: string | null;
   person_id: number | null;
+  person_name: string | null;
   vote_value: string | null;
+  event_item_id: number;
+  matter_id: number;
+}
+
+// A tally counts positions ONLY. Never COUNT(*) the rows — an Absent entry is a
+// row but not a vote cast (issue #30 acceptance: the Res 0540-2026 committee
+// roll call is 14–1, not 17).
+export interface Tally {
+  affirmative: number;
+  negative: number;
+  abstain: number;
+}
+
+// The complete set of member entries for one event item — one roll call.
+export interface RollCall {
+  event_item_id: number;
+  body_name: string | null;   // acting body — full Council vs a committee
+  action_name: string | null;
+  date: string | null;
+  recorded: number;           // total entries (positions + non-positions)
+  tally: Tally;               // positions only
+  votes: VoteRow[];           // every entry, faithfully — positions AND non-positions
+}
+
+// vote_breakdown result: a matter can be decided in more than one roll call
+// (e.g. committee then full Council), so roll calls are first-class rather than
+// flattened into one list where committee and Council entries blur together.
+export interface VoteBreakdownResult {
+  file_number: string;
+  matter_id: number | null;
+  roll_calls: RollCall[];
+}
+
+// One action in a matter's timeline, for get_bill_history (local path).
+export interface MatterHistoryRow {
+  action_name: string | null;
+  action_date: string | null;
+  body_name: string | null;
+  event_id: number | null;
+  event_item_id: number | null;
+  passed_flag: string | null;
+}
+
+export interface BillHistoryResult {
+  file_number: string;
+  matter_id: number | null;
+  history: MatterHistoryRow[];
 }
 
 export interface PersonVoteRow {
@@ -327,31 +377,29 @@ export function aggregateBills(
 
 /**
  * Guidance returned when a vote tool is asked a question the local corpus
- * cannot answer.
+ * cannot answer because the `votes` table is empty.
  *
- * The `votes` table is never populated: the indexer prepares an `upsertVote`
- * statement and never calls it. Every vote tool therefore returned `[]` for
- * every member — indistinguishable from a true negative, and read by a caller
- * as "this member cast no votes." Rather than answer a vote question with an
- * empty list, the query functions stop and explain what is and is not there.
+ * An empty array from a tool named `get_voting_record` is indistinguishable
+ * from a true negative — a caller reads `[]` as "this member cast no votes." In
+ * a transparency tool that is the worst available failure mode, so the query
+ * functions stop and explain the gap rather than answer with `[]`.
  *
- * Be precise about provenance: per-member aye/nay positions are not merely
- * un-indexed, they are absent from the source archive entirely. Its `RollCall`
- * arrays carry attendance (Present / Absent / Excused / Medical / Conflict / …)
- * with no Affirmative or Negative value, so indexing more of the archive would
- * not produce vote positions. Those come only from the live Legistar API.
+ * Provenance, corrected by issue #30: per-member positions ARE in the archive —
+ * each matter's `History[].Votes[]` carries Affirmative / Negative / Abstain
+ * alongside non-position reasons (Absent, Excused, Medical, …). They are indexed
+ * by the current schema (>= 5). An empty table therefore means the corpus was
+ * built before vote indexing and needs a rebuild — not that the data is missing.
  */
 export const VOTES_NOT_INDEXED_MESSAGE =
-  "Vote data is not indexed in the local corpus: the 'votes' table is empty, so " +
+  "Vote data is not indexed in this corpus: the 'votes' table is empty, so " +
   "vote_breakdown and get_voting_record have nothing to read. They stop here rather " +
   "than return an empty list, which is indistinguishable from a member who cast no " +
-  "votes. Note that per-member aye/nay positions are not in the source archive at " +
-  "all — it records roll-call attendance (Present, Absent, Excused, Medical, " +
-  "Conflict) with no Affirmative/Negative value — so they would have to come from " +
-  "the live Legistar API. Options: (1) get_votes with an EventItemId returns " +
-  "per-member positions from the live API (requires LEGISTAR_TOKEN); (2) " +
-  "get_bill_history returns a bill's recorded actions and status changes; (3) " +
-  "co_sponsors and search_bills cover sponsorship, which is fully indexed.";
+  "votes. Per-member positions ARE in the source archive — each matter's History[] " +
+  "carries the roll call — so this corpus predates vote indexing (schema < 5). Fix: " +
+  "rebuild the local index (nyc-council-mcp index --archive <path> --db <path>), which " +
+  "populates votes and matter_history from History[]. For live data without a rebuild, " +
+  "get_votes returns per-member positions for an EventItemId from the Legistar API " +
+  "(requires LEGISTAR_TOKEN).";
 
 // ponytail: only the populated result is cached, so an empty table is re-checked
 // (a LIMIT 1 probe, not a COUNT) and a later re-index starts working without a
@@ -367,22 +415,111 @@ function assertVotesIndexed(db: Database.Database): void {
 }
 
 // ---------------------------------------------------------------------------
+// File-number → matter resolution (shared by the file-number tools)
+// ---------------------------------------------------------------------------
+
+/**
+ * Resolve a file number to a single matter, or throw naming the ambiguity.
+ *
+ * `bills.file_number` is type-prefixed ("Int 0540-2026", "Res 0540-2026"), so a
+ * bare "0540-2026" is NOT unique — it matches both. Silently returning one
+ * type's data for a query that matches both is the #27 defect class. A
+ * type-prefixed input matches exactly one matter (exact match); a bare number
+ * suffix-matches every prefix, and >1 match is rejected with every file number
+ * named so the caller re-asks with the prefix.
+ *
+ * Returns null when nothing matches (an unknown file number, not an error).
+ */
+function resolveMatter(
+  db: Database.Database,
+  fileNumber: string
+): { matter_id: number; file_number: string } | null {
+  const trimmed = fileNumber.trim();
+  // Suffix match: "% 0540-2026" catches "Int 0540-2026"/"Res 0540-2026" but not
+  // a mid-string coincidence (the leading space anchors it). Escape LIKE
+  // metacharacters in user input so a stray % cannot widen the match.
+  const suffix = "% " + trimmed.replace(/[\\%_]/g, (c) => "\\" + c);
+  const rows = db
+    .prepare(
+      `SELECT DISTINCT matter_id, file_number FROM bills
+       WHERE file_number = ? OR file_number LIKE ? ESCAPE '\\'`
+    )
+    .all(trimmed, suffix) as { matter_id: number; file_number: string }[];
+
+  if (rows.length === 0) return null;
+  if (rows.length > 1) {
+    const files = rows.map((r) => r.file_number).join(", ");
+    throw new Error(
+      `Ambiguous file number "${fileNumber}": it matches ${rows.length} matters — ${files}. ` +
+        `Re-call with the exact type-prefixed file number (e.g. "${rows[0].file_number}").`
+    );
+  }
+  return rows[0];
+}
+
+// ---------------------------------------------------------------------------
 // vote_breakdown
 // ---------------------------------------------------------------------------
 
-export function voteBreakdown(db: Database.Database, fileNumber: string): VoteRow[] {
+/**
+ * Every roll call for a matter, grouped by event item. A matter can be decided
+ * more than once (committee, then full Council), so each roll call is returned
+ * separately with its own position-only tally — never a flat list where the two
+ * blur together, and never a COUNT(*) that would score an Absent as a vote.
+ */
+export function voteBreakdown(db: Database.Database, fileNumber: string): VoteBreakdownResult {
   assertVotesIndexed(db);
-  return db
+  const matter = resolveMatter(db, fileNumber);
+  if (!matter) return { file_number: fileNumber, matter_id: null, roll_calls: [] };
+
+  // Roll-call context (body, action, date) comes from matter_history keyed on
+  // (matter_id, event_item_id) — the SAME History[] row that carried the votes.
+  // No event_items join, so this is unaffected by #26's NULL file_number linkage.
+  const rows = db
     .prepare(
       `
-      SELECT v.person_name, v.person_id, v.vote_value
+      SELECT v.person_id, v.person_name, v.vote_value, v.event_item_id, v.matter_id,
+             mh.body_name, mh.action_name, mh.action_date
       FROM votes v
-      JOIN event_items ei ON v.event_item_id = ei.event_item_id
-      WHERE ei.file_number = ?
-      ORDER BY v.vote_value, v.person_name
+      LEFT JOIN matter_history mh
+        ON mh.matter_id = v.matter_id AND mh.event_item_id = v.event_item_id
+      WHERE v.matter_id = ?
+      ORDER BY mh.action_date, v.event_item_id, v.vote_value, v.person_name
     `
     )
-    .all(fileNumber) as VoteRow[];
+    .all(matter.matter_id) as Array<
+      VoteRow & { body_name: string | null; action_name: string | null; action_date: string | null }
+    >;
+
+  const byRollCall = new Map<number, RollCall>();
+  for (const r of rows) {
+    let rc = byRollCall.get(r.event_item_id);
+    if (!rc) {
+      rc = {
+        event_item_id: r.event_item_id,
+        body_name: r.body_name,
+        action_name: r.action_name,
+        date: r.action_date,
+        recorded: 0,
+        tally: { affirmative: 0, negative: 0, abstain: 0 },
+        votes: [],
+      };
+      byRollCall.set(r.event_item_id, rc);
+    }
+    rc.votes.push({
+      person_id: r.person_id,
+      person_name: r.person_name,
+      vote_value: r.vote_value,
+      event_item_id: r.event_item_id,
+      matter_id: r.matter_id,
+    });
+    rc.recorded++;
+    if (r.vote_value === "Affirmative") rc.tally.affirmative++;
+    else if (r.vote_value === "Negative") rc.tally.negative++;
+    else if (r.vote_value === "Abstain") rc.tally.abstain++;
+  }
+
+  return { file_number: matter.file_number, matter_id: matter.matter_id, roll_calls: [...byRollCall.values()] };
 }
 
 // ---------------------------------------------------------------------------
@@ -396,13 +533,15 @@ export function getVotingRecord(
 ): PersonVoteRow[] {
   assertVotesIndexed(db);
   const limit = opts.limit ?? 50;
+  // votes → bills on matter_id (columns that are populated), NOT event_items on
+  // file_number (NULL in every row until #26). person_name is the recorded name,
+  // so historical members resolve even if absent from the people table (#30).
   const rows = db
     .prepare(
       `
-      SELECT ei.file_number, ei.title, b.intro_date, v.vote_value, v.event_item_id
+      SELECT b.file_number, b.title, b.intro_date, v.vote_value, v.event_item_id
       FROM votes v
-      JOIN event_items ei ON v.event_item_id = ei.event_item_id
-      LEFT JOIN bills b ON ei.matter_id = b.matter_id
+      JOIN bills b ON v.matter_id = b.matter_id
       WHERE v.person_name LIKE ?
       ORDER BY b.intro_date DESC
       LIMIT ?
@@ -410,6 +549,32 @@ export function getVotingRecord(
     )
     .all(`%${memberName}%`, limit) as Omit<PersonVoteRow, "legistar_url">[];
   return rows.map((r) => ({ ...r, legistar_url: legistarUrl(r.file_number) }));
+}
+
+// ---------------------------------------------------------------------------
+// get_bill_history (local path — answers from matter_history, no token)
+// ---------------------------------------------------------------------------
+
+/**
+ * A matter's action timeline from the local corpus, chronological (oldest
+ * first). Accepts a file number like its sibling tools and disambiguates a bare
+ * number the same way vote_breakdown does. No votes guard: a matter legitimately
+ * has history with no roll calls.
+ */
+export function getBillHistoryLocal(db: Database.Database, fileNumber: string): BillHistoryResult {
+  const matter = resolveMatter(db, fileNumber);
+  if (!matter) return { file_number: fileNumber, matter_id: null, history: [] };
+  const history = db
+    .prepare(
+      `
+      SELECT action_name, action_date, body_name, event_id, event_item_id, passed_flag
+      FROM matter_history
+      WHERE matter_id = ?
+      ORDER BY action_date ASC, rowid ASC
+    `
+    )
+    .all(matter.matter_id) as MatterHistoryRow[];
+  return { file_number: matter.file_number, matter_id: matter.matter_id, history };
 }
 
 // ---------------------------------------------------------------------------

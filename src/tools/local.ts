@@ -15,6 +15,7 @@ import {
   aggregateBills,
   voteBreakdown,
   getVotingRecord,
+  getBillHistoryLocal,
   coSponsors,
   getBillHearings,
   getEventBills,
@@ -155,6 +156,20 @@ export const LOCAL_TOOL_DEFS = [
     },
   },
   {
+    name: "get_bill_history",
+    description:
+      "A matter's legislative history — hearings, referrals, committee and Council actions, and outcomes — from the local index, in chronological order. No token required. " +
+      "Identified by a type-prefixed file number like every sibling tool (e.g. 'Int 1122-2024', 'Res 0540-2026'). A bare 'NNNN-YYYY' that matches more than one matter type is rejected with an error naming each match.",
+    inputSchema: {
+      type: "object",
+      additionalProperties: false,
+      properties: {
+        file_number: { type: "string", description: "Type-prefixed file number, e.g. 'Int 1122-2024'" },
+      },
+      required: ["file_number"],
+    },
+  },
+  {
     name: "co_sponsors",
     description:
       "Council members who most frequently co-sponsor bills with a given member.",
@@ -267,6 +282,12 @@ export function handleLocalTool(
           .object({ member_name: z.string(), limit: z.number().optional() })
           .strict().parse(args);
         const results = getVotingRecord(db, member_name, { limit });
+        return { content: [{ type: "text", text: JSON.stringify(results, null, 2) }] };
+      }
+
+      case "get_bill_history": {
+        const { file_number } = z.object({ file_number: z.string() }).strict().parse(args);
+        const results = getBillHistoryLocal(db, file_number);
         return { content: [{ type: "text", text: JSON.stringify(results, null, 2) }] };
       }
 

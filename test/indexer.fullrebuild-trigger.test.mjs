@@ -16,8 +16,8 @@
 // contents (external behavior), not internal helpers:
 //   1. the indexed source set changed — including the ABSENT key, which is
 //      exactly today's live corpus. THIS is the trigger that fixes this ticket.
-//   2. schema_version changed — the mechanism #30's future 4→5 bump will ride to
-//      self-repair the corpus.
+//   2. schema_version changed — the mechanism #30's 4→5 bump rides to
+//      self-repair the corpus (that bump has now shipped).
 // Plus a guard that an ordinary unchanged run does NOT turn into a full crawl.
 
 import { test } from "node:test";
@@ -114,10 +114,11 @@ test("schema-version change forces a full rebuild and self-clears (mechanism for
     await buildIndex({ archiveRoot: root, dbPath, full: true });
 
     // A resolution appears on disk with an OLD mtime, and the stored schema is
-    // rolled back to simulate a corpus indexed under an older schema. The source
-    // set is left unchanged so ONLY the schema trigger can explain a rebuild.
+    // rolled back to '4' to simulate a corpus indexed under the previous schema
+    // (the real 4→5 bump this ticket ships). The source set is left unchanged so
+    // ONLY the schema trigger can explain a rebuild.
     writeMatter(root, "resolution/2007/0100.json", matter(2, "Res 0100-2007", "Resolution", "A resolution"), OLD);
-    editState(dbPath, (db) => db.prepare("UPDATE index_state SET value = '3' WHERE key = 'schema_version'").run());
+    editState(dbPath, (db) => db.prepare("UPDATE index_state SET value = '4' WHERE key = 'schema_version'").run());
 
     const stats = await buildIndex({ archiveRoot: root, dbPath, full: false });
 
@@ -132,7 +133,7 @@ test("schema-version change forces a full rebuild and self-clears (mechanism for
     // closes — a future bump repairs the corpus once, not on every run forever.
     editState(dbPath, (db) => {
       const v = db.prepare("SELECT value FROM index_state WHERE key = 'schema_version'").get().value;
-      assert.equal(v, "4", "the rebuild must re-stamp the current schema version");
+      assert.equal(v, "5", "the rebuild must re-stamp the current schema version");
     });
   } finally {
     rmSync(root, { recursive: true, force: true });

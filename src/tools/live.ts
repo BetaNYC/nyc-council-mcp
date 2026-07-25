@@ -103,7 +103,7 @@ const LIVE_TOOL_DEFS = [
   {
     name: "get_votes",
     description:
-      "Get the vote record for a specific agenda item by its EventItemId. Shows how each member voted. Live API data. EventItemIds come from an event's agenda items (GET /events/{EventId}/eventitems) — e.g. the EventItemId field inside each event returned by get_upcoming_hearings. Note: MatterHistoryEventId from get_bill_history is an EVENT id, not an event ITEM id; to go from bill history to votes, fetch that event's eventitems and pick the item matching the bill.",
+      "Get the vote record for a specific agenda item by its EventItemId. Shows how each member voted. Live API data — use for freshness. For a bill's roll call from the local corpus, prefer vote_breakdown (grouped roll calls with a positions-only tally) or the local get_bill_history, which returns each action's event_item_id directly. EventItemIds also come from an event's agenda items (GET /events/{EventId}/eventitems) — e.g. the EventItemId field inside each event returned by get_upcoming_hearings. Note: the live get_bill_history's MatterHistoryEventId is an EVENT id, not an event ITEM id, whereas each local history action's event_item_id IS the id this tool takes.",
     inputSchema: {
       type: "object",
       additionalProperties: false,
