@@ -20,9 +20,12 @@ import {
   CREATE_TABLES,
   SCHEMA_VERSION,
   SET_SCHEMA_VERSION,
+  GET_SCHEMA_VERSION,
   SET_ARCHIVE_ROOT,
   SET_LAST_INDEXED,
   GET_LAST_INDEXED,
+  GET_INDEXED_SOURCES,
+  SET_INDEXED_SOURCES,
 } from "./schema.js";
 
 // ---------------------------------------------------------------------------
@@ -97,7 +100,12 @@ export interface IndexStats {
 export function openDatabase(dbPath: string): Sqlite.Database {
   const db = new Sqlite(dbPath);
   db.exec(CREATE_TABLES);
-  db.prepare(SET_SCHEMA_VERSION).run(String(SCHEMA_VERSION));
+  // schema_version is intentionally NOT stamped here. It records the schema
+  // version the DATA was indexed under, so it is written only at the end of a
+  // successful buildIndex — never on a bare open (the server opens this DB
+  // read-only for queries). Stamping on open would clobber the stored value
+  // before buildIndex can compare it, defeating the schema-change full-rebuild
+  // trigger that lets a future SCHEMA_VERSION bump (#30) self-repair the corpus.
   return db;
 }
 
@@ -146,6 +154,14 @@ function isoDate(raw: string | null | undefined): string | null {
 // at all. A directory that does not exist yields no files (fast-glob returns
 // []), so this list is safe to extend and forward-compatible.
 const MATTER_DIRS = ["introduction", "resolution", "land_use"];
+
+// A stable, order-independent fingerprint of the matter trees walked above,
+// persisted after each successful index. On the next run, if this differs from
+// the stored value — including the absent case, which is exactly today's live
+// corpus (built before this tracking existed) — buildIndex forces a full
+// rebuild so pre-existing files an incremental mtime cutoff would skip get
+// picked up (issue #32).
+const CURRENT_SOURCE_SET = [...MATTER_DIRS].sort().join(",");
 
 // ---------------------------------------------------------------------------
 // Index bills / resolutions / land use (MATTER_DIRS/{year}/*.json)
@@ -422,9 +438,43 @@ export async function buildIndex(opts: IndexOptions): Promise<IndexStats> {
 
   const db = openDatabase(opts.dbPath);
 
-  // Determine incremental cutoff
+  // --- Should this run do a full rebuild? (single decision point) -----------
+  // An incremental run trusts that the stored corpus was built under the same
+  // conditions as the current code, and only picks up files whose mtime beats
+  // the last-indexed cutoff. Two things silently invalidate that trust and
+  // under-populate the index (issue #32); either one forces a full rebuild so
+  // pre-existing files an incremental cutoff would skip are re-read:
+  //   1. schema_version changed — a future SCHEMA_VERSION bump (#30) self-heals.
+  //   2. the indexed source set (MATTER_DIRS) widened — the bug in this ticket:
+  //      resolution/ and land_use/ were added after the corpus was first built,
+  //      so ~8,400 pre-existing matters were never picked up incrementally. The
+  //      stored key is ABSENT on today's corpus, which counts as "changed".
+  // An explicit full flag still forces full unconditionally.
+  const storedSchema = (db.prepare(GET_SCHEMA_VERSION).get() as { value: string } | undefined)?.value;
+  const storedSources = (db.prepare(GET_INDEXED_SOURCES).get() as { value: string } | undefined)?.value;
+
+  const schemaChanged = storedSchema !== undefined && storedSchema !== String(SCHEMA_VERSION);
+  const sourceSetChanged = storedSources !== CURRENT_SOURCE_SET;
+
+  let forceFull = opts.full === true;
+  if (!forceFull && schemaChanged) {
+    forceFull = true;
+    if (opts.verbose) {
+      console.error(`schema version changed ${storedSchema}→${SCHEMA_VERSION}, forcing full rebuild`);
+    }
+  }
+  if (!forceFull && sourceSetChanged) {
+    forceFull = true;
+    if (opts.verbose) {
+      console.error(
+        `indexed source set changed (${storedSources ?? "unset"} → ${CURRENT_SOURCE_SET}), forcing full rebuild`
+      );
+    }
+  }
+
+  // Determine incremental cutoff (skipped entirely when doing a full rebuild)
   let since: Date | null = null;
-  if (!opts.full) {
+  if (!forceFull) {
     const row = db.prepare(GET_LAST_INDEXED).get() as { value: string } | undefined;
     if (row?.value) {
       since = new Date(row.value);
@@ -461,7 +511,24 @@ export async function buildIndex(opts: IndexOptions): Promise<IndexStats> {
   indexEvents(db, opts.archiveRoot, since, stats);
   if (opts.verbose) console.error(`${stats.events} events`);
 
-  // Update last_indexed_at
+  // Coverage report: per-matter-type row counts now in the DB, so an
+  // under-populated build (e.g. #32's 12,887 Introductions but 119 Resolutions)
+  // is visible rather than silent. Reflects total DB state, not just this run.
+  if (opts.verbose) {
+    const coverage = db
+      .prepare(`SELECT type_name AS t, COUNT(*) AS n FROM bills GROUP BY type_name ORDER BY type_name`)
+      .all() as Array<{ t: string | null; n: number }>;
+    const summary = coverage.map((r) => `${r.t ?? "(untyped)"}=${r.n}`).join(" ") || "(none)";
+    console.error(`Coverage by matter type: ${summary}`);
+  }
+
+  // Stamp the conditions this successful index ran under, so the next run can
+  // detect drift (see the full-rebuild decision above). schema_version lives
+  // here — not in openDatabase — precisely so a bare read-only open cannot
+  // clobber it. Written together at the end; a mid-index throw leaves the prior
+  // values in place, so a re-run still re-triggers a full rebuild (idempotent).
+  db.prepare(SET_SCHEMA_VERSION).run(String(SCHEMA_VERSION));
+  db.prepare(SET_INDEXED_SOURCES).run(CURRENT_SOURCE_SET);
   db.prepare(SET_LAST_INDEXED).run(startedAt);
 
   db.close();

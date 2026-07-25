@@ -165,3 +165,14 @@ export const GET_LAST_INDEXED = `
 export const SET_LAST_INDEXED = `
   INSERT OR REPLACE INTO index_state (key, value) VALUES ('last_indexed_at', ?)
 `;
+
+// The set of matter trees (MATTER_DIRS) that the last successful index walked,
+// stored so a later run can detect that coverage widened and force a full
+// rebuild (issue #32). Absent on any corpus built before this tracking existed.
+export const GET_INDEXED_SOURCES = `
+  SELECT value FROM index_state WHERE key = 'indexed_sources'
+`;
+
+export const SET_INDEXED_SOURCES = `
+  INSERT OR REPLACE INTO index_state (key, value) VALUES ('indexed_sources', ?)
+`;
