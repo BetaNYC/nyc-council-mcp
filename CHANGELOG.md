@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Dates are npm publish dates (`npm view @betanyc/nyc-council-mcp time`).
 
-## [2.5.0] - unreleased
+## [2.6.0] - unreleased
 
 ### Added
 - **Roll-call votes and matter history are indexed from the archive**
@@ -18,7 +18,9 @@ Dates are npm publish dates (`npm view @betanyc/nyc-council-mcp time`).
   `LEGISTAR_TOKEN` are involved, and indexing covers all three matter trees —
   `introduction`, `resolution`, and `land_use` (the densest vote source, ~80–98% of Land
   Use matters carry a roll call). `History[].ID` is the `EventItemId` and each
-  `Votes[].ID` is the `PersonId`, both verified against the live endpoints.
+  `Votes[].ID` is the `PersonId`, both verified against the live endpoints. This resolves
+  [#19](https://github.com/BetaNYC/nyc-council-mcp/issues/19) — the `votes` table is no
+  longer empty, so the named-error guard shipped in 2.5.0 stops firing.
 - **`get_bill_history` now has a local path** and, like every sibling tool, accepts a
   type-prefixed **file number** (e.g. `Int 1122-2024`) instead of demanding a numeric
   matter id. It answers from `matter_history` in chronological order with no token. The
@@ -55,18 +57,10 @@ Dates are npm publish dates (`npm view @betanyc/nyc-council-mcp time`).
   input is unambiguous and still costs exactly one request. The success shape is unchanged
   from before this fix (a single matter object); only the previously-wrong ambiguous case
   now errors instead of silently returning one — so this is not a breaking change.
-- **`vote_breakdown` and `get_voting_record` no longer answer a vote question with `[]`**
-  ([#19](https://github.com/BetaNYC/nyc-council-mcp/issues/19)). The `votes` table is never
-  populated, so both returned an empty array for every member, including four-year
-  incumbents — indistinguishable from a true negative, and read by a caller as "this member
-  cast no votes." Both now raise a named error naming the gap and the live-API path that
-  does have per-member positions. One guard in `src/db/queries.ts` covers both callers and
-  any future one; it fires only while the table is genuinely empty, so a later re-index
-  works normally without a restart. (The `votes` table is now populated from the archive —
-  see the #30 entry below, which corrects this fix's original belief that the archive held
-  only attendance; each matter's `History[].Votes` carries the aye/nay roll call.)
 
-## [2.4.0] - unreleased
+## [2.5.0] - 2026-07-22
+
+npm went straight from 2.3.0 to 2.5.0; the same-day `2.4.0` release commit was bumped but never published, so its change is folded in here.
 
 ### Fixed
 - **Unknown tool parameters are rejected instead of silently dropped**
@@ -77,6 +71,11 @@ Dates are npm publish dates (`npm view @betanyc/nyc-council-mcp time`).
   result row: real, correctly-sourced data answering a *different* question, with nothing
   signalling that a filter had been dropped. The refusal names the offending key and lists
   the parameters that tool does accept.
+- **Vote tools raise a named error for the unpopulated `votes` table**
+  ([#19](https://github.com/BetaNYC/nyc-council-mcp/issues/19)) — the interim guard. An
+  empty array from `vote_breakdown` / `get_voting_record` is indistinguishable from "this
+  member cast no votes," so both fail with a named error instead of returning `[]`. Fully
+  resolved in 2.6.0, where #30 populates the table from the archive.
 
 ## [2.3.0] - 2026-07-17
 
