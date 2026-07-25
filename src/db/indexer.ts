@@ -56,11 +56,17 @@ interface EventJson {
   BodyName?: string;
   Location?: string;
   AgendaStatusName?: string;
-  // Archive uses "Items" not "EventItems"
+  // Archive uses "Items" not "EventItems". Agenda items carry matter linkage
+  // (MatterID/MatterFile/ActionName); purely procedural items (Roll Call,
+  // Invocation, Adoption of Minutes) legitimately omit them. Votes are NOT in
+  // event items — they live in matter-file History[] (issue #30), so there is
+  // no Votes field here.
   Items?: Array<{
     ID?: number;
     Title?: string | null;
-    // MatterId and Votes are not present in the archive format
+    MatterID?: number | null;
+    MatterFile?: string | null;
+    ActionName?: string | null;
   }>;
 }
 
@@ -321,19 +327,20 @@ function indexEvents(
           raw
         );
 
-        // Archive uses "Items" not "EventItems"; MatterId and Votes not present
+        // Archive agenda items carry matter linkage; procedural items (Roll
+        // Call, Invocation) legitimately have none, so ?? null is correct.
         if (Array.isArray(event.Items)) {
           for (const item of event.Items) {
             if (!item.ID) continue;
             upsertItem.run(
               item.ID,
               event.ID,
-              null,   // MatterId not available in archive
-              null,   // file_number not available in archive
+              item.MatterID ?? null,    // matter linkage (join key)
+              item.MatterFile ?? null,  // e.g. "Res 0540-2026"
               item.Title ?? null,
-              null    // ActionName not available in archive
+              item.ActionName ?? null,
             );
-            // Votes not present in archive format — skip
+            // Votes are NOT in event items — sourced from matter History[] (#30)
           }
         }
 
