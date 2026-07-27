@@ -27,7 +27,7 @@ See [Setup](#setup) and [Environment variables](#environment-variables) for full
 
 | Path | Speed | Data | Use for |
 |---|---|---|---|
-| **Local index** (SQLite) | < 1 second | 1–7 days fresh | Search, browse, voting history, aggregation |
+| **Local index** (SQLite) | < 1 second | As fresh as your last index run | Search, browse, voting history, aggregation |
 | **Live API** (Legistar) | 1–5 seconds | Real-time | Current status, upcoming hearings, confirmation |
 
 Use both together for the best experience. Search locally to explore; confirm with the live API when accuracy matters.
@@ -53,7 +53,7 @@ These require `LEGISTAR_DB_PATH` and a built index (see [Setup](#setup)).
 | `get_voting_record` | All votes cast by a named council member, newest first |
 | `get_bill_history` | A matter's action trail — hearings, referrals, committee/Council actions, outcomes — in chronological order, by file number. No token required |
 | `co_sponsors` | Members who most often co-sponsor with a given member |
-| `get_bill_hearings` | Events where a bill appeared on the agenda — **currently returns empty; see caveat** |
+| `get_bill_hearings` | Events where a bill appeared on the agenda, with each event's date, body, and action |
 | `get_event_bills` | Bills on a specific event's agenda |
 
 ### Confirm-path tools (live Legistar API)
@@ -99,7 +99,7 @@ fix:
 
 - Node.js 18 or later
 - **For live tools:** a free Legistar API key — [register here](https://council.nyc.gov/legislation/api/)
-- **For local tools:** the `jehiah/nyc_legislation` archive (~700 MB, one-time clone)
+- **For local tools:** the `jehiah/nyc_legislation` archive (~920 MB, one-time clone)
 
 ---
 
@@ -117,7 +117,7 @@ Register at [council.nyc.gov/legislation/api](https://council.nyc.gov/legislatio
 git clone --depth 1 https://github.com/jehiah/nyc_legislation.git ~/legistar/nyc_legislation
 ```
 
-This is about 700 MB and takes a few minutes. It only needs to be done once.
+This is about 920 MB and takes a few minutes. It only needs to be done once.
 
 **Step 3 — Build the local index**
 
@@ -128,7 +128,7 @@ npx @betanyc/nyc-council-mcp index \
   --verbose
 ```
 
-This takes about 80 seconds the first time and produces a `legistar.db` file (~100–200 MB).
+This takes roughly 15 seconds and produces a `legistar.db` file of about 900 MB (it indexes ~21,500 matters, ~17,300 events, and ~509,000 roll-call vote rows).
 
 **Step 4 — Configure your MCP client**
 
@@ -180,7 +180,7 @@ npx @betanyc/nyc-council-mcp index \
   --full
 ```
 
-> **Note:** The local index may be 1–7 days behind live Legistar depending on when you last updated. For current status and upcoming hearings, use the live API tools (`get_bill`, `get_upcoming_hearings`).
+> **Note:** The local index is only as current as your last index run — run the daily cron above and it stays about a day behind live Legistar; leave it for a month and it is a month stale. The upstream archive itself updates most weekdays. For current status and upcoming hearings, use the live API tools (`get_bill`, `get_upcoming_hearings`).
 
 ---
 
@@ -253,10 +253,22 @@ nyc-council-mcp index [options]
 Options:
   --archive <path>    Path to jehiah/nyc_legislation clone (required)
   --db <path>         SQLite output path (default: $LEGISTAR_DB_PATH or ./legistar.db)
-  --full              Full rebuild (default: incremental)
+  --full              Force a full rebuild (default: incremental)
   --verbose           Print progress to stderr
   --help              Show help
 ```
+
+**Incremental mode upgrades itself to a full rebuild when it has to.** Even without
+`--full`, the indexer rebuilds from scratch if either has changed since your last run:
+
+- the **schema version** — the corpus was built by an older release whose tables differ, or
+- the **set of indexed sources** — the indexer now walks matter trees it did not before.
+
+This matters because an incremental run skips files by modification time, so widening
+coverage would otherwise leave older files permanently unindexed. When a trigger fires,
+`--verbose` names it and the run drops and recreates the data tables before indexing.
+Upgrading to 2.6.0 fires the schema trigger once, so your **first index after upgrading
+takes a full rebuild** (~15 seconds) and picks up roll-call votes and matter history.
 
 ---
 
@@ -320,6 +332,18 @@ Council roll call (45–6, 51 recorded) and its Committee on Finance roll call (
 |---|---|---|---|
 | `file_number` | string | yes | Type-prefixed file number, e.g. `Res 0540-2026`. A bare `NNNN-YYYY` that matches both an `Int` and a `Res` is rejected, naming each |
 
+### `get_bill_history`
+
+A matter's action trail in chronological order — introduced, referred, heard, amended,
+approved, enacted — one row per action, with the acting body and date. Served from the
+local `matter_history` table, so it needs no token. Each action also carries the
+`event_item_id` of the meeting item it happened at, which is the id `get_votes` takes if
+you want to confirm a roll call against the live API.
+
+| Parameter | Type | Required | Description |
+|---|---|---|---|
+| `file_number` | string | yes | Type-prefixed file number, e.g. `Int 1122-2024` |
+
 ### `get_voting_record`
 
 All votes cast by a council member.
@@ -362,7 +386,7 @@ Members who most frequently co-sponsor bills with a given member.
 ### Track upcoming hearings
 
 ```
-1. upcoming_events(days=14)            → from local index (may be 1–7 days stale)
+1. upcoming_events(days=14)            → from local index (as fresh as your last index run)
 2. get_upcoming_hearings()             → from live API (real-time)
 ```
 
@@ -465,6 +489,12 @@ This server pairs directly with:
 ## Contributing
 
 Issues and pull requests welcome at [github.com/BetaNYC/nyc-council-mcp](https://github.com/BetaNYC/nyc-council-mcp).
+
+Before working on the code, read [`CONTEXT.md`](./CONTEXT.md) — the project's glossary. It
+pins down the distinctions this domain punishes you for blurring: a *matter* versus a
+*bill* versus a *file number* (which is not unique without its type prefix), an *event*
+versus an *event item* (different id spaces), and a *position* versus a *non-position* in a
+roll call (both live in the same field, so a tally must filter rather than count rows).
 
 ---
 

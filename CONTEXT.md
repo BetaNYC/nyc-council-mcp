@@ -52,6 +52,10 @@ _Avoid_: attendance (implies a separate dataset; it is the same field)
 The aggregate of positions for one roll call. Always derived by filtering to positions and counting — Legistar's own tally field is not populated.
 _Avoid_: result, score, outcome
 
+**Matter history**:
+A matter's ordered trail of actions — introduced, referred, heard, amended, approved, enacted — one entry per action. Each entry names the acting body and the event item it occurred at, and an entry that recorded a roll call is the parent of that roll call's votes.
+_Avoid_: status (a matter's single current state, not its trail), timeline
+
 ### Data sources
 
 **Corpus**:
