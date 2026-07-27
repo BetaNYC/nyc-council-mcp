@@ -113,6 +113,7 @@ Automated daily updates (launchd / cron):
 
   console.log(
     `Indexed: bills=${stats.bills} events=${stats.events} people=${stats.people} ` +
+      `votes=${stats.votes} history=${stats.matterHistory} ` +
       `skipped=${stats.skipped} errors=${stats.errors} (${elapsed}s)`
   );
 }

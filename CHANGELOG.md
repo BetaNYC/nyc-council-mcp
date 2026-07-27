@@ -7,20 +7,60 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Dates are npm publish dates (`npm view @betanyc/nyc-council-mcp time`).
 
-## [2.5.0] - unreleased
+## [2.6.0] - unreleased
+
+### Added
+- **Roll-call votes and matter history are indexed from the archive**
+  ([#30](https://github.com/BetaNYC/nyc-council-mcp/issues/30)). One traversal of each
+  matter's `History[]` now populates two tables: `votes` (one row per member entry in a
+  roll call, from `History[].Votes`) and a new `matter_history` (one row per action — the
+  matter's timeline). Both come from the local archive, so no network and no
+  `LEGISTAR_TOKEN` are involved, and indexing covers all three matter trees —
+  `introduction`, `resolution`, and `land_use` (the densest vote source, ~80–98% of Land
+  Use matters carry a roll call). `History[].ID` is the `EventItemId` and each
+  `Votes[].ID` is the `PersonId`, both verified against the live endpoints. This resolves
+  [#19](https://github.com/BetaNYC/nyc-council-mcp/issues/19) — the `votes` table is no
+  longer empty, so the named-error guard shipped in 2.5.0 stops firing.
+- **`get_bill_history` now has a local path** and, like every sibling tool, accepts a
+  type-prefixed **file number** (e.g. `Int 1122-2024`) instead of demanding a numeric
+  matter id. It answers from `matter_history` in chronological order with no token. The
+  live variant remains for live-only mode and freshness.
+
+### Changed
+- **`vote_breakdown` returns roll calls grouped by event item, each with a positions-only
+  tally.** A matter decided in committee and then in full Council returns both roll calls
+  separately; the tally counts positions (Affirmative / Negative / Abstain) and **never**
+  `COUNT(*)`s the rows, so an Absent member is not scored as a vote (the `Res 0540-2026`
+  committee roll call tallies 14–1 across 17 recorded entries). `vote_breakdown` and
+  `get_voting_record` now join `votes.matter_id` to `bills.matter_id` instead of
+  `event_items.file_number` (NULL in every row), removing the dependency on #26. A bare
+  file number that matches both an `Int` and a `Res` is rejected, naming each (as #27 did
+  for `get_bill`).
+- **`SCHEMA_VERSION` is now 5.** The `votes` primary key changed from a source-less
+  `vote_id` to the natural `(event_item_id, person_id)` (unique within a roll call, and
+  idempotent on re-index). A full rebuild now drops and recreates the data tables before
+  indexing, so the new DDL is actually applied to an existing corpus — `CREATE TABLE IF NOT
+  EXISTS` alone would have silently kept the old `votes` table. A corpus built under schema
+  4 is detected as stale and rebuilt automatically on the next index run.
 
 ### Fixed
-- **`vote_breakdown` and `get_voting_record` no longer answer a vote question with `[]`**
-  ([#19](https://github.com/BetaNYC/nyc-council-mcp/issues/19)). The `votes` table is never
-  populated, so both returned an empty array for every member, including four-year
-  incumbents — indistinguishable from a true negative, and read by a caller as "this member
-  cast no votes." Both now raise a named error naming the gap and the live-API path that
-  does have per-member positions. One guard in `src/db/queries.ts` covers both callers and
-  any future one; it fires only while the table is genuinely empty, so a later re-index
-  works normally without a restart. Indexing the archive's `RollCall` data is deliberately
-  **not** done here: it is attendance (Present / Absent / Excused / Medical / Conflict),
-  not aye/nay, and whether it belongs in a table called `votes` is an open naming decision.
-## [2.4.0] - unreleased
+- **`get_bill` with a bare file number no longer hides matters of another type**
+  ([#27](https://github.com/BetaNYC/nyc-council-mcp/issues/27)). Legistar's `MatterFile`
+  values are type-prefixed, so a bare `NNNN-YYYY` was probed against `Int`, `Res`, `LU` in
+  order and the **first** hit was returned. A number that exists as more than one type
+  resolved to whichever prefix was tried first: `0540-2026` returned `Int 0540-2026` (an
+  Introduction still in committee) and silently hid `Res 0540-2026` (the *adopted* FY2027
+  contract-budget resolution) — the wrong matter, with nothing signalling the other exists.
+  A bare number now probes every prefix in parallel; a single match returns that matter,
+  and an ambiguous one (more than one match) is **rejected** with an error naming every
+  match, so the caller re-calls with the exact type-prefixed file number. A type-prefixed
+  input is unambiguous and still costs exactly one request. The success shape is unchanged
+  from before this fix (a single matter object); only the previously-wrong ambiguous case
+  now errors instead of silently returning one — so this is not a breaking change.
+
+## [2.5.0] - 2026-07-22
+
+npm went straight from 2.3.0 to 2.5.0; the same-day `2.4.0` release commit was bumped but never published, so its change is folded in here.
 
 ### Fixed
 - **Unknown tool parameters are rejected instead of silently dropped**
@@ -31,6 +71,11 @@ Dates are npm publish dates (`npm view @betanyc/nyc-council-mcp time`).
   result row: real, correctly-sourced data answering a *different* question, with nothing
   signalling that a filter had been dropped. The refusal names the offending key and lists
   the parameters that tool does accept.
+- **Vote tools raise a named error for the unpopulated `votes` table**
+  ([#19](https://github.com/BetaNYC/nyc-council-mcp/issues/19)) — the interim guard. An
+  empty array from `vote_breakdown` / `get_voting_record` is indistinguishable from "this
+  member cast no votes," so both fail with a named error instead of returning `[]`. Fully
+  resolved in 2.6.0, where #30 populates the table from the archive.
 
 ## [2.3.0] - 2026-07-17
 

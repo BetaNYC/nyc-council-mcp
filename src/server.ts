@@ -85,11 +85,20 @@ See README for full setup instructions.
     db = openDatabase(mode.dbPath);
   }
 
-  // Build tool list
+  // Build tool list. get_bill_history is defined in BOTH the local and live sets
+  // (local is the default, token-free path; the live one remains for live-only
+  // mode / freshness), so dedupe by name — local listed first, so it wins in
+  // hybrid mode. Routing (below) already prefers local when the corpus exists,
+  // and falls through to the live handler in live-only mode.
+  const seenToolNames = new Set<string>();
   const toolDefs = [
     ...(mode.hasLocal ? LOCAL_TOOL_DEFS : []),
     ...(mode.hasLive ? [...LIVE_TOOL_DEFS, LIVE_SEARCH_TOOL_DEF] : []),
-  ];
+  ].filter((t) => {
+    if (seenToolNames.has(t.name)) return false;
+    seenToolNames.add(t.name);
+    return true;
+  });
 
   // Build set of local and live tool names for routing
   const localNames = new Set(LOCAL_TOOL_DEFS.map((t) => t.name));
