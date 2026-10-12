@@ -156,7 +156,102 @@ export type LegistarPerson = {
   PersonFax: string | null;
   PersonEmail: string | null;
   PersonWWW: string | null;
+  /** Legistar website profile (PersonDetail.aspx). See correctPersonProfiles. */
+  PersonWWW2?: string | null;
 };
+
+/** A person record as returned by get_council_member, after profile-link checks. */
+export type CouncilMemberRecord = LegistarPerson & {
+  /** Set when PersonWWW2 was replaced by a PERSON_WWW2_OVERRIDES entry: the upstream value. */
+  PersonWWW2_upstream?: string | null;
+  /** Human-readable reason PersonWWW2 was corrected, or why it may be wrong. */
+  PersonWWW2_warning?: string;
+};
+
+/**
+ * Known-bad PersonWWW2 values in the Council's Legistar Persons records, with
+ * the correct profile link. Upstream data errors we cannot fix at the source.
+ *
+ * An entry applies ONLY while the upstream record still carries the known-bad
+ * profile ID (`badProfileId`, the `ID=` query parameter of PersonDetail.aspx).
+ * Once the Council corrects the record, the upstream value no longer matches
+ * and the override becomes a no-op, so a stale entry cannot overwrite a fixed
+ * record. Remove an entry once the upstream fix is confirmed.
+ *
+ * Each entry is dated and cites how the correct link was verified.
+ */
+export const PERSON_WWW2_OVERRIDES: ReadonlyArray<{
+  personId: number;
+  name: string;
+  badProfileId: string;
+  correct: string;
+  verified: string;
+  reference: string;
+}> = [
+  {
+    // Upstream PersonWWW2 for Maloney (PersonId 7894) is Elsie Encarnación's
+    // profile (ID=329370), the same value as PersonId 7895. Correct link
+    // verified in a browser 2026-09-30 (page title "The New York City Council -
+    // Virginia Maloney"); upstream still wrong on the WebAPI 2026-10-11.
+    personId: 7894,
+    name: "Virginia Maloney",
+    badProfileId: "329370",
+    correct:
+      "https://legistar.council.nyc.gov/PersonDetail.aspx?ID=329369&GUID=0DEF07B0-6228-41F9-84D8-560C1659684D",
+    verified: "2026-09-30",
+    reference: "https://github.com/BetaNYC/nyc-council-mcp/issues/38",
+  },
+];
+
+/** The `ID=` parameter of a PersonDetail.aspx link, or null if absent/unparseable. */
+export function personProfileId(www2: string | null | undefined): string | null {
+  if (!www2) return null;
+  try {
+    return new URL(www2).searchParams.get("ID");
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Apply PERSON_WWW2_OVERRIDES, then flag any remaining PersonWWW2 that points
+ * to the same Legistar profile as another person in the same result set (two
+ * people cannot share one profile page, so at least one link is wrong). A
+ * flagged link is kept, not dropped: we cannot tell which of the two is right.
+ */
+export function correctPersonProfiles(people: LegistarPerson[]): CouncilMemberRecord[] {
+  const out: CouncilMemberRecord[] = people.map((p) => {
+    const fix = PERSON_WWW2_OVERRIDES.find(
+      (o) => o.personId === p.PersonId && personProfileId(p.PersonWWW2) === o.badProfileId
+    );
+    if (!fix) return { ...p };
+    return {
+      ...p,
+      PersonWWW2: fix.correct,
+      PersonWWW2_upstream: p.PersonWWW2 ?? null,
+      PersonWWW2_warning:
+        `Corrected: the Council's Legistar record lists another member's profile (ID=${fix.badProfileId}). ` +
+        `Correct link verified ${fix.verified}; see ${fix.reference}.`,
+    };
+  });
+
+  const byProfile = new Map<string, CouncilMemberRecord[]>();
+  for (const p of out) {
+    const id = personProfileId(p.PersonWWW2);
+    if (!id) continue;
+    byProfile.set(id, [...(byProfile.get(id) ?? []), p]);
+  }
+  for (const group of byProfile.values()) {
+    if (group.length < 2) continue;
+    for (const p of group) {
+      if (p.PersonWWW2_upstream !== undefined) continue; // already corrected
+      const others = group.filter((o) => o !== p).map((o) => o.PersonFullName.trim());
+      p.PersonWWW2_warning =
+        `PersonWWW2 is shared with ${others.join(", ")}; this Legistar profile link may be wrong.`;
+    }
+  }
+  return out;
+}
 
 export type LegistarBody = {
   BodyId: number;
@@ -398,12 +493,12 @@ export async function getUpcomingHearings(
 export async function getCouncilMember(
   token: string,
   name: string
-): Promise<LegistarPerson[]> {
+): Promise<CouncilMemberRecord[]> {
   const url = buildUrl("/persons", token, {
     $filter: `substringof('${odataString(name)}',PersonFullName) and PersonActiveFlag eq 1`,
     $top: "10",
   });
-  return legistarFetch<LegistarPerson[]>(url);
+  return correctPersonProfiles(await legistarFetch<LegistarPerson[]>(url));
 }
 
 export async function getCommittee(
