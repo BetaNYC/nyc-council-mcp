@@ -78,7 +78,9 @@ const LIVE_TOOL_DEFS = [
   },
   {
     name: "get_council_member",
-    description: "Look up an NYC Council member by name. Returns current contact info and active status.",
+    description:
+      "Look up an NYC Council member by name. Returns current contact info and active status. " +
+      "PersonWWW2 may carry a PersonWWW2_warning (and the original value in PersonWWW2_upstream) when the upstream link is known or suspected wrong.",
     inputSchema: {
       type: "object",
       additionalProperties: false,

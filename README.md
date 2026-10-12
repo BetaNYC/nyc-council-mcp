@@ -274,8 +274,8 @@ takes a full rebuild** (~15 seconds) and picks up roll-call votes and matter his
 points at a directory where none of `people/*.json`, `introduction/**/*.json`,
 `resolution/**/*.json`, `land_use/**/*.json` or `events/**/*.json` match, `index` exits
 non-zero and leaves any existing database untouched. A source directory that exists but
-matches nothing is reported on stderr. Paths work on Windows, macOS and Linux, including
-archive paths with spaces, parentheses or brackets.
+matches nothing is reported on stderr. The build uses portable paths (including archive
+paths with spaces, parentheses or brackets) and is tested in CI on Windows as well as Linux.
 
 ---
 

@@ -218,6 +218,10 @@ export function personProfileId(www2: string | null | undefined): string | null 
  * to the same Legistar profile as another person in the same result set (two
  * people cannot share one profile page, so at least one link is wrong). A
  * flagged link is kept, not dropped: we cannot tell which of the two is right.
+ *
+ * Limitation: shared-link detection sees only the people in THIS result set
+ * (one name search, at most $top rows). A wrong link that duplicates someone
+ * outside the result, as Maloney's did, is caught only by an override entry.
  */
 export function correctPersonProfiles(people: LegistarPerson[]): CouncilMemberRecord[] {
   const out: CouncilMemberRecord[] = people.map((p) => {

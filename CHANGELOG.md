@@ -7,11 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Dates are npm publish dates (`npm view @betanyc/nyc-council-mcp time`).
 
-## [Unreleased]
+## [2.7.0] - 2026-10-11
 
 ### Fixed
-- **The index build works on Windows**
-  ([#12](https://github.com/BetaNYC/nyc-council-mcp/issues/12)). Glob patterns were built
+- **Fixes the empty index on Windows
+  ([#12](https://github.com/BetaNYC/nyc-council-mcp/issues/12)); covered by a new
+  windows-latest CI job.** Glob patterns were built
   with `path.join(archiveRoot, ...)`, which emits backslashes on Windows; fast-glob reads
   those as escape characters, so nothing matched and `index` reported
   `bills=0 events=0 people=0 errors=0` as if it had succeeded. The archive root is now
