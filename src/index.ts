@@ -103,12 +103,20 @@ Automated daily updates (launchd / cron):
   const { buildIndex } = await import("./db/indexer.js");
 
   const start = Date.now();
-  const stats = await buildIndex({
-    archiveRoot: resolvedArchive,
-    dbPath: resolvedDb,
-    full,
-    verbose,
-  });
+  let stats: Awaited<ReturnType<typeof buildIndex>>;
+  try {
+    stats = await buildIndex({
+      archiveRoot: resolvedArchive,
+      dbPath: resolvedDb,
+      full,
+      verbose,
+    });
+  } catch (err) {
+    // e.g. an archive path that matches no JSON files (issue #12): fail loud
+    // with a non-zero exit instead of reporting an empty index as success.
+    console.error(`Error: ${err instanceof Error ? err.message : String(err)}`);
+    process.exit(1);
+  }
   const elapsed = ((Date.now() - start) / 1000).toFixed(1);
 
   console.log(

@@ -14,7 +14,7 @@
 
 import Sqlite from "better-sqlite3";
 import fg from "fast-glob";
-import { readFileSync, statSync } from "fs";
+import { existsSync, readFileSync, statSync } from "fs";
 import { join, basename } from "path";
 import {
   CREATE_TABLES,
@@ -200,12 +200,68 @@ const MATTER_DIRS = ["introduction", "resolution", "land_use"];
 const CURRENT_SOURCE_SET = [...MATTER_DIRS].sort().join(",");
 
 // ---------------------------------------------------------------------------
+// Archive file discovery (cross-platform)
+// ---------------------------------------------------------------------------
+//
+// Glob patterns are ALWAYS POSIX and RELATIVE; the archive root goes in
+// fast-glob's `cwd` option. Never build a pattern with path.join(archiveRoot,
+// ...): on Windows that yields backslashes, which fast-glob treats as escape
+// characters, so the pattern matched nothing and the index built empty with
+// errors=0 (issue #12). The same mistake also broke any archive path, on any
+// OS, containing glob syntax such as "(x86)" or "[...]". fast-glob's README,
+// "How to write patterns on Windows?": "Always use forward-slashes in glob
+// expressions ... With the cwd option use a convenient format."
+export function archiveGlob(archiveRoot: string, pattern: string): string[] {
+  return fg.sync(pattern, { cwd: archiveRoot, absolute: true });
+}
+
+export interface ArchiveFiles {
+  people: string[];
+  matters: string[];
+  events: string[];
+}
+
+// Walk the archive once, up front, before the database is touched. Fails loud
+// rather than building a silently empty index: zero matching files across the
+// whole archive throws (a full rebuild would otherwise drop every table and
+// repopulate nothing), and a source directory that exists but matches no
+// files is reported on stderr.
+export function listArchiveFiles(archiveRoot: string): ArchiveFiles {
+  const sources: Array<{ dir: string; pattern: string }> = [
+    { dir: "people", pattern: "people/*.json" },
+    ...MATTER_DIRS.map((dir) => ({ dir, pattern: `${dir}/**/*.json` })),
+    { dir: "events", pattern: "events/**/*.json" },
+  ];
+  const found = new Map<string, string[]>();
+  for (const { dir, pattern } of sources) {
+    const files = archiveGlob(archiveRoot, pattern);
+    found.set(dir, files);
+    if (files.length === 0 && existsSync(join(archiveRoot, dir))) {
+      console.error(`Warning: ${join(archiveRoot, dir)} exists but no files matched ${pattern}`);
+    }
+  }
+  const files: ArchiveFiles = {
+    people: found.get("people") ?? [],
+    matters: MATTER_DIRS.flatMap((dir) => found.get(dir) ?? []),
+    events: found.get("events") ?? [],
+  };
+  if (files.people.length + files.matters.length + files.events.length === 0) {
+    throw new Error(
+      `No archive JSON files found under ${archiveRoot} ` +
+        `(looked for ${sources.map((s) => s.pattern).join(", ")}). ` +
+        "Is this a clone of https://github.com/jehiah/nyc_legislation? The index was not modified."
+    );
+  }
+  return files;
+}
+
+// ---------------------------------------------------------------------------
 // Index bills / resolutions / land use (MATTER_DIRS/{year}/*.json)
 // ---------------------------------------------------------------------------
 
 function indexBills(
   db: Sqlite.Database,
-  archiveRoot: string,
+  files: string[],
   since: Date | null,
   stats: IndexStats
 ): void {
@@ -346,12 +402,8 @@ function indexBills(
 
   // Process in chunks to avoid holding too many file handles.
   const CHUNK = 500;
-  for (const dir of MATTER_DIRS) {
-    const pattern = join(archiveRoot, dir, "**", "*.json");
-    const files = fg.sync(pattern, { absolute: true });
-    for (let i = 0; i < files.length; i += CHUNK) {
-      insertBillBatch(files.slice(i, i + CHUNK));
-    }
+  for (let i = 0; i < files.length; i += CHUNK) {
+    insertBillBatch(files.slice(i, i + CHUNK));
   }
 }
 
@@ -361,7 +413,7 @@ function indexBills(
 
 function indexEvents(
   db: Sqlite.Database,
-  archiveRoot: string,
+  files: string[],
   since: Date | null,
   stats: IndexStats
 ): void {
@@ -446,9 +498,6 @@ function indexEvents(
     }
   });
 
-  const pattern = join(archiveRoot, "events", "**", "*.json");
-  const files = fg.sync(pattern, { absolute: true });
-
   const CHUNK = 200;
   for (let i = 0; i < files.length; i += CHUNK) {
     insertEventBatch(files.slice(i, i + CHUNK));
@@ -461,7 +510,7 @@ function indexEvents(
 
 function indexPeople(
   db: Sqlite.Database,
-  archiveRoot: string,
+  files: string[],
   stats: IndexStats
 ): void {
   const upsert = db.prepare(`
@@ -496,8 +545,6 @@ function indexPeople(
     }
   });
 
-  const pattern = join(archiveRoot, "people", "*.json");
-  const files = fg.sync(pattern, { absolute: true });
   insertPeopleBatch(files);
 }
 
@@ -514,6 +561,10 @@ export interface IndexOptions {
 
 export async function buildIndex(opts: IndexOptions): Promise<IndexStats> {
   const stats: IndexStats = { bills: 0, events: 0, people: 0, votes: 0, matterHistory: 0, skipped: 0, errors: 0 };
+
+  // Discover archive files BEFORE opening the database, so a bad archive path
+  // throws without dropping or touching an existing index (issue #12).
+  const archive = listArchiveFiles(opts.archiveRoot);
 
   const db = openDatabase(opts.dbPath);
 
@@ -592,15 +643,15 @@ export async function buildIndex(opts: IndexOptions): Promise<IndexStats> {
 
   // Index in order: people first (needed for sponsor FK integrity), then bills, then events
   if (opts.verbose) process.stderr.write("Indexing people… ");
-  indexPeople(db, opts.archiveRoot, stats);
+  indexPeople(db, archive.people, stats);
   if (opts.verbose) console.error(`${stats.people} people`);
 
   if (opts.verbose) process.stderr.write("Indexing bills… ");
-  indexBills(db, opts.archiveRoot, since, stats);
+  indexBills(db, archive.matters, since, stats);
   if (opts.verbose) console.error(`${stats.bills} bills`);
 
   if (opts.verbose) process.stderr.write("Indexing events… ");
-  indexEvents(db, opts.archiveRoot, since, stats);
+  indexEvents(db, archive.events, since, stats);
   if (opts.verbose) console.error(`${stats.events} events`);
 
   // Coverage report: per-matter-type row counts now in the DB, so an

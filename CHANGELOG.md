@@ -7,6 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Dates are npm publish dates (`npm view @betanyc/nyc-council-mcp time`).
 
+## [2.7.0] - 2026-10-11
+
+### Fixed
+- **Fixes the empty index on Windows
+  ([#12](https://github.com/BetaNYC/nyc-council-mcp/issues/12)); covered by a new
+  windows-latest CI job.** Glob patterns were built
+  with `path.join(archiveRoot, ...)`, which emits backslashes on Windows; fast-glob reads
+  those as escape characters, so nothing matched and `index` reported
+  `bills=0 events=0 people=0 errors=0` as if it had succeeded. The archive root is now
+  passed as fast-glob's `cwd` with POSIX relative patterns, as fast-glob's README
+  prescribes. The same bug affected archive paths containing glob syntax (`(x86)`,
+  `[...]`) on every OS. Thanks to NewDestinyDan and BenWeinbergNYC for the diagnosis.
+- **`index` fails loud on an empty archive.** Zero matching files across the archive now
+  throws before the database is opened (exit 1, existing index untouched), and a source
+  directory that exists but matches nothing is warned about on stderr.
+- **`get_council_member` no longer returns another member's Legistar profile**
+  ([#38](https://github.com/BetaNYC/nyc-council-mcp/issues/38)). The Council's Legistar
+  record for Virginia Maloney (PersonId 7894) carries Elsie Encarnación's `PersonWWW2`.
+  A dated override list (`PERSON_WWW2_OVERRIDES`) corrects known-bad upstream links, only
+  while upstream still carries the bad value, and keeps the original in
+  `PersonWWW2_upstream` with a `PersonWWW2_warning`. Any `PersonWWW2` shared by two people
+  in one result is flagged.
+
+### CI
+- A `windows-latest` / Node 22.x job runs the full build and test suite (#12).
+
 ## [2.6.0] - unreleased
 
 ### Added
