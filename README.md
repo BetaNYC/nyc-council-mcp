@@ -65,7 +65,7 @@ These require `LEGISTAR_TOKEN`.
 | `get_bill` | Current status and record for a bill. A bare `NNNN-YYYY` number is ambiguous (it can be both an `Int` and a `Res`); an ambiguous match is rejected with an error naming every candidate, so re-call with the exact type-prefixed number |
 | `get_bill_history` | *Local by default* (served from the index, no token; takes a file number). In **live-only** mode this live variant answers instead — authoritative action trail by numeric matter id |
 | `get_upcoming_hearings` | Real-time upcoming committee hearings and Stated meetings, each with its agenda items (bills/matters) in `EventItems` |
-| `get_council_member` | Current contact info and active status for a council member |
+| `get_council_member` | Current contact info and active status for a council member. `PersonWWW2` (the Legistar profile page) is checked: a known-bad upstream link is corrected from a small dated override list (`PERSON_WWW2_OVERRIDES` in `src/legistar.ts`, with the original kept in `PersonWWW2_upstream`), and a link shared by two people in one result gets a `PersonWWW2_warning` |
 | `get_committee` | Current membership count and details for a committee |
 | `get_votes` | Per-item vote breakdown by event item ID |
 | `list_recent_legislation` | Most recently introduced legislation (catches bills since last index) |
@@ -269,6 +269,13 @@ coverage would otherwise leave older files permanently unindexed. When a trigger
 `--verbose` names it and the run drops and recreates the data tables before indexing.
 Upgrading to 2.6.0 fires the schema trigger once, so your **first index after upgrading
 takes a full rebuild** (~15 seconds) and picks up roll-call votes and matter history.
+
+**An archive with no matching files is an error, not an empty index.** If `--archive`
+points at a directory where none of `people/*.json`, `introduction/**/*.json`,
+`resolution/**/*.json`, `land_use/**/*.json` or `events/**/*.json` match, `index` exits
+non-zero and leaves any existing database untouched. A source directory that exists but
+matches nothing is reported on stderr. Paths work on Windows, macOS and Linux, including
+archive paths with spaces, parentheses or brackets.
 
 ---
 
