@@ -13,6 +13,14 @@
 # never greenlights code against an unpatched runtime. If the engines floor is
 # raised to >= 20 in a future release, drop this note. 22.x is the current LTS,
 # so the matrix still tests both ends of the supported range.
+#
+# Windows: one extra windows-latest job on Node 22.x (#12). The index build
+# silently produced an empty index on Windows because glob patterns were built
+# with path.join (backslashes). Every fixture-archive indexer test exercises
+# that path, so running the suite on Windows keeps it fixed. Node 22 only on
+# Windows: npm runs `node --test test/*.test.mjs` through cmd.exe, which does
+# not expand globs, so the pattern relies on the test runner's own glob
+# support (added in Node 21).
 
 name: CI
 
@@ -44,15 +52,19 @@ permissions:
 
 jobs:
   test:
-    name: Build & test (Node ${{ matrix.node-version }})
-    runs-on: ubuntu-latest
+    name: Build & test (${{ matrix.os }}, Node ${{ matrix.node-version }})
+    runs-on: ${{ matrix.os }}
 
     strategy:
       fail-fast: false
       matrix:
+        os: [ubuntu-latest]
         node-version:
           - "20.x"
           - "22.x"
+        include:
+          - os: windows-latest
+            node-version: "22.x"
 
     steps:
       - name: Checkout
