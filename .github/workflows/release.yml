@@ -52,6 +52,17 @@ jobs:
       - name: Run tests
         run: npm test --if-present
 
+      # server.json is the MCP Registry listing (see publish-mcp.yml). It must
+      # be at the same version as package.json and carry its mcpName, or the
+      # registry publish that follows this workflow will fail.
+      - name: Verify server.json versions match package.json
+        run: |
+          node -e '
+            const p = require("./package.json"), s = require("./server.json");
+            const bad = [s.version, ...s.packages.map((x) => x.version)].filter((v) => v !== p.version);
+            if (bad.length || s.name !== p.mcpName) { console.error("server.json is out of step with package.json"); process.exit(1); }
+          '
+
       # Guard: the pushed tag must match the version in package.json exactly
       # (tag v2.2.0 ⇔ "version": "2.2.0"). Catches the classic mistake of
       # tagging before merging the version-bump PR, which would otherwise

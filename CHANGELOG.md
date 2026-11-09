@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Dates are npm publish dates (`npm view @betanyc/nyc-council-mcp time`).
 
+## [2.7.1] - unreleased
+
+### Added
+- **Listing in the official MCP Registry as `io.github.BetaNYC/nyc-council-mcp`.**
+  `package.json` carries `mcpName`, which the registry checks on the published npm
+  package, so this release exists to put it there. `server.json` is the listing; a new
+  `publish-mcp.yml` workflow publishes it after the Release workflow succeeds, logging in
+  with GitHub OIDC (no stored secret). The Release workflow now fails if `server.json`
+  and `package.json` disagree on version or name.
+- **`glama.json`** names the maintainer so the Glama listing can be claimed.
+
+No change to the server's behavior or tools.
+
 ## [2.7.0] - 2026-10-11
 
 ### Fixed

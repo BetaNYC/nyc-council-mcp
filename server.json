@@ -1,0 +1,44 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.BetaNYC/nyc-council-mcp",
+  "title": "NYC Council",
+  "description": "NYC Council legislation: bills, hearings, votes and members, from a local index or live Legistar",
+  "repository": {
+    "url": "https://github.com/BetaNYC/nyc-council-mcp",
+    "source": "github"
+  },
+  "version": "2.7.1",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "@betanyc/nyc-council-mcp",
+      "version": "2.7.1",
+      "transport": {
+        "type": "stdio"
+      },
+      "packageArguments": [
+        {
+          "type": "positional",
+          "value": "serve",
+          "description": "Start the MCP server (the default subcommand)"
+        }
+      ],
+      "environmentVariables": [
+        {
+          "name": "LEGISTAR_TOKEN",
+          "description": "Free Legistar API token for the live tools. Set this, LEGISTAR_DB_PATH, or both",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": true
+        },
+        {
+          "name": "LEGISTAR_DB_PATH",
+          "description": "Path to a legistar.db built with the index subcommand, for the fast local tools",
+          "isRequired": false,
+          "format": "filepath",
+          "isSecret": false
+        }
+      ]
+    }
+  ]
+}
