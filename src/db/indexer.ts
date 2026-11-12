@@ -13,8 +13,7 @@
  */
 
 import Sqlite from "better-sqlite3";
-import fg from "fast-glob";
-import { existsSync, readFileSync, statSync } from "fs";
+import { existsSync, readFileSync, readdirSync, statSync } from "fs";
 import { join, basename } from "path";
 import { execFileSync } from "child_process";
 import {
@@ -188,7 +187,7 @@ function isoDate(raw: string | null | undefined): string | null {
 // The archive's `resubmit/{year}.json` files are intentionally excluded: they
 // are not matters but a {"Resubmitted":[{"FromFile","ToFile"}]} cross-session
 // mapping. `events/`, `people/`, and `scripts/` are handled elsewhere or not
-// at all. A directory that does not exist yields no files (fast-glob returns
+// at all. A directory that does not exist yields no files (archiveJsonFiles returns
 // []), so this list is safe to extend and forward-compatible.
 const MATTER_DIRS = ["introduction", "resolution", "land_use"];
 
@@ -204,16 +203,32 @@ const CURRENT_SOURCE_SET = [...MATTER_DIRS].sort().join(",");
 // Archive file discovery (cross-platform)
 // ---------------------------------------------------------------------------
 //
-// Glob patterns are ALWAYS POSIX and RELATIVE; the archive root goes in
-// fast-glob's `cwd` option. Never build a pattern with path.join(archiveRoot,
-// ...): on Windows that yields backslashes, which fast-glob treats as escape
-// characters, so the pattern matched nothing and the index built empty with
-// errors=0 (issue #12). The same mistake also broke any archive path, on any
-// OS, containing glob syntax such as "(x86)" or "[...]". fast-glob's README,
-// "How to write patterns on Windows?": "Always use forward-slashes in glob
-// expressions ... With the cwd option use a convenient format."
-export function archiveGlob(archiveRoot: string, pattern: string): string[] {
-  return fg.sync(pattern, { cwd: archiveRoot, absolute: true });
+// A plain directory walk, no glob library (#36, replacing fast-glob). Paths are
+// built with path.join from real directory entries, so nothing is ever parsed
+// as a pattern: the Windows backslash bug (#12) and archive paths containing
+// glob syntax such as "(x86)" or "[...]" cannot happen. Manual recursion rather
+// than readdirSync({ recursive: true }), which needs Node 18.17+ and this
+// package supports Node 18. Sorted, so the walk order is the same everywhere.
+export function archiveJsonFiles(archiveRoot: string, dir: string, recursive: boolean): string[] {
+  const out: string[] = [];
+  const walk = (abs: string) => {
+    let entries;
+    try {
+      entries = readdirSync(abs, { withFileTypes: true });
+    } catch {
+      return; // a missing directory yields no files
+    }
+    for (const e of entries) {
+      const child = join(abs, e.name);
+      if (e.isDirectory()) {
+        if (recursive) walk(child);
+      } else if (e.isFile() && e.name.endsWith(".json")) {
+        out.push(child);
+      }
+    }
+  };
+  walk(join(archiveRoot, dir));
+  return out.sort();
 }
 
 export interface ArchiveFiles {
@@ -228,14 +243,14 @@ export interface ArchiveFiles {
 // repopulate nothing), and a source directory that exists but matches no
 // files is reported on stderr.
 export function listArchiveFiles(archiveRoot: string): ArchiveFiles {
-  const sources: Array<{ dir: string; pattern: string }> = [
-    { dir: "people", pattern: "people/*.json" },
-    ...MATTER_DIRS.map((dir) => ({ dir, pattern: `${dir}/**/*.json` })),
-    { dir: "events", pattern: "events/**/*.json" },
+  const sources: Array<{ dir: string; pattern: string; recursive: boolean }> = [
+    { dir: "people", pattern: "people/*.json", recursive: false },
+    ...MATTER_DIRS.map((dir) => ({ dir, pattern: `${dir}/**/*.json`, recursive: true })),
+    { dir: "events", pattern: "events/**/*.json", recursive: true },
   ];
   const found = new Map<string, string[]>();
-  for (const { dir, pattern } of sources) {
-    const files = archiveGlob(archiveRoot, pattern);
+  for (const { dir, pattern, recursive } of sources) {
+    const files = archiveJsonFiles(archiveRoot, dir, recursive);
     found.set(dir, files);
     if (files.length === 0 && existsSync(join(archiveRoot, dir))) {
       console.error(`Warning: ${join(archiveRoot, dir)} exists but no files matched ${pattern}`);

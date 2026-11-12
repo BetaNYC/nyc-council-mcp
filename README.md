@@ -42,8 +42,8 @@ These require `LEGISTAR_DB_PATH` and a built index (see [Setup](#setup)).
 
 | Tool | Description |
 |---|---|
-| `search_bills` | Full-text search across all bills and resolutions |
-| `search_legislation` | Alias for `search_bills` |
+| `search_legislation` | Full-text search across all legislation: Introductions, Resolutions, Land Use and every other matter type |
+| `search_bills` | Alias for `search_legislation` (same tool, same results; kept so existing callers work) |
 | `search_events` | Full-text search across committee hearings |
 | `list_committees` | All committees with bill and event counts |
 | `recent_bills` | Bills introduced in the last N days |

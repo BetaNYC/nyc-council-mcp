@@ -55,6 +55,17 @@ Dates are npm publish dates (`npm view @betanyc/nyc-council-mcp time`).
   docs; the README says so.
 
 ### Changed
+- **`search_legislation` is now the main name, and `search_bills` the alias
+  ([#21](https://github.com/BetaNYC/nyc-council-mcp/issues/21)).** The tool returns every
+  matter type, not only bills, so the old main name misdescribed it. Both names still work
+  and return the same results; the alias's definition is now built from the main one, so
+  the two cannot drift.
+- **Cleanup carried over from the stale PR #7
+  ([#36](https://github.com/BetaNYC/nyc-council-mcp/issues/36)).** The archive is walked
+  with a plain directory read instead of `fast-glob`, so that dependency is gone. On the
+  real archive it finds the same files (254 people, 21,803 matters, 17,532 events). Paths
+  are never parsed as patterns, so the Windows and "(x86)" path bugs from #12 cannot come
+  back. The 21 copied answer wrappers are one shared helper. Still supports Node 18.
 - **`get_event_bills` is paged
   ([#29](https://github.com/BetaNYC/nyc-council-mcp/issues/29)).** It now returns
   `{ event_id, total, offset, limit, items }` instead of a bare array, 50 items per page by
