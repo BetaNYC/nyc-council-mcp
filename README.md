@@ -95,7 +95,7 @@ Why this shape, so nobody re-attempts the obvious-looking fix:
   the Legistar site links to its own records — observed behavior, not a documented
   contract. `LEGISTAR_LIVE_URL_TEST=1 npm test` re-checks the fixtures live.
 - A row with no matter id (a procedural agenda line) gets `null`.
-- Before 2.8.0 the link came from [intro.nyc](https://intro.nyc), which keys on the
+- Through 2.7.1 the link came from [intro.nyc](https://intro.nyc), which keys on the
   bare number and assumes an Introduction, so every other type got `null`
   ([#45](https://github.com/BetaNYC/nyc-council-mcp/issues/45)).
 
