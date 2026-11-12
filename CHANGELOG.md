@@ -17,6 +17,12 @@ Dates are npm publish dates (`npm view @betanyc/nyc-council-mcp time`).
   files its website page lists, and the files match byte for byte.
 
 ### Fixed
+- **`get_voting_record` says when each vote happened
+  ([#41](https://github.com/BetaNYC/nyc-council-mcp/issues/41)).** Rows now carry
+  `vote_date`, `vote_action` and `vote_body` from the matter's history, and are ordered
+  by vote date, not by the bill's intro date. Before, a 2024 bill voted on in 2026 read
+  like an old vote. The future `intro_date` in the report came from Legistar itself
+  (MatterIntroDate), which has since been corrected upstream.
 - **Member names match the way people type them
   ([#40](https://github.com/BetaNYC/nyc-council-mcp/issues/40)).** `get_council_member`,
   `get_voting_record` and `co_sponsors` found nobody for "Carmen De La Rosa", because

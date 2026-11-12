@@ -50,7 +50,7 @@ These require `LEGISTAR_DB_PATH` and a built index (see [Setup](#setup)).
 | `upcoming_events` | Scheduled events in the next N days |
 | `aggregate_bills` | Count bills grouped by status, type, committee, or year |
 | `vote_breakdown` | Every member's vote on a bill (by type-prefixed file number), grouped by roll call — committee and full Council — each with a positions-only tally. Indexed from the archive's `History[].Votes` |
-| `get_voting_record` | All votes cast by a named council member, newest first |
+| `get_voting_record` | All votes cast by a named council member, newest vote first. Each row has `vote_date`, `vote_action` and `vote_body`; `intro_date` is the bill's, not the vote's |
 | `get_bill_history` | A matter's action trail — hearings, referrals, committee/Council actions, outcomes — in chronological order, by file number. No token required |
 | `co_sponsors` | Members who most often co-sponsor with a given member |
 | `get_bill_hearings` | Events where a bill appeared on the agenda, with each event's date, body, and action |
