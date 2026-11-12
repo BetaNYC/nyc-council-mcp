@@ -193,19 +193,9 @@ export const PERSON_WWW2_OVERRIDES: ReadonlyArray<{
   verified: string;
   reference: string;
 }> = [
-  {
-    // Upstream PersonWWW2 for Maloney (PersonId 7894) is Elsie Encarnación's
-    // profile (ID=329370), the same value as PersonId 7895. Correct link
-    // verified in a browser 2026-09-30 (page title "The New York City Council -
-    // Virginia Maloney"); upstream still wrong on the WebAPI 2026-10-11.
-    personId: 7894,
-    name: "Virginia Maloney",
-    badProfileId: "329370",
-    correct:
-      "https://legistar.council.nyc.gov/PersonDetail.aspx?ID=329369&GUID=0DEF07B0-6228-41F9-84D8-560C1659684D",
-    verified: "2026-09-30",
-    reference: "https://github.com/BetaNYC/nyc-council-mcp/issues/38",
-  },
+  // Empty. The Maloney entry (#38) was removed 2026-11-12: the WebAPI now returns
+  // her own profile (ID=329369), confirmed on the live API and on the page
+  // itself ("The New York City Council - Virginia Maloney").
 ];
 
 /** The `ID=` parameter of a PersonDetail.aspx link, or null if absent/unparseable. */
@@ -228,9 +218,12 @@ export function personProfileId(www2: string | null | undefined): string | null 
  * (one name search, at most $top rows). A wrong link that duplicates someone
  * outside the result, as Maloney's did, is caught only by an override entry.
  */
-export function correctPersonProfiles(people: LegistarPerson[]): CouncilMemberRecord[] {
+export function correctPersonProfiles(
+  people: LegistarPerson[],
+  overrides: typeof PERSON_WWW2_OVERRIDES = PERSON_WWW2_OVERRIDES
+): CouncilMemberRecord[] {
   const out: CouncilMemberRecord[] = people.map((p) => {
-    const fix = PERSON_WWW2_OVERRIDES.find(
+    const fix = overrides.find(
       (o) => o.personId === p.PersonId && personProfileId(p.PersonWWW2) === o.badProfileId
     );
     if (!fix) return { ...p };

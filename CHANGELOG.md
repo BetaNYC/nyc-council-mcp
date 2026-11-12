@@ -41,6 +41,11 @@ Dates are npm publish dates (`npm view @betanyc/nyc-council-mcp time`).
   files its website page lists, and the files match byte for byte.
 
 ### Fixed
+- **Retired the Maloney profile-link override
+  ([#38](https://github.com/BetaNYC/nyc-council-mcp/issues/38)).** The Council fixed the
+  record upstream: on 2026-11-12 the Legistar API returned Council Member Maloney's own
+  profile page, so the 2.7.0 workaround is removed. The override mechanism stays, with an
+  empty list, for the next upstream error.
 - **`upcoming_events` no longer shows a called-off meeting as on
   ([#42](https://github.com/BetaNYC/nyc-council-mcp/issues/42)).** Legistar changed event
   22725 to Deferred without updating its last-modified time, so the archive kept "Final".
