@@ -6,7 +6,7 @@
  * Snippets are built at query-time by reading source JSON from the bills/events tables.
  */
 
-export const SCHEMA_VERSION = 5;
+export const SCHEMA_VERSION = 6;
 
 export const CREATE_TABLES = `
 PRAGMA journal_mode = WAL;
@@ -29,7 +29,15 @@ CREATE TABLE IF NOT EXISTS bills (
   passed_date  TEXT,
   enact_date   TEXT,
   sponsor_names TEXT,
-  source_json  TEXT NOT NULL
+  source_json  TEXT NOT NULL,
+  -- Matter attributes (#31, schema v6). VIRTUAL generated columns: computed
+  -- from source_json on read, so they store nothing and the ~94 MB of text is
+  -- not kept twice. bills_fts reads text and summary through them. NULLIF:
+  -- the archive writes "" for a missing summary; a null is unambiguous.
+  text         TEXT GENERATED ALWAYS AS (NULLIF(json_extract(source_json, '$.Text'), '')) VIRTUAL,
+  summary      TEXT GENERATED ALWAYS AS (NULLIF(json_extract(source_json, '$.Summary'), '')) VIRTUAL,
+  version      TEXT GENERATED ALWAYS AS (NULLIF(json_extract(source_json, '$.Version'), '')) VIRTUAL,
+  local_law    TEXT GENERATED ALWAYS AS (NULLIF(json_extract(source_json, '$.LocalLaw'), '')) VIRTUAL
 );
 
 CREATE INDEX IF NOT EXISTS bills_intro_date ON bills (intro_date);
@@ -40,27 +48,41 @@ CREATE VIRTUAL TABLE IF NOT EXISTS bills_fts USING fts5(
   file_number,
   title,
   sponsor_names,
+  summary,
+  text,
   content     = 'bills',
   content_rowid = 'rowid',
   tokenize    = 'porter ascii'
 );
 
 CREATE TRIGGER IF NOT EXISTS bills_ai AFTER INSERT ON bills BEGIN
-  INSERT INTO bills_fts (rowid, file_number, title, sponsor_names)
-    VALUES (new.rowid, new.file_number, new.title, new.sponsor_names);
+  INSERT INTO bills_fts (rowid, file_number, title, sponsor_names, summary, text)
+    VALUES (new.rowid, new.file_number, new.title, new.sponsor_names, new.summary, new.text);
 END;
 
 CREATE TRIGGER IF NOT EXISTS bills_ad AFTER DELETE ON bills BEGIN
-  INSERT INTO bills_fts (bills_fts, rowid, file_number, title, sponsor_names)
-    VALUES ('delete', old.rowid, old.file_number, old.title, old.sponsor_names);
+  INSERT INTO bills_fts (bills_fts, rowid, file_number, title, sponsor_names, summary, text)
+    VALUES ('delete', old.rowid, old.file_number, old.title, old.sponsor_names, old.summary, old.text);
 END;
 
 CREATE TRIGGER IF NOT EXISTS bills_au AFTER UPDATE ON bills BEGIN
-  INSERT INTO bills_fts (bills_fts, rowid, file_number, title, sponsor_names)
-    VALUES ('delete', old.rowid, old.file_number, old.title, old.sponsor_names);
-  INSERT INTO bills_fts (rowid, file_number, title, sponsor_names)
-    VALUES (new.rowid, new.file_number, new.title, new.sponsor_names);
+  INSERT INTO bills_fts (bills_fts, rowid, file_number, title, sponsor_names, summary, text)
+    VALUES ('delete', old.rowid, old.file_number, old.title, old.sponsor_names, old.summary, old.text);
+  INSERT INTO bills_fts (rowid, file_number, title, sponsor_names, summary, text)
+    VALUES (new.rowid, new.file_number, new.title, new.sponsor_names, new.summary, new.text);
 END;
+
+-- A matter's attachments (#31): committee reports, fiscal impact statements,
+-- transcripts. One-to-many; re-indexing deletes a matter's rows first.
+CREATE TABLE IF NOT EXISTS matter_attachments (
+  matter_id      INTEGER NOT NULL,
+  attachment_id  INTEGER NOT NULL,
+  name           TEXT,
+  link           TEXT,
+  sort           INTEGER,
+  last_modified  TEXT,
+  PRIMARY KEY (matter_id, attachment_id)
+);
 
 CREATE TABLE IF NOT EXISTS events (
   rowid         INTEGER PRIMARY KEY,
@@ -176,6 +198,7 @@ CREATE INDEX IF NOT EXISTS matter_history_matter ON matter_history (matter_id);
 // FTS virtual tables are dropped explicitly; SQLite drops a base table's
 // triggers with it.
 export const DROP_DATA_TABLES = `
+DROP TABLE IF EXISTS matter_attachments;
 DROP TABLE IF EXISTS votes;
 DROP TABLE IF EXISTS matter_history;
 DROP TABLE IF EXISTS event_items;
@@ -220,4 +243,12 @@ export const GET_INDEXED_SOURCES = `
 
 export const SET_INDEXED_SOURCES = `
   INSERT OR REPLACE INTO index_state (key, value) VALUES ('indexed_sources', ?)
+`;
+
+// Indexes on v6 generated columns. NOT in CREATE_TABLES: the server runs
+// CREATE_TABLES when it opens the database, and on a corpus still built under
+// v5 (no local_law column) this would throw and stop the server before the
+// next index run could rebuild it. buildIndex runs it once the schema is current.
+export const CREATE_V6_INDEXES = `
+CREATE INDEX IF NOT EXISTS bills_local_law ON bills (local_law);
 `;

@@ -27,6 +27,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 import Database from "better-sqlite3";
+import { SCHEMA_VERSION } from "../dist/db/schema.js";
 import { buildIndex } from "../dist/db/indexer.js";
 
 // mtimes drive the incremental cutoff. OLD is before any last_indexed_at an
@@ -133,7 +134,7 @@ test("schema-version change forces a full rebuild and self-clears (mechanism for
     // closes — a future bump repairs the corpus once, not on every run forever.
     editState(dbPath, (db) => {
       const v = db.prepare("SELECT value FROM index_state WHERE key = 'schema_version'").get().value;
-      assert.equal(v, "5", "the rebuild must re-stamp the current schema version");
+      assert.equal(v, String(SCHEMA_VERSION), "the rebuild must re-stamp the current schema version");
     });
   } finally {
     rmSync(root, { recursive: true, force: true });

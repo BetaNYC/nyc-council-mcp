@@ -19,6 +19,7 @@ import { execFileSync } from "child_process";
 import {
   CREATE_TABLES,
   DROP_DATA_TABLES,
+  CREATE_V6_INDEXES,
   SCHEMA_VERSION,
   SET_SCHEMA_VERSION,
   GET_SCHEMA_VERSION,
@@ -78,6 +79,13 @@ interface MatterJson {
   PassedDate?: string | null;
   EnactmentDate?: string | null;
   Summary?: string | null;
+  Attachments?: Array<{
+    ID?: number;
+    Name?: string | null;
+    Link?: string | null;
+    Sort?: number | null;
+    LastModified?: string | null;
+  }> | null;
   Sponsors?: Array<{
     ID?: number;
     FullName?: string;
@@ -317,6 +325,12 @@ function indexBills(
     VALUES (?, ?, ?, ?, ?)
   `);
   const deleteHistory = db.prepare(`DELETE FROM matter_history WHERE matter_id = ?`);
+  const deleteAttachments = db.prepare(`DELETE FROM matter_attachments WHERE matter_id = ?`);
+  const insertAttachment = db.prepare(`
+    INSERT OR REPLACE INTO matter_attachments
+      (matter_id, attachment_id, name, link, sort, last_modified)
+    VALUES (?, ?, ?, ?, ?, ?)
+  `);
   const deleteVotes = db.prepare(`DELETE FROM votes WHERE matter_id = ?`);
 
   const insertBillBatch = db.transaction((files: string[]) => {
@@ -406,6 +420,15 @@ function indexBills(
                 stats.votes++;
               }
             }
+          }
+        }
+
+        // Attachments (#31). Delete-then-insert keeps re-indexing idempotent.
+        deleteAttachments.run(matter.ID);
+        if (Array.isArray(matter.Attachments)) {
+          for (const a of matter.Attachments) {
+            if (a?.ID == null) continue;
+            insertAttachment.run(matter.ID, a.ID, a.Name ?? null, a.Link ?? null, a.Sort ?? null, a.LastModified ?? null);
           }
         }
 
@@ -630,6 +653,8 @@ export async function buildIndex(opts: IndexOptions): Promise<IndexStats> {
     db.exec(CREATE_TABLES);
     if (opts.verbose) console.error("full rebuild: dropped and recreated data tables under current schema");
   }
+  // The schema is current from here (a v5 corpus was just rebuilt above).
+  db.exec(CREATE_V6_INDEXES);
 
   // Determine incremental cutoff (skipped entirely when doing a full rebuild)
   let since: Date | null = null;

@@ -18,6 +18,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 import Database from "better-sqlite3";
+import { SCHEMA_VERSION } from "../dist/db/schema.js";
 import { buildIndex } from "../dist/db/indexer.js";
 
 function matterWithRollCall(id, file, typeName) {
@@ -113,7 +114,7 @@ test("a v4→v5 rebuild applies the new votes primary key (the migration gotcha)
       const real = db.prepare("SELECT COUNT(*) AS n FROM votes").get().n;
       assert.equal(real, 2, "the matter's roll call was reindexed under the new schema");
       const schema = db.prepare("SELECT value FROM index_state WHERE key = 'schema_version'").get().value;
-      assert.equal(schema, "5", "schema_version re-stamped to 5, so the rebuild fires once");
+      assert.equal(schema, String(SCHEMA_VERSION), "schema_version re-stamped to the current version, so the rebuild fires once");
     } finally {
       db.close();
     }
