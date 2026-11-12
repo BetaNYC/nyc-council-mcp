@@ -7,6 +7,7 @@ import type Database from "better-sqlite3";
 import { resolveAgencyPhrases, extractSnippet } from "../agencies.js";
 import { nyDateString } from "../dates.js";
 import { legistarUrl } from "../legistar.js";
+import { nameMatches } from "../names.js";
 
 // ---------------------------------------------------------------------------
 // Helper: build a safe FTS5 MATCH expression from user input
@@ -538,18 +539,24 @@ export function getVotingRecord(
   // votes → bills on matter_id (columns that are populated), NOT event_items on
   // file_number (NULL in every row until #26). person_name is the recorded name,
   // so historical members resolve even if absent from the people table (#30).
+  // Match the typed name against each distinct recorded name in code, so middle
+  // initials, odd spacing and accents don't hide a member (#40; see names.ts).
+  const names = (db.prepare("SELECT DISTINCT person_name FROM votes").all() as { person_name: string | null }[])
+    .map((r) => r.person_name)
+    .filter((n): n is string => nameMatches(memberName, n));
+  if (names.length === 0) return [];
   const rows = db
     .prepare(
       `
       SELECT b.matter_id, b.file_number, b.title, b.intro_date, v.vote_value, v.event_item_id
       FROM votes v
       JOIN bills b ON v.matter_id = b.matter_id
-      WHERE v.person_name LIKE ?
+      WHERE v.person_name IN (SELECT value FROM json_each(?))
       ORDER BY b.intro_date DESC
       LIMIT ?
     `
     )
-    .all(`%${memberName}%`, limit) as Omit<PersonVoteRow, "legistar_url">[];
+    .all(JSON.stringify(names), limit) as Omit<PersonVoteRow, "legistar_url">[];
   return rows.map((r) => ({ ...r, legistar_url: legistarUrl(r.matter_id) }));
 }
 
@@ -591,9 +598,11 @@ export function coSponsors(
   const limit = opts.limit ?? 20;
 
   // Find the person_id first
-  const person = db
-    .prepare("SELECT person_id FROM people WHERE full_name LIKE ? LIMIT 1")
-    .get(`%${memberName}%`) as { person_id: number } | undefined;
+  // Name matched in code, not with LIKE: see names.ts (#40).
+  const person = (db.prepare("SELECT person_id, full_name FROM people ORDER BY person_id").all() as {
+    person_id: number;
+    full_name: string;
+  }[]).find((p) => nameMatches(memberName, p.full_name));
 
   if (!person) return [];
 
