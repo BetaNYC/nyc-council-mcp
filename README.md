@@ -44,6 +44,8 @@ These require `LEGISTAR_DB_PATH` and a built index (see [Setup](#setup)).
 |---|---|
 | `search_legislation` | Full-text search across all legislation: Introductions, Resolutions, Land Use and every other matter type. Searches titles, sponsors, summaries and the full text; a title hit ranks above a body hit. Rows carry `version` and `local_law` |
 | `get_matter` | One matter by file number (`Int 1122-2024`) or Local Law number (`2025/153`): summary, version, Local Law number, attachments with download links, `legistar_url`, and the full text on request (`include_text`) |
+| `get_member_roles` | A member's committees (chairs listed separately), caucuses, party conferences, borough delegations and task forces, from Legistar's own membership records. Today by default; `as_of` for a past date; `include_past` for the full history with dates. No party is inferred from caucus or conference |
+| `committee_roster` | Who sits on a committee, chair first, on a date or across its history |
 | `search_bills` | Alias for `search_legislation` (same tool, same results; kept so existing callers work) |
 | `search_events` | Full-text search across committee hearings |
 | `list_committees` | All committees with bill and event counts |

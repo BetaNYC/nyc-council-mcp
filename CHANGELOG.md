@@ -10,6 +10,16 @@ Dates are npm publish dates (`npm view @betanyc/nyc-council-mcp time`).
 ## [2.8.0] - unreleased
 
 ### Added
+- **Committees, chairs, caucuses and delegations for every member
+  ([#28](https://github.com/BetaNYC/nyc-council-mcp/issues/28), first of its four
+  layers).** The indexer now keeps each person's Legistar `OfficeRecords` (6,027 rows over
+  171 bodies), sorted into committees, caucuses, party conferences, borough delegations and
+  task forces, each with a role (chair, vice chair, leader, member) and start/end dates. Two
+  new local tools: **`get_member_roles`** ("which committees does she chair?") and
+  **`committee_roster`** ("who sits on Technology?"), each for today, a past date, or the
+  whole history. Answers name their source. A conference or caucus is reported as a
+  membership only: party is never inferred from it. District, party and Wikidata/Wikipedia
+  links (#28's other three layers) are not in this release.
 - **Search the full text and summaries of legislation; Local Law numbers, versions and
   attachments ([#31](https://github.com/BetaNYC/nyc-council-mcp/issues/31)).** Local search
   now covers each matter's summary and full text, not only its title and sponsors. A title
