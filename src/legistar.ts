@@ -441,6 +441,42 @@ export async function getBill(token: string, fileNumber: string): Promise<Legist
   return [...new Map(batches.flat().map((m) => [m.MatterId, m])).values()];
 }
 
+// A file attached to a matter: committee report, resolution text, charts,
+// hearing transcript, agenda. Field shape verified live 2026-11-12 against
+//   GET https://webapi.legistar.com/v1/nyc/matters/79177/attachments?token=...
+// (18 fields, same names as the documented MatterAttachment model:
+// https://webapi.legistar.com/Help/Api/GET-v1-Client-Matters-MatterId-Attachments).
+// MatterAttachmentHyperlink is a nyc.legistar1.com/nyc/attachments/<uuid> URL,
+// not the website's View.ashx link, but serves the same bytes (SHA-1 matched
+// for Res 0551-2026's "Charts for Resolution").
+export type LegistarMatterAttachment = {
+  MatterAttachmentId: number;
+  MatterAttachmentGuid: string;
+  MatterAttachmentLastModifiedUtc: string;
+  MatterAttachmentRowVersion: string;
+  MatterAttachmentName: string | null;
+  MatterAttachmentHyperlink: string | null;
+  MatterAttachmentFileName: string | null;
+  MatterAttachmentMatterVersion: string | null;
+  MatterAttachmentIsHyperlink: boolean;
+  MatterAttachmentBinary: string | null;
+  MatterAttachmentIsSupportingDocument: boolean;
+  MatterAttachmentShowOnInternetPage: boolean;
+  MatterAttachmentIsMinuteOrder: boolean;
+  MatterAttachmentIsBoardLetter: boolean;
+  MatterAttachmentAgiloftId: number | null;
+  MatterAttachmentDescription: string | null;
+  MatterAttachmentPrintWithReports: boolean;
+  MatterAttachmentSort: number | null;
+};
+
+export async function getMatterAttachments(
+  token: string,
+  matterId: number
+): Promise<LegistarMatterAttachment[]> {
+  return legistarFetch<LegistarMatterAttachment[]>(buildUrl(`/matters/${matterId}/attachments`, token));
+}
+
 export async function getBillHistory(token: string, matterId: number): Promise<LegistarHistory[]> {
   const url = buildUrl(`/matters/${matterId}/histories`, token, {
     $orderby: "MatterHistoryActionDate desc",

@@ -9,6 +9,13 @@ Dates are npm publish dates (`npm view @betanyc/nyc-council-mcp time`).
 
 ## [Unreleased]
 
+### Added
+- **`get_bill_attachments`** (live, needs `LEGISTAR_TOKEN`): the files attached to a
+  matter, from the documented `GET /matters/{MatterId}/attachments` endpoint
+  ([#45](https://github.com/BetaNYC/nyc-council-mcp/issues/45)). Each row has a name
+  and a direct download link. Checked 2026-11-12: Res 0551-2026 returns the same 7
+  files its website page lists, and the files match byte for byte.
+
 ### Fixed
 - **`legistar_url` now works for every matter type, not just Introductions
   ([#45](https://github.com/BetaNYC/nyc-council-mcp/issues/45)).** Resolutions, Land

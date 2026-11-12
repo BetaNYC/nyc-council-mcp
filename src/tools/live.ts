@@ -1,7 +1,7 @@
 /**
  * Live Legistar API tools (confirm path).
- * These are the 8 original tools from BetaNYC/nyc-council-mcp, refactored
- * into a registration function. No logic has changed.
+ * The original live tools from BetaNYC/nyc-council-mcp, refactored
+ * into a registration function, plus tools added since (see CHANGELOG).
  */
 
 import { z } from "zod";
@@ -9,6 +9,7 @@ import {
   searchLegislation,
   getBill,
   getBillHistory,
+  getMatterAttachments,
   getUpcomingHearings,
   getCouncilMember,
   getCommittee,
@@ -51,6 +52,22 @@ const LIVE_TOOL_DEFS = [
         matter_id: {
           type: "number",
           description: "Legistar matter ID (returned by search_bills or get_bill)",
+        },
+      },
+      required: ["matter_id"],
+    },
+  },
+  {
+    name: "get_bill_attachments",
+    description:
+      "List the files attached to a bill or other matter — committee reports, resolution text, charts, hearing transcripts, agendas — from the live Legistar API. Each row has MatterAttachmentName and MatterAttachmentHyperlink (a direct download URL). Takes the numeric matter id (MatterId from get_bill or search_legislation_live; matter_id from the local tools). Many matters have none: [] is a normal answer.",
+    inputSchema: {
+      type: "object",
+      additionalProperties: false,
+      properties: {
+        matter_id: {
+          type: "number",
+          description: "Legistar matter ID (MatterId / matter_id), not the file number",
         },
       },
       required: ["matter_id"],
@@ -169,6 +186,15 @@ export async function handleLiveTool(
         const { matter_id } = z.object({ matter_id: z.number() }).strict().parse(args);
         const results = await getBillHistory(token, matter_id);
         return { content: [{ type: "text", text: JSON.stringify(results, null, 2) }] };
+      }
+
+      case "get_bill_attachments": {
+        const { matter_id } = z.object({ matter_id: z.number().int().positive() }).strict().parse(args);
+        const results = await getMatterAttachments(token, matter_id);
+        // MatterAttachmentBinary is null in every NYC row (the file is at the
+        // hyperlink), so drop it rather than send a dead field.
+        const rows = results.map(({ MatterAttachmentBinary: _bin, ...rest }) => rest);
+        return { content: [{ type: "text", text: JSON.stringify(rows, null, 2) }] };
       }
 
       case "get_upcoming_hearings": {
