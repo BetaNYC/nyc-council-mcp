@@ -91,6 +91,11 @@ test("buildIndex indexes Introductions, Resolutions, and Land Use — not resubm
       const capital = searchBills(db, "capital program");
       assert.equal(capital.length, 1);
       assert.equal(capital[0].file_number, "Res 0100-2007");
+      // #45: a Resolution gets a link too, keyed on its WebAPI matter id.
+      assert.equal(
+        capital[0].legistar_url,
+        `https://legistar.council.nyc.gov/gateway.aspx?M=L&ID=${capital[0].matter_id}`
+      );
 
       const designation = searchBills(db, "designation transparency");
       assert.equal(designation.length, 1);
@@ -100,6 +105,7 @@ test("buildIndex indexes Introductions, Resolutions, and Land Use — not resubm
       const rezoning = searchBills(db, "rezoning");
       assert.equal(rezoning.length, 1);
       assert.equal(rezoning[0].file_number, "LU 0821-2013");
+      assert.match(rezoning[0].legistar_url, /^https:\/\/legistar\.council\.nyc\.gov\/gateway\.aspx\?M=L&ID=\d+$/);
 
       // All three types show up in the aggregate.
       const byType = aggregateBills(db, "type");

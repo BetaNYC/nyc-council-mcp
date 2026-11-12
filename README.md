@@ -71,27 +71,33 @@ These require `LEGISTAR_TOKEN`.
 | `list_recent_legislation` | Most recently introduced legislation (catches bills since last index) |
 | `search_legislation_live` | Live Legistar search (slower than local, always current). Multi-word queries match all words in any order; quote a `"phrase"` for adjacency. No relevance ranking upstream — results are ordered by intro date (`order='date_asc'` for oldest-first). |
 
-### `legistar_url` — the human-openable link, and why it's Introduction-only
+### `legistar_url` — the human-openable link
 
 Bill/matter records include a `legistar_url` field: a link a person can click to
-open the matter on Legistar. It is populated **only for Introductions** and is
-`null` for every other type. Here's why — so nobody re-attempts the obvious-looking
-fix:
+open the matter on Legistar. It works for **every matter type** (Int, Res, LU, M,
+T, …) and looks like:
 
-- NYC runs **two independent Legistar backends with different ids.** The OData
-  WebAPI this server reads exposes `MatterId`/`MatterGuid`; the public
-  `LegislationDetail.aspx` page keys on a **separate** ID/GUID that appears
-  **nowhere** in the OData record. So `LegislationDetail.aspx?ID={MatterId}&GUID={MatterGuid}`
-  returns *"Invalid parameters!"* — there is no formula from the OData id to the
-  website id. (Verified 2026-07-16 for Int 0976-2026: OData `MatterId=78436` vs
-  website `ID=8138338`; both the number and the GUID differ.)
-- The one reliable bridge is **[intro.nyc](https://intro.nyc)** (Jehiah Czebotar's
-  redirector, built on the same `nyc_legislation` archive): `intro.nyc/{NNNN-YYYY}`
-  302-redirects to the correct Legistar page. But it keys on the **bare number and
-  assumes type = Introduction** — `intro.nyc/0052-2026` resolves to *Int* 0052-2026,
-  never the same-numbered *M* (Land Use Call-Up). There is no type-prefixed slug.
-- Therefore a link is emitted only when `MatterFile` starts with `Int `. Resolutions,
-  LU, M, T, Oversight, etc. get `null`, because a wrong link is worse than no link.
+```
+https://legistar.council.nyc.gov/gateway.aspx?M=L&ID={MatterId}
+```
+
+Why this shape, so nobody re-attempts the obvious-looking fix:
+
+- NYC runs **two Legistar backends with different ids.** The WebAPI this server
+  reads exposes `MatterId`/`MatterGuid`; the public `LegislationDetail.aspx` page
+  keys on a **separate** ID/GUID that is not in the API record. So
+  `LegislationDetail.aspx?ID={MatterId}` returns *"Invalid parameters!"*.
+- `gateway.aspx?M=L&ID={MatterId}` takes the **API** id and redirects to the right
+  `LegislationDetail.aspx` page. Checked 2026-11-12 on Res 0551, 0595, 0652 and
+  0695-2026, T2026-2764 and an Introduction: each landed on its own page. An id that
+  does not exist shows *"This record is currently unavailable."*
+- **Caveat:** `gateway.aspx` is **not in Granicus's published API docs**. It is how
+  the Legistar site links to its own records — observed behavior, not a documented
+  contract. `LEGISTAR_LIVE_URL_TEST=1 npm test` re-checks the fixtures live.
+- A row with no matter id (a procedural agenda line) gets `null`.
+- Before 2.8.0 the link came from [intro.nyc](https://intro.nyc), which keys on the
+  bare number and assumes an Introduction, so every other type got `null`
+  ([#45](https://github.com/BetaNYC/nyc-council-mcp/issues/45)).
 
 ---
 

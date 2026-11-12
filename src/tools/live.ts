@@ -19,11 +19,11 @@ import {
 } from "../legistar.js";
 import { unknownParamMessage } from "./unknown-param.js";
 
-// Add a human-openable legistar_url to a matter record (Introductions only;
-// null otherwise — see legistarUrl). get_bill_history returns MatterHistory
-// rows, which carry no MatterFile, so no URL is possible there.
+// Add a human-openable legistar_url to a matter record (any type — see
+// legistarUrl). get_bill_history returns MatterHistory rows, not matters, so
+// they get no URL here.
 function withLegistarUrl(m: LegistarMatter): LegistarMatter & { legistar_url: string | null } {
-  return { ...m, legistar_url: legistarUrl(m.MatterFile) };
+  return { ...m, legistar_url: legistarUrl(m.MatterId) };
 }
 
 const LIVE_TOOL_DEFS = [

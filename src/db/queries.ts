@@ -51,7 +51,7 @@ export interface BillRow {
   intro_date: string | null;
   passed_date: string | null;
   sponsor_names: string | null;
-  // Human-openable Legistar link (Introductions only; null otherwise) — see legistarUrl.
+  // Human-openable Legistar link (any matter type; null with no matter id) — see legistarUrl.
   legistar_url: string | null;
   snippet?: string | null;
 }
@@ -128,6 +128,7 @@ export interface BillHistoryResult {
 }
 
 export interface PersonVoteRow {
+  matter_id: number | null;
   file_number: string | null;
   title: string | null;
   intro_date: string | null;
@@ -145,6 +146,7 @@ export interface CoSponsorRow {
 export interface EventItemRow {
   event_item_id: number;
   event_id: number;
+  matter_id: number | null;
   file_number: string | null;
   title: string | null;
   action_name: string | null;
@@ -225,7 +227,7 @@ export function searchBills(
       snippet = extractSnippet(text, agencyPhrases);
     }
     const { source_json: _src, ...rest } = row;
-    return { ...rest, legistar_url: legistarUrl(rest.file_number), snippet };
+    return { ...rest, legistar_url: legistarUrl(rest.matter_id), snippet };
   });
 }
 
@@ -308,7 +310,7 @@ export function recentBills(
     `
     )
     .all(nyDateString(cutoff), limit) as Omit<BillRow, "legistar_url">[];
-  return rows.map((r) => ({ ...r, legistar_url: legistarUrl(r.file_number) }));
+  return rows.map((r) => ({ ...r, legistar_url: legistarUrl(r.matter_id) }));
 }
 
 // ---------------------------------------------------------------------------
@@ -539,7 +541,7 @@ export function getVotingRecord(
   const rows = db
     .prepare(
       `
-      SELECT b.file_number, b.title, b.intro_date, v.vote_value, v.event_item_id
+      SELECT b.matter_id, b.file_number, b.title, b.intro_date, v.vote_value, v.event_item_id
       FROM votes v
       JOIN bills b ON v.matter_id = b.matter_id
       WHERE v.person_name LIKE ?
@@ -548,7 +550,7 @@ export function getVotingRecord(
     `
     )
     .all(`%${memberName}%`, limit) as Omit<PersonVoteRow, "legistar_url">[];
-  return rows.map((r) => ({ ...r, legistar_url: legistarUrl(r.file_number) }));
+  return rows.map((r) => ({ ...r, legistar_url: legistarUrl(r.matter_id) }));
 }
 
 // ---------------------------------------------------------------------------
@@ -622,7 +624,7 @@ export function getBillHearings(
   const rows = db
     .prepare(
       `
-      SELECT ei.event_item_id, ei.event_id, ei.file_number, ei.title, ei.action_name,
+      SELECT ei.event_item_id, ei.event_id, ei.matter_id, ei.file_number, ei.title, ei.action_name,
              e.date, e.body_name
       FROM event_items ei
       JOIN events e ON ei.event_id = e.event_id
@@ -631,7 +633,7 @@ export function getBillHearings(
     `
     )
     .all(fileNumber) as Omit<EventItemRow, "legistar_url">[];
-  return rows.map((r) => ({ ...r, legistar_url: legistarUrl(r.file_number) }));
+  return rows.map((r) => ({ ...r, legistar_url: legistarUrl(r.matter_id) }));
 }
 
 // ---------------------------------------------------------------------------
@@ -640,6 +642,7 @@ export function getBillHearings(
 
 export interface EventBillRow {
   event_item_id: number;
+  matter_id: number | null;
   file_number: string | null;
   title: string | null;
   action_name: string | null;
@@ -654,7 +657,7 @@ export function getEventBills(
   const rows = db
     .prepare(
       `
-      SELECT ei.event_item_id, ei.file_number, ei.title, ei.action_name,
+      SELECT ei.event_item_id, ei.matter_id, ei.file_number, ei.title, ei.action_name,
              b.status_name
       FROM event_items ei
       LEFT JOIN bills b ON ei.matter_id = b.matter_id
@@ -663,5 +666,5 @@ export function getEventBills(
     `
     )
     .all(eventId) as Omit<EventBillRow, "legistar_url">[];
-  return rows.map((r) => ({ ...r, legistar_url: legistarUrl(r.file_number) }));
+  return rows.map((r) => ({ ...r, legistar_url: legistarUrl(r.matter_id) }));
 }

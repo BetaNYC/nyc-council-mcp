@@ -285,6 +285,8 @@ test("get_voting_record joins on matter_id and returns a member's votes", () => 
     for (const r of rows) {
       assert.equal(r.file_number, "Res 0540-2026");
       assert.equal(r.vote_value, "Negative");
+      // #45: Resolutions get a link (was null when links were Int-only).
+      assert.equal(r.legistar_url, `https://legistar.council.nyc.gov/gateway.aspx?M=L&ID=${r.matter_id}`);
     }
   } finally {
     db.close();
