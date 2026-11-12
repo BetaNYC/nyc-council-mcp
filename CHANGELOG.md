@@ -79,6 +79,12 @@ Dates are npm publish dates (`npm view @betanyc/nyc-council-mcp time`).
   docs; the README says so.
 
 ### Changed
+- **README follows the shared BetaNYC MCP layout
+  ([#35](https://github.com/BetaNYC/nyc-council-mcp/issues/35), this repo only).** What it
+  does and a quick start come first; setup, configuration, tools, how it works, known
+  traps, testing and releases follow in the same order as the other servers will use.
+  New: badges, a "What it does" section with corpus counts, a "Notes and limitations"
+  section, and a "Testing and CI" section. No content was removed.
 - **`search_legislation` is now the main name, and `search_bills` the alias
   ([#21](https://github.com/BetaNYC/nyc-council-mcp/issues/21)).** The tool returns every
   matter type, not only bills, so the old main name misdescribed it. Both names still work
