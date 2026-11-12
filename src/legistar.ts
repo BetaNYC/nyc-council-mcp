@@ -535,6 +535,46 @@ export async function getUpcomingHearings(
   return events;
 }
 
+/** Longest EventItemTitle kept in the summary shape (Land Use titles are unbounded). */
+export const SUMMARY_TITLE_MAX = 300;
+
+/**
+ * The short shape of an upcoming hearing (#22): the fields that answer "what
+ * is the Council hearing, when and where", with nulls dropped and long titles
+ * cut. EventItemId stays, because it is the id get_votes takes. detail:"full"
+ * returns the raw LegistarEvent instead.
+ */
+export function summarizeHearing(event: LegistarEvent): Record<string, unknown> {
+  const dropNulls = (o: Record<string, unknown>) =>
+    Object.fromEntries(Object.entries(o).filter(([, v]) => v !== null && v !== undefined));
+  return dropNulls({
+    EventId: event.EventId,
+    EventDate: event.EventDate,
+    EventTime: event.EventTime,
+    EventBodyName: event.EventBodyName,
+    EventLocation: event.EventLocation,
+    EventAgendaStatusName: event.EventAgendaStatusName,
+    EventAgendaFile: event.EventAgendaFile,
+    EventInSiteURL: event.EventInSiteURL,
+    EventItems: (event.EventItems ?? []).map((it) => {
+      const title = it.EventItemTitle;
+      const cut = title !== null && title.length > SUMMARY_TITLE_MAX;
+      return dropNulls({
+        EventItemId: it.EventItemId,
+        EventItemAgendaNumber: it.EventItemAgendaNumber,
+        EventItemTitle: cut ? `${title!.slice(0, SUMMARY_TITLE_MAX)}…` : title,
+        EventItemTitleTruncated: cut ? true : null,
+        EventItemMatterId: it.EventItemMatterId,
+        EventItemMatterFile: it.EventItemMatterFile,
+        EventItemMatterName: it.EventItemMatterName,
+        EventItemMatterType: it.EventItemMatterType,
+        EventItemMatterStatus: it.EventItemMatterStatus,
+        legistar_url: legistarUrl(it.EventItemMatterId),
+      });
+    }),
+  });
+}
+
 export async function getCouncilMember(
   token: string,
   name: string

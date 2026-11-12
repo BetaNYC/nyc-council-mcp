@@ -54,7 +54,7 @@ These require `LEGISTAR_DB_PATH` and a built index (see [Setup](#setup)).
 | `get_bill_history` | A matter's action trail — hearings, referrals, committee/Council actions, outcomes — in chronological order, by file number. No token required |
 | `co_sponsors` | Members who most often co-sponsor with a given member |
 | `get_bill_hearings` | Events where a bill appeared on the agenda, with each event's date, body, and action |
-| `get_event_bills` | Bills on a specific event's agenda |
+| `get_event_bills` | Items on one event's agenda, paged: `{ event_id, total, offset, limit, items }`, 50 per page by default (max 500) |
 
 ### Confirm-path tools (live Legistar API)
 
@@ -65,7 +65,7 @@ These require `LEGISTAR_TOKEN`.
 | `get_bill` | Current status and record for a bill. A bare `NNNN-YYYY` number is ambiguous (it can be both an `Int` and a `Res`); an ambiguous match is rejected with an error naming every candidate, so re-call with the exact type-prefixed number |
 | `get_bill_history` | *Local by default* (served from the index, no token; takes a file number). In **live-only** mode this live variant answers instead — authoritative action trail by numeric matter id |
 | `get_bill_attachments` | Files attached to a matter (committee reports, resolution text, charts, transcripts), each with a direct download link. Takes the numeric matter id |
-| `get_upcoming_hearings` | Real-time upcoming committee hearings and Stated meetings, each with its agenda items (bills/matters) in `EventItems` |
+| `get_upcoming_hearings` | Real-time upcoming committee hearings and Stated meetings, each with its agenda items (bills/matters) in `EventItems`. Short shape by default (`detail: "summary"`: no null fields, titles cut at 300 characters, `legistar_url` per item); `detail: "full"` returns every Legistar field |
 | `get_council_member` | Current contact info and active status for a council member. The name matches word by word, ignoring case, accents and middle initials ("Amanda Farias" finds "Amanda C. Farías"); `get_voting_record` and `co_sponsors` match names the same way. `PersonWWW2` (the Legistar profile page) is checked: a known-bad upstream link is corrected from a small dated override list (`PERSON_WWW2_OVERRIDES` in `src/legistar.ts`, with the original kept in `PersonWWW2_upstream`), and a link shared by two people in one result gets a `PersonWWW2_warning` |
 | `get_committee` | Current membership count and details for a committee |
 | `get_votes` | Per-item vote breakdown by event item ID |

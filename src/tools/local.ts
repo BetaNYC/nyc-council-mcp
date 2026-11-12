@@ -199,12 +199,14 @@ export const LOCAL_TOOL_DEFS = [
   {
     name: "get_event_bills",
     description:
-      "All bills on a specific event's agenda, identified by event ID.",
+      "Bills and other items on a specific event's agenda, identified by event ID. Paged: returns { event_id, total, offset, limit, items }. A stated meeting can have ~180 items, so the default page is 50; raise offset to read the rest.",
     inputSchema: {
       type: "object",
       additionalProperties: false,
       properties: {
         event_id: { type: "number", description: "Legistar event ID" },
+        limit: { type: "number", description: "Items per page (default 50, max 500)" },
+        offset: { type: "number", description: "Items to skip (default 0)" },
       },
       required: ["event_id"],
     },
@@ -306,8 +308,15 @@ export function handleLocalTool(
       }
 
       case "get_event_bills": {
-        const { event_id } = z.object({ event_id: z.number() }).strict().parse(args);
-        const results = getEventBills(db, event_id);
+        const { event_id, limit, offset } = z
+          .object({
+            event_id: z.number(),
+            limit: z.number().int().min(1).max(500).optional(),
+            offset: z.number().int().min(0).optional(),
+          })
+          .strict()
+          .parse(args);
+        const results = getEventBills(db, event_id, { limit, offset });
         return { content: [{ type: "text", text: JSON.stringify(results, null, 2) }] };
       }
 
