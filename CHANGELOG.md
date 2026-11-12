@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Dates are npm publish dates (`npm view @betanyc/nyc-council-mcp time`).
 
-## [2.8.0] - 2026-11-12
+## [2.8.0] - unreleased
 
 ### Fixed
 - **`legistar_url` now works for every matter type, not just Introductions
