@@ -16,6 +16,7 @@ import Sqlite from "better-sqlite3";
 import fg from "fast-glob";
 import { existsSync, readFileSync, statSync } from "fs";
 import { join, basename } from "path";
+import { execFileSync } from "child_process";
 import {
   CREATE_TABLES,
   DROP_DATA_TABLES,
@@ -678,7 +679,30 @@ export async function buildIndex(opts: IndexOptions): Promise<IndexStats> {
   db.prepare(SET_SCHEMA_VERSION).run(String(SCHEMA_VERSION));
   db.prepare(SET_INDEXED_SOURCES).run(CURRENT_SOURCE_SET);
   db.prepare(SET_LAST_INDEXED).run(startedAt);
+  // Which archive commit this index was built from (#25), so a local answer can
+  // say how current its data is. Best effort: an archive that is not a git
+  // checkout, or a machine without git, just leaves the keys unset.
+  const commit = archiveCommit(opts.archiveRoot);
+  if (commit) {
+    const put = db.prepare("INSERT OR REPLACE INTO index_state (key, value) VALUES (?, ?)");
+    put.run("archive_commit", commit.sha);
+    put.run("archive_commit_date", commit.date);
+  }
 
   db.close();
   return stats;
+}
+
+function archiveCommit(root: string): { sha: string; date: string } | null {
+  try {
+    const out = execFileSync("git", ["-C", root, "log", "-1", "--format=%h %cI"], {
+      stdio: ["ignore", "pipe", "ignore"],
+    })
+      .toString()
+      .trim();
+    const [sha, date] = out.split(" ");
+    return sha && date ? { sha, date } : null;
+  } catch {
+    return null;
+  }
 }

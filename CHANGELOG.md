@@ -17,6 +17,20 @@ Dates are npm publish dates (`npm view @betanyc/nyc-council-mcp time`).
   files its website page lists, and the files match byte for byte.
 
 ### Fixed
+- **`upcoming_events` no longer shows a called-off meeting as on
+  ([#42](https://github.com/BetaNYC/nyc-council-mcp/issues/42)).** Legistar changed event
+  22725 to Deferred without updating its last-modified time, so the archive kept "Final".
+  On 2026-11-12, 10 of 658 meetings in 2026 differed this way. With `LEGISTAR_TOKEN` set,
+  `upcoming_events` now checks each meeting's status with one live request
+  (`status_checked_live`, plus `agenda_status_index` when they differ), and a note lists
+  meetings the index does not have yet. If the live call fails, the index's answer stands
+  and the note says so.
+- **Local answers say how old their data is
+  ([#25](https://github.com/BetaNYC/nyc-council-mcp/issues/25)).** Every answer from the
+  local index ends with a source line: when the index was built and which archive commit
+  it came from. The indexer now records `archive_commit` and `archive_commit_date`. With no
+  token, the line also says the answer was not checked live, and that an empty answer
+  means "not in this index". The hard-coded "may be 1–7 days stale" guess is gone.
 - **`get_voting_record` says when each vote happened
   ([#41](https://github.com/BetaNYC/nyc-council-mcp/issues/41)).** Rows now carry
   `vote_date`, `vote_action` and `vote_body` from the matter's history, and are ordered
