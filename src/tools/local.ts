@@ -101,7 +101,9 @@ export const LOCAL_TOOL_DEFS = [
     name: "upcoming_events",
     description:
       "Scheduled committee hearings and events in the next N days from the local index. " +
-      "Note: the index may be 1–7 days stale. Use get_upcoming_hearings for real-time data.",
+      "When LEGISTAR_TOKEN is set, each meeting's agenda_status is checked against the live API " +
+      "(status_checked_live; the index's value is kept in agenda_status_index when they differ), " +
+      "because the archive can miss a status change such as a deferral. Use get_upcoming_hearings for the full live agenda.",
     inputSchema: {
       type: "object",
       additionalProperties: false,

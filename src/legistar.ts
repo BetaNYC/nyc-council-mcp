@@ -497,6 +497,21 @@ export async function getEventItems(
   return legistarFetch<LegistarEventItem[]>(url);
 }
 
+/** Meetings between two NY dates (inclusive), id/date/status/body only (#42). */
+export async function getEventStatuses(
+  token: string,
+  from: string,
+  to: string
+): Promise<Pick<LegistarEvent, "EventId" | "EventDate" | "EventAgendaStatusName" | "EventBodyName">[]> {
+  const url = buildUrl("/events", token, {
+    $filter: `EventDate ge datetime'${from}' and EventDate le datetime'${to}'`,
+    $select: "EventId,EventDate,EventAgendaStatusName,EventBodyName",
+    $orderby: "EventDate asc",
+    $top: "1000",
+  });
+  return legistarFetch(url);
+}
+
 export async function getUpcomingHearings(
   token: string,
   daysAhead = 14,

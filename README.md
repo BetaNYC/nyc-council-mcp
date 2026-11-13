@@ -47,7 +47,7 @@ These require `LEGISTAR_DB_PATH` and a built index (see [Setup](#setup)).
 | `search_events` | Full-text search across committee hearings |
 | `list_committees` | All committees with bill and event counts |
 | `recent_bills` | Bills introduced in the last N days |
-| `upcoming_events` | Scheduled events in the next N days |
+| `upcoming_events` | Scheduled events in the next N days. With `LEGISTAR_TOKEN` set, each meeting's `agenda_status` is checked live (`status_checked_live`; the index's value stays in `agenda_status_index` when they differ), and meetings the index doesn't have yet are listed in a note |
 | `aggregate_bills` | Count bills grouped by status, type, committee, or year |
 | `vote_breakdown` | Every member's vote on a bill (by type-prefixed file number), grouped by roll call — committee and full Council — each with a positions-only tally. Indexed from the archive's `History[].Votes` |
 | `get_voting_record` | All votes cast by a named council member, newest vote first. Each row has `vote_date`, `vote_action` and `vote_body`; `intro_date` is the bill's, not the vote's |
@@ -188,6 +188,10 @@ npx @betanyc/nyc-council-mcp index \
 ```
 
 > **Note:** The local index is only as current as your last index run — run the daily cron above and it stays about a day behind live Legistar; leave it for a month and it is a month stale. The upstream archive itself updates most weekdays. For current status and upcoming hearings, use the live API tools (`get_bill`, `get_upcoming_hearings`).
+>
+> Every local answer ends with a **source line**: when the index was built and which `jehiah/nyc_legislation` commit it came from, e.g. `Source: local index built 2026-11-12T11:30:07Z from jehiah/nyc_legislation@9e52935 (archive commit 2026-11-11T23:38:10Z).` It is a second text item, after the JSON. With no `LEGISTAR_TOKEN`, the line also says the answer was not checked live, and that an empty answer means "not in this index", not "does not exist".
+>
+> **Why upcoming meeting status is checked live:** Legistar can change a meeting's status without updating its last-modified time. Event 22725 went from Final to Deferred with its timestamp still 2026-09-10, so the archive never fetched it again. On 2026-11-12, 10 of 658 meetings in 2026 differed this way, all Final → Deferred.
 
 ---
 

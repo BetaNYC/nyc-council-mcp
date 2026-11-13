@@ -12,6 +12,8 @@ import {
 import { existsSync, readFileSync } from "fs";
 import Sqlite from "better-sqlite3";
 
+import { withSourceNote, checkUpcomingLive } from "./tools/local-source.js";
+import { getEventStatuses } from "./legistar.js";
 import { LIVE_TOOL_DEFS, LIVE_SEARCH_TOOL_DEF, handleLiveTool, handleLiveSearch } from "./tools/live.js";
 import { LOCAL_TOOL_DEFS, handleLocalTool } from "./tools/local.js";
 import { openDatabase } from "./db/indexer.js";
@@ -120,7 +122,16 @@ See README for full setup instructions.
 
     // Route to local (SQLite) handler
     if (mode.hasLocal && db && localNames.has(name)) {
-      return handleLocalTool(name, safeArgs, db);
+      let res = handleLocalTool(name, safeArgs, db);
+      // #42: the archive can keep a stale meeting status, so in hybrid mode the
+      // upcoming meetings' status is checked live (one request).
+      if (name === "upcoming_events" && mode.hasLive && mode.token && !res.isError) {
+        const token = mode.token;
+        const days = typeof safeArgs.days === "number" ? safeArgs.days : 14;
+        res = await checkUpcomingLive(res, days, (from, to) => getEventStatuses(token, from, to));
+      }
+      // #25: say when the index was built (and, with no token, that it is unchecked).
+      return withSourceNote(res, db, { hasLive: Boolean(mode.hasLive && mode.token) });
     }
 
     // Route to live search alias
