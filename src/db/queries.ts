@@ -7,7 +7,9 @@ import type Database from "better-sqlite3";
 import { resolveAgencyPhrases, extractSnippet } from "../agencies.js";
 import { nyDateString } from "../dates.js";
 import { legistarUrl } from "../legistar.js";
-import { nameMatches } from "../names.js";
+import { nameMatches, normalizeName } from "../names.js";
+import { classifyBody, ROLE_ORDER, type Role } from "../roles.js";
+export { classifyBody };
 
 // ---------------------------------------------------------------------------
 // Helper: build a safe FTS5 MATCH expression from user input
@@ -805,4 +807,121 @@ export function getMatter(
     )
     .all(matterId) as MatterAttachmentRow[];
   return { ...m, legistar_url: legistarUrl(m.matter_id), attachments };
+}
+
+// ---------------------------------------------------------------------------
+// Member roles and committee rosters (#28, tier 1: Legistar OfficeRecords)
+// ---------------------------------------------------------------------------
+
+export const ROLES_SOURCE = "Legistar archive (people/*.json OfficeRecords)";
+
+export interface RoleRow {
+  body_name: string;
+  role: Role;
+  title: string | null;
+  start: string | null;
+  end: string | null;
+}
+
+export interface MemberRoles {
+  person_id: number;
+  full_name: string;
+  as_of: string | null;
+  council_terms: RoleRow[];
+  chairs: RoleRow[];
+  committees: RoleRow[];
+  caucuses: RoleRow[];
+  conferences: RoleRow[];
+  delegations: RoleRow[];
+  task_forces: RoleRow[];
+  other: RoleRow[];
+  source: string;
+}
+
+type RoleOpts = { as_of?: string; include_past?: boolean };
+
+/** The date filter both tools share: active on as_of (default today, NY), or everything. */
+function activeClause(opts: RoleOpts): { sql: string; params: string[]; asOf: string | null } {
+  if (opts.include_past) return { sql: "", params: [], asOf: null };
+  const asOf = opts.as_of ?? nyDateString();
+  return {
+    sql: " AND (start IS NULL OR start <= ?) AND (end IS NULL OR end >= ?)",
+    params: [asOf, asOf],
+    asOf,
+  };
+}
+
+const byRoleThenName = (a: RoleRow, b: RoleRow) =>
+  ROLE_ORDER[a.role] - ROLE_ORDER[b.role] || a.body_name.localeCompare(b.body_name);
+
+/**
+ * A member's committees (chairs separately), caucuses, party conferences,
+ * borough delegations and task forces, active on a date or across their whole
+ * history. Party is never derived from any of these (#28).
+ */
+export function memberRoles(db: Database.Database, memberName: string, opts: RoleOpts = {}): MemberRoles[] {
+  const people = (db.prepare("SELECT person_id, full_name FROM people ORDER BY person_id").all() as {
+    person_id: number;
+    full_name: string;
+  }[]).filter((p) => nameMatches(memberName, p.full_name));
+  const active = activeClause(opts);
+  const stmt = db.prepare(
+    `SELECT body_name, body_kind, role, title, start, end FROM office_records
+     WHERE person_id = ?${active.sql} ORDER BY start, body_name`
+  );
+  return people.map((p) => {
+    const rows = stmt.all(p.person_id, ...active.params) as (RoleRow & { body_kind: string })[];
+    const pick = (kind: string) =>
+      rows
+        .filter((r) => r.body_kind === kind)
+        .map(({ body_kind: _k, ...r }) => r)
+        .sort(byRoleThenName);
+    const committees = pick("committee");
+    return {
+      person_id: p.person_id,
+      full_name: p.full_name.trim(),
+      as_of: active.asOf,
+      council_terms: pick("council"),
+      chairs: committees.filter((c) => c.role === "chair"),
+      committees,
+      caucuses: pick("caucus"),
+      conferences: pick("conference"),
+      delegations: pick("delegation"),
+      task_forces: pick("task_force"),
+      other: pick("other"),
+      source: ROLES_SOURCE,
+    };
+  });
+}
+
+export interface CommitteeRoster {
+  body_name: string;
+  as_of: string | null;
+  members: { person_id: number; full_name: string; role: Role; title: string | null; start: string | null; end: string | null }[];
+  source: string;
+}
+
+/** Who sits on a committee (chair first), on a date or across its history. */
+export function committeeRoster(db: Database.Database, committee: string, opts: RoleOpts = {}): CommitteeRoster[] {
+  const want = normalizeName(committee);
+  const bodies = (db
+    .prepare("SELECT DISTINCT body_name FROM office_records WHERE body_kind = 'committee' ORDER BY body_name")
+    .all() as { body_name: string }[])
+    .map((b) => b.body_name)
+    .filter((name) => want && normalizeName(name).includes(want));
+  const active = activeClause(opts);
+  const stmt = db.prepare(
+    `SELECT o.person_id, TRIM(p.full_name) AS full_name, o.role, o.title, o.start, o.end
+     FROM office_records o JOIN people p ON p.person_id = o.person_id
+     WHERE o.body_name = ?${active.sql.replace(/\b(start|end)\b/g, "o.$1")}`
+  );
+  return bodies.map((body_name) => {
+    const members = (stmt.all(body_name, ...active.params) as CommitteeRoster["members"]).sort(
+      (a, b) => ROLE_ORDER[a.role] - ROLE_ORDER[b.role] || a.full_name.localeCompare(b.full_name)
+    );
+    return { body_name, as_of: active.asOf, members, source: ROLES_SOURCE };
+  })
+    // On a date, a committee nobody sat on (defunct, or not yet formed) is left
+    // out rather than listed empty. include_past keeps every match.
+    .filter((r) => opts.include_past || r.members.length > 0);
 }

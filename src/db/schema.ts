@@ -72,6 +72,25 @@ CREATE TRIGGER IF NOT EXISTS bills_au AFTER UPDATE ON bills BEGIN
     VALUES (new.rowid, new.file_number, new.title, new.sponsor_names, new.summary, new.text);
 END;
 
+-- Body memberships from the archive's people/*.json OfficeRecords[] (#28, tier
+-- 1). body_kind and role are computed at index time (src/roles.ts). Dates are
+-- YYYY-MM-DD. Re-indexing deletes a person's rows first.
+CREATE TABLE IF NOT EXISTS office_records (
+  record_id    INTEGER PRIMARY KEY,
+  person_id    INTEGER NOT NULL,
+  body_id      INTEGER,
+  body_name    TEXT NOT NULL,
+  body_kind    TEXT NOT NULL,
+  title        TEXT,
+  member_type  TEXT,
+  role         TEXT NOT NULL,
+  start        TEXT,
+  end          TEXT
+);
+
+CREATE INDEX IF NOT EXISTS office_records_person ON office_records (person_id);
+CREATE INDEX IF NOT EXISTS office_records_body   ON office_records (body_name);
+
 -- A matter's attachments (#31): committee reports, fiscal impact statements,
 -- transcripts. One-to-many; re-indexing deletes a matter's rows first.
 CREATE TABLE IF NOT EXISTS matter_attachments (
@@ -198,6 +217,7 @@ CREATE INDEX IF NOT EXISTS matter_history_matter ON matter_history (matter_id);
 // FTS virtual tables are dropped explicitly; SQLite drops a base table's
 // triggers with it.
 export const DROP_DATA_TABLES = `
+DROP TABLE IF EXISTS office_records;
 DROP TABLE IF EXISTS matter_attachments;
 DROP TABLE IF EXISTS votes;
 DROP TABLE IF EXISTS matter_history;

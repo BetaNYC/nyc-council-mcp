@@ -16,6 +16,7 @@ import Sqlite from "better-sqlite3";
 import { existsSync, readFileSync, readdirSync, statSync } from "fs";
 import { join, basename } from "path";
 import { execFileSync } from "child_process";
+import { classifyBody, roleOf } from "../roles.js";
 import {
   CREATE_TABLES,
   DROP_DATA_TABLES,
@@ -121,6 +122,15 @@ interface PersonJson {
   FirstName?: string;
   LastName?: string;
   IsActive?: boolean | number;
+  OfficeRecords?: Array<{
+    ID?: number;
+    BodyID?: number;
+    BodyName?: string | null;
+    Title?: string | null;
+    MemberType?: string | null;
+    Start?: string | null;
+    End?: string | null;
+  }> | null;
 }
 
 // ---------------------------------------------------------------------------
@@ -562,6 +572,13 @@ function indexPeople(
       active_flag = excluded.active_flag
   `);
 
+  const deleteRecords = db.prepare(`DELETE FROM office_records WHERE person_id = ?`);
+  const insertRecord = db.prepare(`
+    INSERT OR REPLACE INTO office_records
+      (record_id, person_id, body_id, body_name, body_kind, title, member_type, role, start, end)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `);
+
   const insertPeopleBatch = db.transaction((files: string[]) => {
     for (const filePath of files) {
       const raw = safeRead(filePath);
@@ -577,6 +594,24 @@ function indexPeople(
           person.LastName ?? null,
           person.IsActive ? 1 : 0
         );
+        // OfficeRecords → office_records (#28). Delete-then-insert per person.
+        deleteRecords.run(person.ID);
+        for (const r of person.OfficeRecords ?? []) {
+          const body = (r.BodyName ?? "").trim();
+          if (r.ID == null || !body) continue;
+          insertRecord.run(
+            r.ID,
+            person.ID,
+            r.BodyID ?? null,
+            body,
+            classifyBody(body),
+            r.Title?.trim() || null,
+            r.MemberType?.trim() || null,
+            roleOf(r.Title, r.MemberType),
+            isoDate(r.Start ?? null),
+            isoDate(r.End ?? null)
+          );
+        }
         stats.people++;
       } catch {
         stats.errors++;

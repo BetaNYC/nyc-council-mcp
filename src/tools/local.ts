@@ -20,6 +20,8 @@ import {
   getBillHearings,
   getEventBills,
   getMatter,
+  memberRoles,
+  committeeRoster,
 } from "../db/queries.js";
 import { unknownParamMessage } from "./unknown-param.js";
 
@@ -79,6 +81,41 @@ export const LOCAL_TOOL_DEFS = [
         local_law: { type: "string", description: "Local Law number as 'YYYY/NNN', e.g. '2025/153'" },
         include_text: { type: "boolean", description: "Also return the full text (can be over 200,000 characters). Default false." },
       },
+    },
+  },
+  {
+    name: "get_member_roles",
+    description:
+      "A council member's committees (with chairs listed separately), caucuses, party conferences, borough delegations " +
+      "and task forces, from Legistar's own membership records in the local index. Current as of today by default; " +
+      "pass as_of (YYYY-MM-DD) for a past date, or include_past for the whole history with start/end dates. " +
+      "Conference and caucus memberships are memberships only: no party is inferred from them. No token needed.",
+    inputSchema: {
+      type: "object",
+      additionalProperties: false,
+      properties: {
+        member_name: { type: "string", description: "Full or partial name; middle initials and accents optional" },
+        as_of: { type: "string", description: "Date YYYY-MM-DD (default today)" },
+        include_past: { type: "boolean", description: "Return every membership ever, with dates (ignores as_of)" },
+      },
+      required: ["member_name"],
+    },
+  },
+  {
+    name: "committee_roster",
+    description:
+      "Who sits on a Council committee, chair first, from Legistar's membership records in the local index. " +
+      "Matches any committee whose name contains the words given (e.g. 'technology'). Current as of today by default; " +
+      "as_of (YYYY-MM-DD) for a past date, or include_past for everyone who ever served. No token needed.",
+    inputSchema: {
+      type: "object",
+      additionalProperties: false,
+      properties: {
+        committee: { type: "string", description: "Committee name or part of it" },
+        as_of: { type: "string", description: "Date YYYY-MM-DD (default today)" },
+        include_past: { type: "boolean", description: "Everyone who ever served, with dates (ignores as_of)" },
+      },
+      required: ["committee"],
     },
   },
   {
@@ -324,6 +361,23 @@ export function handleLocalTool(
         const { file_number } = z.object({ file_number: z.string() }).strict().parse(args);
         const results = getBillHearings(db, file_number);
         return json(results);
+      }
+
+      case "get_member_roles":
+      case "committee_roster": {
+        const date = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "as_of must be YYYY-MM-DD");
+        if (name === "get_member_roles") {
+          const { member_name, as_of, include_past } = z
+            .object({ member_name: z.string(), as_of: date.optional(), include_past: z.boolean().optional() })
+            .strict()
+            .parse(args);
+          return json(memberRoles(db, member_name, { as_of, include_past }));
+        }
+        const { committee, as_of, include_past } = z
+          .object({ committee: z.string(), as_of: date.optional(), include_past: z.boolean().optional() })
+          .strict()
+          .parse(args);
+        return json(committeeRoster(db, committee, { as_of, include_past }));
       }
 
       case "get_matter": {
