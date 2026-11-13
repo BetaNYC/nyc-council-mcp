@@ -104,8 +104,8 @@ jobs:
   # 2. data.json (DCAT-US 3.0) matches DATA-SOURCES.json; rebuild with the same command
   #    without --check. 3. DATA-SOURCES.json against its JSON Schema and data.json against the
   #    vendored DCAT-US 3.0 schema, with pinned validators (CI only, not runtime dependencies).
-  # The release gate (`about-data check --release`) is NOT wired into release.yml yet: it fails
-  # while contact_email is the placeholder, and BetaNYC has not named the monitored address.
+  # The release gate (`about-data check --release`) is NOT wired into release.yml yet. It passes
+  # now that contact_email is lab@beta.nyc (2026-11-13); wiring it in is planned for 2.9.0.
   about-data:
     name: About data
     runs-on: ubuntu-latest
