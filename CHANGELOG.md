@@ -16,9 +16,16 @@ Dates are npm publish dates (`npm view @betanyc/nyc-council-mcp time`).
   this?". It names BetaNYC and the Fund for the City of New York, the repo, the license and
   how to send a correction. For each kind of data it gives the source, whether the data is
   official or curated by BetaNYC, how it was gathered, and its date on this server (index
-  build and archive commit, district snapshot, curated check dates). The server's MCP
+  build time, district snapshot, curated check dates). The server's MCP
   `instructions` tell AI apps to call it when someone asks about sources. A test fails if a
   new tool ships without a documented source.
+- **`about_data` now runs on BetaNYC's shared module and `DATA-SOURCES.json`.** The
+  sources are listed once, in [`DATA-SOURCES.json`](DATA-SOURCES.json), and the tool and a
+  DCAT-US 3.0 catalog, [`data.json`](data.json), are both made from it; both ship in the
+  package. Each source now also gives its publisher, what BetaNYC changed, terms of use and a
+  credit line, where to check a figure and where to report an error. `topic` is a kind of
+  data or a tool name (`get_council_member` covers everything about a member). CI checks the
+  file, the catalog, and that every tool has a source.
 - **Committees, chairs, caucuses and delegations for every member
   ([#28](https://github.com/BetaNYC/nyc-council-mcp/issues/28), first of its four
   layers).** The indexer now keeps each person's Legistar `OfficeRecords` (6,027 rows over
