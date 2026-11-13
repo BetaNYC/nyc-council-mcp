@@ -22,47 +22,46 @@ import {
 } from "../db/queries.js";
 import { unknownParamMessage } from "./unknown-param.js";
 
+import { json } from "./json.js";
+
+// #21: one search tool, two names. search_legislation is the main name because
+// it returns every matter type (Introductions, Resolutions, Land Use, Mayor's
+// Messages, …), not only bills. search_bills stays as an alias so existing
+// callers keep working. The alias is built from the main definition (#36), so
+// the two schemas cannot drift.
+const SEARCH_LEGISLATION_DEF = {
+  name: "search_legislation",
+  description:
+    "Full-text search across NYC Council legislation in the local index: Introductions, Resolutions, " +
+    "Land Use items and every other matter type. Sub-second response. " +
+    "Returns file number, title, type, status, committee, intro date, sponsors and legistar_url. " +
+    "Optionally filter by agency (uses role-context snippets), status, or committee.",
+  inputSchema: {
+    type: "object",
+    additionalProperties: false,
+    properties: {
+      query: { type: "string", description: "Search terms (full-text)" },
+      limit: { type: "number", description: "Max results (default 25, max 100)" },
+      agency: {
+        type: "string",
+        description:
+          "NYC agency key or name (e.g. 'DEP', 'NYPD', 'department of transportation'). " +
+          "Adds a role-context snippet showing HOW the agency is mentioned.",
+      },
+      status: { type: "string", description: "Filter by status (e.g. 'Enacted', 'Laid Over')" },
+      committee: { type: "string", description: "Filter by committee name" },
+    },
+    required: ["query"],
+  },
+};
+
 export const LOCAL_TOOL_DEFS = [
+  SEARCH_LEGISLATION_DEF,
   {
+    ...SEARCH_LEGISLATION_DEF,
     name: "search_bills",
     description:
-      "Full-text search across NYC Council bills using the local index. Sub-second response. " +
-      "Returns file number, title, status, committee, intro date, and sponsors. " +
-      "Optionally filter by agency (uses role-context snippets), status, or committee.",
-    inputSchema: {
-      type: "object",
-      additionalProperties: false,
-      properties: {
-        query: { type: "string", description: "Search terms (full-text)" },
-        limit: { type: "number", description: "Max results (default 25, max 100)" },
-        agency: {
-          type: "string",
-          description:
-            "NYC agency key or name (e.g. 'DEP', 'NYPD', 'department of transportation'). " +
-            "Adds a role-context snippet showing HOW the agency is mentioned.",
-        },
-        status: { type: "string", description: "Filter by status (e.g. 'Enacted', 'Laid Over')" },
-        committee: { type: "string", description: "Filter by committee name" },
-      },
-      required: ["query"],
-    },
-  },
-  {
-    name: "search_legislation",
-    description:
-      "Alias for search_bills. Full-text search across NYC Council legislation using the local index.",
-    inputSchema: {
-      type: "object",
-      additionalProperties: false,
-      properties: {
-        query: { type: "string", description: "Search terms (full-text)" },
-        limit: { type: "number", description: "Max results (default 25, max 100)" },
-        agency: { type: "string", description: "NYC agency key or name for role-context snippets" },
-        status: { type: "string", description: "Filter by status" },
-        committee: { type: "string", description: "Filter by committee name" },
-      },
-      required: ["query"],
-    },
+      "Alias for search_legislation (same tool, same results). Despite the name, it returns every matter type, not only bills.",
   },
   {
     name: "search_events",
@@ -234,7 +233,7 @@ export function handleLocalTool(
           })
           .strict().parse(args);
         const results = searchBills(db, query, { limit, agency, status, committee });
-        return { content: [{ type: "text", text: JSON.stringify(results, null, 2) }] };
+        return json(results);
       }
 
       case "search_events": {
@@ -242,13 +241,13 @@ export function handleLocalTool(
           .object({ query: z.string(), limit: z.number().optional() })
           .strict().parse(args);
         const results = searchEvents(db, query, { limit });
-        return { content: [{ type: "text", text: JSON.stringify(results, null, 2) }] };
+        return json(results);
       }
 
       case "list_committees": {
         z.object({}).strict().parse(args ?? {});
         const results = listCommittees(db);
-        return { content: [{ type: "text", text: JSON.stringify(results, null, 2) }] };
+        return json(results);
       }
 
       case "recent_bills": {
@@ -256,7 +255,7 @@ export function handleLocalTool(
           .object({ days: z.number().optional(), limit: z.number().optional() })
           .strict().parse(args ?? {});
         const results = recentBills(db, { days, limit });
-        return { content: [{ type: "text", text: JSON.stringify(results, null, 2) }] };
+        return json(results);
       }
 
       case "upcoming_events": {
@@ -264,7 +263,7 @@ export function handleLocalTool(
           .object({ days: z.number().optional(), limit: z.number().optional() })
           .strict().parse(args ?? {});
         const results = upcomingEvents(db, { days, limit });
-        return { content: [{ type: "text", text: JSON.stringify(results, null, 2) }] };
+        return json(results);
       }
 
       case "aggregate_bills": {
@@ -272,13 +271,13 @@ export function handleLocalTool(
           .object({ group_by: z.enum(["status", "type", "committee", "year"]) })
           .strict().parse(args);
         const results = aggregateBills(db, group_by);
-        return { content: [{ type: "text", text: JSON.stringify(results, null, 2) }] };
+        return json(results);
       }
 
       case "vote_breakdown": {
         const { file_number } = z.object({ file_number: z.string() }).strict().parse(args);
         const results = voteBreakdown(db, file_number);
-        return { content: [{ type: "text", text: JSON.stringify(results, null, 2) }] };
+        return json(results);
       }
 
       case "get_voting_record": {
@@ -286,13 +285,13 @@ export function handleLocalTool(
           .object({ member_name: z.string(), limit: z.number().optional() })
           .strict().parse(args);
         const results = getVotingRecord(db, member_name, { limit });
-        return { content: [{ type: "text", text: JSON.stringify(results, null, 2) }] };
+        return json(results);
       }
 
       case "get_bill_history": {
         const { file_number } = z.object({ file_number: z.string() }).strict().parse(args);
         const results = getBillHistoryLocal(db, file_number);
-        return { content: [{ type: "text", text: JSON.stringify(results, null, 2) }] };
+        return json(results);
       }
 
       case "co_sponsors": {
@@ -300,13 +299,13 @@ export function handleLocalTool(
           .object({ member_name: z.string(), limit: z.number().optional() })
           .strict().parse(args);
         const results = coSponsors(db, member_name, { limit });
-        return { content: [{ type: "text", text: JSON.stringify(results, null, 2) }] };
+        return json(results);
       }
 
       case "get_bill_hearings": {
         const { file_number } = z.object({ file_number: z.string() }).strict().parse(args);
         const results = getBillHearings(db, file_number);
-        return { content: [{ type: "text", text: JSON.stringify(results, null, 2) }] };
+        return json(results);
       }
 
       case "get_event_bills": {
@@ -319,7 +318,7 @@ export function handleLocalTool(
           .strict()
           .parse(args);
         const results = getEventBills(db, event_id, { limit, offset });
-        return { content: [{ type: "text", text: JSON.stringify(results, null, 2) }] };
+        return json(results);
       }
 
       default:

@@ -21,6 +21,8 @@ import {
 } from "../legistar.js";
 import { unknownParamMessage } from "./unknown-param.js";
 
+import { json } from "./json.js";
+
 // Add a human-openable legistar_url to a matter record (any type — see
 // legistarUrl). get_bill_history returns MatterHistory rows, not matters, so
 // they get no URL here.
@@ -186,13 +188,13 @@ export async function handleLiveTool(
             }],
           };
         }
-        return { content: [{ type: "text", text: JSON.stringify(withLegistarUrl(results[0]), null, 2) }] };
+        return json(withLegistarUrl(results[0]));
       }
 
       case "get_bill_history": {
         const { matter_id } = z.object({ matter_id: z.number() }).strict().parse(args);
         const results = await getBillHistory(token, matter_id);
-        return { content: [{ type: "text", text: JSON.stringify(results, null, 2) }] };
+        return json(results);
       }
 
       case "get_bill_attachments": {
@@ -201,7 +203,7 @@ export async function handleLiveTool(
         // MatterAttachmentBinary is null in every NYC row (the file is at the
         // hyperlink), so drop it rather than send a dead field.
         const rows = results.map(({ MatterAttachmentBinary: _bin, ...rest }) => rest);
-        return { content: [{ type: "text", text: JSON.stringify(rows, null, 2) }] };
+        return json(rows);
       }
 
       case "get_upcoming_hearings": {
@@ -219,25 +221,25 @@ export async function handleLiveTool(
         );
         // #22: short shape by default; the raw payload only on request.
         const out = (detail ?? "summary") === "full" ? results : results.map(summarizeHearing);
-        return { content: [{ type: "text", text: JSON.stringify(out, null, 2) }] };
+        return json(out);
       }
 
       case "get_council_member": {
         const { name: memberName } = z.object({ name: z.string() }).strict().parse(args);
         const results = await getCouncilMember(token, memberName);
-        return { content: [{ type: "text", text: JSON.stringify(results, null, 2) }] };
+        return json(results);
       }
 
       case "get_committee": {
         const { name: committeeName } = z.object({ name: z.string() }).strict().parse(args);
         const results = await getCommittee(token, committeeName);
-        return { content: [{ type: "text", text: JSON.stringify(results, null, 2) }] };
+        return json(results);
       }
 
       case "get_votes": {
         const { event_item_id } = z.object({ event_item_id: z.number() }).strict().parse(args);
         const results = await getVotes(token, event_item_id);
-        return { content: [{ type: "text", text: JSON.stringify(results, null, 2) }] };
+        return json(results);
       }
 
       case "list_recent_legislation": {
@@ -245,7 +247,7 @@ export async function handleLiveTool(
           .object({ limit: z.number().max(50).optional() })
           .strict().parse(args ?? {});
         const results = await listRecentLegislation(token, limit ?? 25);
-        return { content: [{ type: "text", text: JSON.stringify(results.map(withLegistarUrl), null, 2) }] };
+        return json(results.map(withLegistarUrl));
       }
 
       default:
@@ -303,5 +305,5 @@ export async function handleLiveSearch(
   }
   const { query, limit, order } = parsed;
   const results = await searchLegislation(token, query, limit ?? 20, order ?? "date_desc");
-  return { content: [{ type: "text", text: JSON.stringify(results.map(withLegistarUrl), null, 2) }] };
+  return json(results.map(withLegistarUrl));
 }
