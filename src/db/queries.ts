@@ -670,10 +670,26 @@ export interface EventBillRow {
   legistar_url: string | null;
 }
 
+export interface EventBillsPage {
+  event_id: number;
+  total: number;
+  offset: number;
+  limit: number;
+  items: EventBillRow[];
+}
+
+// Paged (#29): one stated meeting has ~178 agenda items (~85 KB), so the
+// default page is 50 and the total says whether there is more.
 export function getEventBills(
   db: Database.Database,
-  eventId: number
-): EventBillRow[] {
+  eventId: number,
+  opts: { limit?: number; offset?: number } = {}
+): EventBillsPage {
+  const limit = opts.limit ?? 50;
+  const offset = opts.offset ?? 0;
+  const { total } = db
+    .prepare("SELECT COUNT(*) AS total FROM event_items WHERE event_id = ?")
+    .get(eventId) as { total: number };
   const rows = db
     .prepare(
       `
@@ -683,8 +699,15 @@ export function getEventBills(
       LEFT JOIN bills b ON ei.matter_id = b.matter_id
       WHERE ei.event_id = ?
       ORDER BY ei.event_item_id
+      LIMIT ? OFFSET ?
     `
     )
-    .all(eventId) as Omit<EventBillRow, "legistar_url">[];
-  return rows.map((r) => ({ ...r, legistar_url: legistarUrl(r.matter_id) }));
+    .all(eventId, limit, offset) as Omit<EventBillRow, "legistar_url">[];
+  return {
+    event_id: eventId,
+    total,
+    offset,
+    limit,
+    items: rows.map((r) => ({ ...r, legistar_url: legistarUrl(r.matter_id) })),
+  };
 }

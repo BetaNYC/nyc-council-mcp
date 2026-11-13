@@ -41,6 +41,18 @@ Dates are npm publish dates (`npm view @betanyc/nyc-council-mcp time`).
   docs; the README says so.
 
 ### Changed
+- **`get_event_bills` is paged
+  ([#29](https://github.com/BetaNYC/nyc-council-mcp/issues/29)).** It now returns
+  `{ event_id, total, offset, limit, items }` instead of a bare array, 50 items per page by
+  default (max 500). One stated meeting (event 22592) has 178 items; the first page is
+  now about 28 KB instead of about 85 KB, and `total` says there is more.
+- **`get_upcoming_hearings` returns a short shape by default
+  ([#22](https://github.com/BetaNYC/nyc-council-mcp/issues/22)).** Per meeting: date, time,
+  body, location, agenda status and links. Per agenda item: its id (the one `get_votes`
+  takes), matter file, name, type and status, `legistar_url`, and a title cut at 300
+  characters (`EventItemTitleTruncated: true` when cut). Null fields are dropped. On
+  2026-11-12 the next 14 days came to 161 KB instead of 470 KB. `detail: "full"` returns the
+  old payload unchanged.
 - Introductions now link through `gateway.aspx` too, not intro.nyc, so one rule
   covers every type.
 - `get_bill_hearings`, `get_event_bills` and `get_voting_record` rows now include

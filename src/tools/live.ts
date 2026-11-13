@@ -16,6 +16,7 @@ import {
   getVotes,
   listRecentLegislation,
   legistarUrl,
+  summarizeHearing,
   type LegistarMatter,
 } from "../legistar.js";
 import { unknownParamMessage } from "./unknown-param.js";
@@ -76,7 +77,7 @@ const LIVE_TOOL_DEFS = [
   {
     name: "get_upcoming_hearings",
     description:
-      "List upcoming NYC Council committee hearings and Stated meetings. Real-time data — use this for scheduling, not the local index. Each event's EventItems array is populated with its agenda items (the bills/matters on the agenda) via a follow-up call per event; pass include_agenda=false to skip that and return events faster with EventItems empty.",
+      "List upcoming NYC Council committee hearings and Stated meetings. Real-time data — use this for scheduling, not the local index. Each event's EventItems array is populated with its agenda items (the bills/matters on the agenda) via a follow-up call per event; pass include_agenda=false to skip that and return events faster with EventItems empty. Returns a short shape by default (detail='summary'); detail='full' returns every Legistar field. A stated meeting can carry 100+ agenda items: for those, use include_agenda=false and page the agenda with get_event_bills.",
     inputSchema: {
       type: "object",
       additionalProperties: false,
@@ -84,6 +85,12 @@ const LIVE_TOOL_DEFS = [
         days_ahead: {
           type: "number",
           description: "How many days ahead to look (default 14, max 90)",
+        },
+        detail: {
+          type: "string",
+          enum: ["summary", "full"],
+          description:
+            "'summary' (default): date, time, body, location, agenda status and links, and per agenda item its id, matter file/name/type/status, legistar_url and a title cut at 300 characters; null fields dropped. 'full': every Legistar field, unchanged.",
         },
         include_agenda: {
           type: "boolean",
@@ -198,10 +205,11 @@ export async function handleLiveTool(
       }
 
       case "get_upcoming_hearings": {
-        const { days_ahead, include_agenda } = z
+        const { days_ahead, include_agenda, detail } = z
           .object({
             days_ahead: z.number().max(90).optional(),
             include_agenda: z.boolean().optional(),
+            detail: z.enum(["summary", "full"]).optional(),
           })
           .strict().parse(args ?? {});
         const results = await getUpcomingHearings(
@@ -209,7 +217,9 @@ export async function handleLiveTool(
           days_ahead ?? 14,
           include_agenda ?? true
         );
-        return { content: [{ type: "text", text: JSON.stringify(results, null, 2) }] };
+        // #22: short shape by default; the raw payload only on request.
+        const out = (detail ?? "summary") === "full" ? results : results.map(summarizeHearing);
+        return { content: [{ type: "text", text: JSON.stringify(out, null, 2) }] };
       }
 
       case "get_council_member": {
