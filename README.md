@@ -245,7 +245,7 @@ These require `LEGISTAR_TOKEN`.
 
 | Tool | Description |
 |---|---|
-| `about_data` | Ask the server where its data comes from. It answers with who made it (BetaNYC, a project of the Fund for the City of New York), how it works, and, for each kind of data, the source, whether it is official or curated by BetaNYC, how it was gathered and how current it is on this server. `topic` narrows it to one kind (for example `party`, `districts`, `votes`, or `members` for everything about council members). Needs no token or index. The server's MCP instructions tell the AI app to call it whenever someone asks about sources, freshness or who is behind the answers. |
+| `about_data` | Ask the server where its data comes from. For each kind of data it gives the source and its publisher, whether it is an official record or BetaNYC's curation, how it was gathered and what BetaNYC changed, how current it is on this server (the index build time, the district snapshot's fetch time, the curated files' check dates), what it covers, terms of use and a credit line, where to check a figure, where to report an error, and which tools use it. `topic` narrows it to one kind of data (`live`, `bills`, `votes`, `events`, `committees`, `districts`, `party`, `wikidata`, `social`) or to the data behind one tool (for example `get_council_member`). The answer also says who built the server: BetaNYC, a project of the Fund for the City of New York. Needs no token or index. The server's MCP instructions tell the AI app to call it whenever someone asks about sources, freshness or accuracy, and to say when figures are not an official record. Answers come from [`DATA-SOURCES.json`](DATA-SOURCES.json), read by BetaNYC's shared module. |
 
 ### Tool details
 
@@ -481,6 +481,8 @@ LEGISTAR_LIVE_URL_TEST=1 npm test         # with LEGISTAR_TOKEN set: adds the li
 
 Tests use Node's built-in runner (`node --test test/*.test.mjs`) and never need the network unless `LEGISTAR_LIVE_URL_TEST` is set. [CI](.github/workflows/ci.yml) runs them on every pull request to `main`, on Ubuntu (Node 20 and 22) and Windows (Node 22), and a version guard fails any PR that changes shipped code without a version bump.
 
+CI fails if `DATA-SOURCES.json` is invalid or leaves a tool without a source (a test checks this too), or if [`data.json`](data.json), the DCAT-US 3.0 catalog made from it, is out of date or invalid. These checks follow BetaNYC's about-data standard. Rebuild it with `python3 scripts/whats_changed.py about-data catalog DATA-SOURCES.json`. `src/betanyc-tools.ts`, `scripts/whats_changed.py`, `scripts/tests/catalog_validate.py` and `scripts/mcp_shared/` are copies of BetaNYC's shared files: do not edit them here.
+
 The council terms snapshot (`data/council-member-terms.json`) is refreshed by `node scripts/refresh-member-terms.mjs`. A [monthly workflow](.github/workflows/refresh-member-terms.yml) runs it and opens a PR when the City's rows change. The snapshot ships in the package, so a refresh needs a version bump like code does.
 
 ### Contributing
@@ -515,6 +517,8 @@ Prerequisite: the `NPM_TOKEN` org secret (an npm automation token with publish r
 - **Local index:** [jehiah/nyc_legislation](https://github.com/jehiah/nyc_legislation) archive — has been mirroring Legistar since 2018, updated most weekdays
 - **Curated member facts:** Wikidata, Wikipedia, NYC Board of Elections certified results (party lines), council.nyc.gov and the Council's Bluesky starter pack (office accounts). Rules in [`data/README.md`](data/README.md)
 - **Council districts and terms:** NYC Open Data [City Council Members (1999 to Present)](https://data.cityofnewyork.us/d/uvw5-9znb) (`uvw5-9znb`), shipped as a dated snapshot and used as published
+
+The full list, source by source, is [`DATA-SOURCES.json`](DATA-SOURCES.json) (also as a DCAT-US 3.0 catalog, [`data.json`](data.json)), and the `about_data` tool answers from it.
 
 ### Acknowledgments
 

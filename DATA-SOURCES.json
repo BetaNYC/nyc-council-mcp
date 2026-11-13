@@ -1,0 +1,502 @@
+{
+  "format": "betanyc-data-sources/1",
+  "server": {
+    "name": "nyc-council-mcp",
+    "title": "NYC Council legislation MCP server",
+    "description": "An MCP server for New York City Council legislation, votes, hearings, committees and members. Live tools ask the Council's Legistar API when you ask; local tools answer from an index built from a public archive of Legistar; member facts no official source publishes in one place are curated by BetaNYC and labeled as not official. Nothing is invented: a value with no source is left blank.",
+    "kind": "mcp",
+    "repository": "https://github.com/BetaNYC/nyc-council-mcp",
+    "documentation_url": "https://github.com/BetaNYC/nyc-council-mcp#readme",
+    "package_url": "https://www.npmjs.com/package/@betanyc/nyc-council-mcp",
+    "license": {
+      "name": "MIT",
+      "url": "https://spdx.org/licenses/MIT.html"
+    },
+    "contact_email": "contact-not-yet-named@example.invalid",
+    "keywords": [
+      "nyc",
+      "nyc council",
+      "legislation",
+      "legistar",
+      "votes",
+      "hearings",
+      "open government"
+    ]
+  },
+  "sources": [
+    {
+      "id": "live",
+      "title": "Legistar, live",
+      "what": "Bills, their history and files, hearings and agendas, committees, roll-call votes and member contact details, fetched from the Council's API when asked.",
+      "source_name": "NYC Council Legistar Web API (Granicus)",
+      "publisher": {
+        "name": "New York City Council"
+      },
+      "source_url": "https://council.nyc.gov/legislation/api/",
+      "official": true,
+      "how_gathered": "Read-only requests to the Council's own API at the moment you ask. Needs LEGISTAR_TOKEN; a server without one has no live tools.",
+      "changes": {
+        "changed": false,
+        "steps": []
+      },
+      "verify_at": "https://legistar.council.nyc.gov/",
+      "freshness": {
+        "kind": "live"
+      },
+      "update_frequency": "continual",
+      "coverage": {
+        "start": null,
+        "end": null,
+        "geography": "New York City Council",
+        "known_gaps": []
+      },
+      "terms": {
+        "license_name": "None stated by the publisher",
+        "terms_url": "https://council.nyc.gov/legislation/api/",
+        "credit_line": "Source: New York City Council, Legistar."
+      },
+      "report_errors": {
+        "upstream_url": "https://council.nyc.gov/legislation/api/",
+        "upstream_email": "correspondence@council.nyc.gov"
+      },
+      "tools": [
+        "get_bill",
+        "get_bill_history",
+        "get_bill_attachments",
+        "get_upcoming_hearings",
+        "get_council_member",
+        "get_committee",
+        "get_votes",
+        "list_recent_legislation",
+        "search_legislation_live"
+      ],
+      "caveats": [
+        "Legistar sometimes changes a meeting's status without updating its timestamp; upcoming_events checks status live when it can.",
+        "A known-bad Legistar profile link (PersonWWW2) is corrected from a small dated list in the code, with the original kept in PersonWWW2_upstream. Other values are passed on as the API returns them.",
+        "get_council_member adds BetaNYC's curated facts (topics party, wikidata, social) and, with a local index, districts (topic districts). Those are separate sources."
+      ],
+      "corrections": []
+    },
+    {
+      "id": "bills",
+      "title": "Bills and their history",
+      "what": "Introductions, resolutions and land use items: titles, summaries, full text, sponsors, Local Law numbers, attachments and history.",
+      "source_name": "NYC Council Legistar",
+      "publisher": {
+        "name": "New York City Council"
+      },
+      "source_url": "https://legistar.council.nyc.gov/",
+      "official": true,
+      "how_gathered": "This server answers from a local SQLite index, with no network call. The index is built from a clone of jehiah/nyc_legislation (https://github.com/jehiah/nyc_legislation), an unofficial mirror that copies the Council's Legistar records through the Legistar API. Every local answer ends with a line naming when the index was built and the archive commit it was built from.",
+      "changes": {
+        "changed": true,
+        "steps": [
+          "reshaped",
+          "counted"
+        ],
+        "detail": "Records are restructured into database tables with their values unchanged. aggregate_bills counts bills by a field, and co_sponsors counts the bills each pair of members sponsored together."
+      },
+      "verify_at": "https://legistar.council.nyc.gov/",
+      "freshness": {
+        "kind": "hook",
+        "key": "index_built"
+      },
+      "update_frequency": "irregular",
+      "coverage": {
+        "start": null,
+        "end": null,
+        "geography": "New York City Council",
+        "known_gaps": []
+      },
+      "terms": {
+        "license_name": "None stated by the publisher; the jehiah/nyc_legislation archive states no license either",
+        "terms_url": "https://council.nyc.gov/legislation/api/",
+        "credit_line": "Source: New York City Council, Legistar."
+      },
+      "report_errors": {
+        "upstream_url": "https://council.nyc.gov/legislation/api/",
+        "upstream_email": "correspondence@council.nyc.gov"
+      },
+      "tools": [
+        "search_legislation",
+        "search_bills",
+        "get_matter",
+        "recent_bills",
+        "aggregate_bills",
+        "get_bill_history",
+        "co_sponsors"
+      ],
+      "caveats": [
+        "The jehiah/nyc_legislation archive is not the Council's: it is an independent copy, and it can lag Legistar. How current shows when this server's index was built; the archive commit it was built from, which is how current the copy is, is named at the end of every local answer.",
+        "An empty local answer means 'not in this index', not 'does not exist'."
+      ],
+      "corrections": []
+    },
+    {
+      "id": "votes",
+      "title": "Roll-call votes",
+      "what": "Roll-call votes by member, with the date, action and body of each vote.",
+      "source_name": "NYC Council Legistar",
+      "publisher": {
+        "name": "New York City Council"
+      },
+      "source_url": "https://legistar.council.nyc.gov/",
+      "official": true,
+      "how_gathered": "This server answers from a local SQLite index, with no network call. The index is built from a clone of jehiah/nyc_legislation (https://github.com/jehiah/nyc_legislation), an unofficial mirror that copies the Council's Legistar records through the Legistar API. Every local answer ends with a line naming when the index was built and the archive commit it was built from.",
+      "changes": {
+        "changed": true,
+        "steps": [
+          "reshaped",
+          "counted"
+        ],
+        "detail": "Records are restructured into database tables with their values unchanged. vote_breakdown tallies each roll call's positions (affirmative, negative, abstain), never counting an absence as a vote."
+      },
+      "verify_at": "https://legistar.council.nyc.gov/",
+      "freshness": {
+        "kind": "hook",
+        "key": "index_built"
+      },
+      "update_frequency": "irregular",
+      "coverage": {
+        "start": null,
+        "end": null,
+        "geography": "New York City Council",
+        "known_gaps": []
+      },
+      "terms": {
+        "license_name": "None stated by the publisher; the jehiah/nyc_legislation archive states no license either",
+        "terms_url": "https://council.nyc.gov/legislation/api/",
+        "credit_line": "Source: New York City Council, Legistar."
+      },
+      "report_errors": {
+        "upstream_url": "https://council.nyc.gov/legislation/api/",
+        "upstream_email": "correspondence@council.nyc.gov"
+      },
+      "tools": [
+        "vote_breakdown",
+        "get_voting_record"
+      ],
+      "caveats": [
+        "The jehiah/nyc_legislation archive is not the Council's: it is an independent copy, and it can lag Legistar. How current shows when this server's index was built; the archive commit it was built from, which is how current the copy is, is named at the end of every local answer.",
+        "An empty local answer means 'not in this index', not 'does not exist'."
+      ],
+      "corrections": []
+    },
+    {
+      "id": "events",
+      "title": "Meetings and hearings",
+      "what": "Meetings and hearings, their agendas and the items heard.",
+      "source_name": "NYC Council Legistar",
+      "publisher": {
+        "name": "New York City Council"
+      },
+      "source_url": "https://legistar.council.nyc.gov/",
+      "official": true,
+      "how_gathered": "This server answers from a local SQLite index, with no network call. The index is built from a clone of jehiah/nyc_legislation (https://github.com/jehiah/nyc_legislation), an unofficial mirror that copies the Council's Legistar records through the Legistar API. Every local answer ends with a line naming when the index was built and the archive commit it was built from.",
+      "changes": {
+        "changed": true,
+        "steps": [
+          "reshaped"
+        ],
+        "detail": "Records are restructured into database tables with their values unchanged."
+      },
+      "verify_at": "https://legistar.council.nyc.gov/",
+      "freshness": {
+        "kind": "hook",
+        "key": "index_built"
+      },
+      "update_frequency": "irregular",
+      "coverage": {
+        "start": null,
+        "end": null,
+        "geography": "New York City Council",
+        "known_gaps": []
+      },
+      "terms": {
+        "license_name": "None stated by the publisher; the jehiah/nyc_legislation archive states no license either",
+        "terms_url": "https://council.nyc.gov/legislation/api/",
+        "credit_line": "Source: New York City Council, Legistar."
+      },
+      "report_errors": {
+        "upstream_url": "https://council.nyc.gov/legislation/api/",
+        "upstream_email": "correspondence@council.nyc.gov"
+      },
+      "tools": [
+        "search_events",
+        "upcoming_events",
+        "get_event_bills",
+        "get_bill_hearings"
+      ],
+      "caveats": [
+        "The jehiah/nyc_legislation archive is not the Council's: it is an independent copy, and it can lag Legistar. How current shows when this server's index was built; the archive commit it was built from, which is how current the copy is, is named at the end of every local answer.",
+        "An empty local answer means 'not in this index', not 'does not exist'."
+      ],
+      "corrections": []
+    },
+    {
+      "id": "committees",
+      "title": "Committees, caucuses and delegations",
+      "what": "Committee, caucus, conference and delegation memberships with roles and dates (Legistar OfficeRecords).",
+      "source_name": "NYC Council Legistar",
+      "publisher": {
+        "name": "New York City Council"
+      },
+      "source_url": "https://legistar.council.nyc.gov/",
+      "official": true,
+      "how_gathered": "This server answers from a local SQLite index, with no network call. The index is built from a clone of jehiah/nyc_legislation (https://github.com/jehiah/nyc_legislation), an unofficial mirror that copies the Council's Legistar records through the Legistar API. Every local answer ends with a line naming when the index was built and the archive commit it was built from.",
+      "changes": {
+        "changed": true,
+        "steps": [
+          "reshaped",
+          "counted"
+        ],
+        "detail": "Records are restructured into database tables with their values unchanged. list_committees counts the bills and meetings recorded for each body."
+      },
+      "verify_at": "https://legistar.council.nyc.gov/",
+      "freshness": {
+        "kind": "hook",
+        "key": "index_built"
+      },
+      "update_frequency": "irregular",
+      "coverage": {
+        "start": null,
+        "end": null,
+        "geography": "New York City Council",
+        "known_gaps": []
+      },
+      "terms": {
+        "license_name": "None stated by the publisher; the jehiah/nyc_legislation archive states no license either",
+        "terms_url": "https://council.nyc.gov/legislation/api/",
+        "credit_line": "Source: New York City Council, Legistar."
+      },
+      "report_errors": {
+        "upstream_url": "https://council.nyc.gov/legislation/api/",
+        "upstream_email": "correspondence@council.nyc.gov"
+      },
+      "tools": [
+        "get_member_roles",
+        "committee_roster",
+        "list_committees"
+      ],
+      "caveats": [
+        "The jehiah/nyc_legislation archive is not the Council's: it is an independent copy, and it can lag Legistar. How current shows when this server's index was built; the archive commit it was built from, which is how current the copy is, is named at the end of every local answer.",
+        "An empty local answer means 'not in this index', not 'does not exist'.",
+        "A caucus or party conference is a membership, never a party."
+      ],
+      "corrections": []
+    },
+    {
+      "id": "districts",
+      "title": "Council terms and districts",
+      "what": "Every Council term since 1999, with its district.",
+      "source_name": "City Council Members (1999 to Present), NYC Open Data dataset uvw5-9znb",
+      "publisher": {
+        "name": "New York City Council"
+      },
+      "source_url": "https://data.cityofnewyork.us/d/uvw5-9znb",
+      "official": true,
+      "how_gathered": "The Council publishes this dataset on NYC Open Data, the City's open data portal. A copy ships with this server (data/council-member-terms.json) and is loaded into the local index. A monthly job re-fetches it and opens a pull request when the rows change.",
+      "changes": {
+        "changed": true,
+        "steps": [
+          "reshaped",
+          "merged"
+        ],
+        "detail": "The rows are used as published, loaded into the index and joined to Legistar people on person ID, never on names. district_member works out who held a district on a date from them."
+      },
+      "verify_at": "https://data.cityofnewyork.us/d/uvw5-9znb",
+      "freshness": {
+        "kind": "hook",
+        "key": "member_terms_fetched"
+      },
+      "update_frequency": "irregular",
+      "coverage": {
+        "start": null,
+        "end": null,
+        "geography": "New York City Council districts 1 to 51, every term since 1999",
+        "known_gaps": [
+          "The City updates this file late. A seat that looks vacant may have a new member; the answer then names anyone Legistar lists who is missing from the file."
+        ]
+      },
+      "terms": {
+        "license_name": "No restrictions on use: NYC Administrative Code § 23-502(d) (the Open Data Law, Local Law 11 of 2012)",
+        "terms_url": "https://codelibrary.amlegal.com/codes/newyorkcity/latest/NYCadmin/0-0-0-216807",
+        "credit_line": "Source: New York City Council, City Council Members (1999 to Present), NYC Open Data uvw5-9znb; used as published."
+      },
+      "report_errors": {
+        "upstream_url": "https://www.nyc.gov/opendata/contact-us"
+      },
+      "tools": [
+        "district_member",
+        "get_member_roles",
+        "get_council_member"
+      ],
+      "caveats": [
+        "How current is when this server's copy was fetched from NYC Open Data.",
+        "District lines are redrawn, so a past district number may not match today's map."
+      ],
+      "corrections": []
+    },
+    {
+      "id": "party",
+      "title": "Party: every ballot line won on",
+      "what": "Every ballot line each sitting member won on, with its votes (NYC has fusion voting).",
+      "source_name": "NYC Board of Elections certified results",
+      "publisher": {
+        "name": "NYC Board of Elections",
+        "url": "https://www.vote.nyc/"
+      },
+      "source_url": "https://www.vote.nyc/page/election-results-summary",
+      "official": false,
+      "how_gathered": "Curated by BetaNYC: lines and votes copied from the Board's certified 'Statement and Return Report for Certification' for the election that gave each member their seat, with a link to that document on each row. Never inferred from a caucus or from Wikidata. Shipped in data/council-party.json; nothing is looked up at run time.",
+      "changes": {
+        "changed": true,
+        "steps": [
+          "curated"
+        ],
+        "detail": "Hand-collected per member from certified results, then re-checked: all 50 general-election rows were compared by script with the Board's CSVs (no differences). Each row records its source, check date, status and second check."
+      },
+      "verify_at": "https://www.vote.nyc/page/election-results-summary",
+      "freshness": {
+        "kind": "file",
+        "path": "data/council-party.json",
+        "field": "checked_at"
+      },
+      "update_frequency": "asNeeded",
+      "coverage": {
+        "start": null,
+        "end": null,
+        "geography": "The 51 members seated on the check date",
+        "known_gaps": [
+          "Former members are not covered."
+        ]
+      },
+      "terms": {
+        "license_name": "None stated by the publisher",
+        "terms_url": "https://www.vote.nyc/page/election-results-summary",
+        "credit_line": "Party lines from NYC Board of Elections certified results, curated by BetaNYC."
+      },
+      "report_errors": {
+        "upstream_url": "https://www.vote.nyc/index%2Ephp/page/contact-us"
+      },
+      "tools": [
+        "get_council_member",
+        "get_member_roles"
+      ],
+      "caveats": [
+        "Most errors here would be in BetaNYC's copying or matching, so report them first at https://github.com/BetaNYC/nyc-council-mcp/issues. To check a row, use its Board of Elections certified results document (each row links it).",
+        "How current is the date BetaNYC last checked the file, not a build date.",
+        "Each row says how sure it is: status verified (50 rows) or likely (1 row), and how it was checked a second time (second_check). No person has reviewed the rows one by one.",
+        "A Council special election is nonpartisan: its lines are names the candidates chose, and the row says so."
+      ],
+      "corrections": []
+    },
+    {
+      "id": "wikidata",
+      "title": "Wikidata and Wikipedia",
+      "what": "The Wikidata item and English Wikipedia article for each sitting member.",
+      "source_name": "Wikidata and English Wikipedia",
+      "publisher": {
+        "name": "Wikimedia Foundation",
+        "url": "https://wikimediafoundation.org/"
+      },
+      "source_url": "https://www.wikidata.org/",
+      "official": false,
+      "how_gathered": "Curated by BetaNYC: each item was checked to be a person whose English Wikipedia article names their Council district. Shipped in data/council-wikidata.json; nothing is looked up at run time.",
+      "changes": {
+        "changed": true,
+        "steps": [
+          "curated"
+        ],
+        "detail": "Hand-matched per member, then every row re-checked against Wikidata and Wikipedia. Party is not taken from Wikidata."
+      },
+      "verify_at": "https://www.wikidata.org/",
+      "freshness": {
+        "kind": "file",
+        "path": "data/council-wikidata.json",
+        "field": "checked_at"
+      },
+      "update_frequency": "asNeeded",
+      "coverage": {
+        "start": null,
+        "end": null,
+        "geography": "The 51 members seated on the check date",
+        "known_gaps": [
+          "Former members are not covered."
+        ]
+      },
+      "terms": {
+        "license_name": "CC0 1.0 (Wikidata structured data). Only links to Wikipedia articles are used, no article text (that text is CC BY-SA)",
+        "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "terms_url": "https://www.wikidata.org/wiki/Wikidata:Licensing"
+      },
+      "report_errors": {
+        "upstream_url": "https://www.wikidata.org/"
+      },
+      "tools": [
+        "get_council_member",
+        "get_member_roles"
+      ],
+      "caveats": [
+        "Most errors here would be in BetaNYC's copying or matching, so report them first at https://github.com/BetaNYC/nyc-council-mcp/issues. To check a row, use the Wikidata item and Wikipedia article each row links.",
+        "How current is the date BetaNYC last checked the file, not a build date.",
+        "All 51 rows have status verified, and each records its second check (second_check). No person has reviewed the rows one by one."
+      ],
+      "corrections": []
+    },
+    {
+      "id": "social",
+      "title": "Office social accounts",
+      "what": "Council office accounts on Bluesky, Instagram, Threads and LinkedIn.",
+      "source_name": "council.nyc.gov member pages and the Council's Bluesky starter pack; the account's own profile last",
+      "publisher": {
+        "name": "New York City Council"
+      },
+      "source_url": "https://council.nyc.gov/",
+      "official": false,
+      "how_gathered": "Curated by BetaNYC: office accounts only, never campaign or personal. 'verified' means council.nyc.gov links it, or it is in the Council's Bluesky starter pack and is not a personal or campaign account; 'likely' means only the account's own bio says it is the office, and nothing official confirms it. Shipped in data/council-social.json; nothing is looked up at run time.",
+      "changes": {
+        "changed": true,
+        "steps": [
+          "curated"
+        ],
+        "detail": "Hand-collected per member. Every 'likely' account was re-checked independently for an official source naming the handle, and each likely account records the result in second_check."
+      },
+      "verify_at": "https://council.nyc.gov/",
+      "freshness": {
+        "kind": "file",
+        "path": "data/council-social.json",
+        "field": "checked_at"
+      },
+      "update_frequency": "asNeeded",
+      "coverage": {
+        "start": null,
+        "end": null,
+        "geography": "The 51 members seated on the check date",
+        "known_gaps": [
+          "Former members are not covered.",
+          "Facebook and X are out of scope.",
+          "Several Threads profiles could not be read without logging in; each row's notes say which."
+        ]
+      },
+      "terms": {
+        "license_name": "None stated by the publisher",
+        "terms_url": "https://council.nyc.gov/"
+      },
+      "report_errors": {
+        "upstream_url": "https://council.nyc.gov/",
+        "upstream_email": "correspondence@council.nyc.gov"
+      },
+      "tools": [
+        "get_council_member",
+        "get_member_roles"
+      ],
+      "caveats": [
+        "Most errors here would be in BetaNYC's copying or matching, so report them first at https://github.com/BetaNYC/nyc-council-mcp/issues. To check a row, use council.nyc.gov or the account itself (each account links its source).",
+        "How current is the date BetaNYC last checked the file, not a build date.",
+        "Of 69 accounts, 49 have status verified and 20 likely. The 20 likely accounts rest only on the account's own bio. No person has reviewed the rows one by one."
+      ],
+      "corrections": []
+    }
+  ]
+}

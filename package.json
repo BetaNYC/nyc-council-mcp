@@ -38,6 +38,8 @@
   },
   "files": [
     "dist",
+    "DATA-SOURCES.json",
+    "data.json",
     "data/council-member-terms.json",
     "data/council-wikidata.json",
     "data/council-party.json",
