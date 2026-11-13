@@ -859,6 +859,8 @@ export interface MemberRoles {
   terms: TermRow[];
   terms_source: string;
   terms_fetched_at: string | null;
+  /** Set when the City's terms file has no row for this person, so an empty list is explained. */
+  terms_note?: string;
 }
 
 type RoleOpts = { as_of?: string; include_past?: boolean };
@@ -960,7 +962,7 @@ export function termsFor(
   db: Database.Database,
   personId: number,
   date: string | null
-): Pick<MemberRoles, "district" | "terms" | "terms_source" | "terms_fetched_at"> {
+): Pick<MemberRoles, "district" | "terms" | "terms_source" | "terms_fetched_at" | "terms_note"> {
   const terms = hasTable(db, "member_terms")
     ? (db
         .prepare(
@@ -970,12 +972,20 @@ export function termsFor(
         .all(personId) as TermRow[])
     : [];
   const term = date == null ? terms[0] : terms.find((t) => onDate(t, date));
-  return {
+  const out: Pick<MemberRoles, "district" | "terms" | "terms_source" | "terms_fetched_at" | "terms_note"> = {
     district: term?.district ?? null,
     terms,
     terms_source: TERMS_SOURCE,
     terms_fetched_at: stateValue(db, "member_terms_fetched_at"),
   };
+  if (terms.length === 0) {
+    const updated = stateValue(db, "member_terms_rows_updated_at")?.slice(0, 10) ?? "unknown";
+    out.terms_note =
+      `The City's Council terms file (NYC Open Data uvw5-9znb, rows last updated ${updated}) does not list ` +
+      `this person, so district and terms are empty. If they are a sitting member, the City's file is behind: ` +
+      `district_member names sitting members missing from it, and the curated block may still carry their district.`;
+  }
+  return out;
 }
 
 export interface DistrictHolder {

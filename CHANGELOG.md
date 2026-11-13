@@ -100,6 +100,17 @@ Dates are npm publish dates (`npm view @betanyc/nyc-council-mcp time`).
   - A server started on an old index notices the nightly rebuild without a restart.
   - CI and the version guard now cover every shipped data file. The monthly terms refresh starts
     CI on its own PR and never reuses a branch name.
+- **Empty answers now say why (full pre-release test run, 2026-11-13,
+  [#48](https://github.com/BetaNYC/nyc-council-mcp/issues/48)).**
+  - A member the City's terms file does not list (Carl Wilson, District 3, on 2026-11-13) gets a
+    `terms_note` in `get_council_member` and `get_member_roles` instead of a bare empty list.
+  - `get_council_member` with no match adds a note that it searches active members only.
+  - A `LEGISTAR_DB_PATH` that points to a missing file is named at startup, instead of "No data
+    source configured".
+  - `search_legislation_live` answers a bad argument or a Legistar failure with an error
+    message, not an MCP protocol error.
+  - `index` adds an "Index now holds" line with the rows stored. The "Indexed" line counts
+    records read, which can be higher when the archive holds one matter in two files.
 - **Retired the Maloney profile-link override
   ([#38](https://github.com/BetaNYC/nyc-council-mcp/issues/38)).** The Council fixed the
   record upstream: on 2026-11-12 the Legistar API returned Council Member Maloney's own
@@ -143,6 +154,10 @@ Dates are npm publish dates (`npm view @betanyc/nyc-council-mcp time`).
   docs; the README says so.
 
 ### Changed
+- **Dependencies: zod 4 and MCP SDK 1.32.2 or later; `npm audit` reports 0 vulnerabilities.**
+  The 2.7.1 lockfile pinned SDK 1.29.0 and zod 3.25.76, and `npm audit` flagged 9 issues. Most sat
+  in the SDK's HTTP transports, which this stdio server does not use. zod had a memory-exhaustion
+  advisory fixed only in zod 4 (GHSA-mrhx-c7xc-m3w5).
 - **The copyright line names BetaNYC as a project of the Fund for the City of New York**
   (LICENSE and README), BetaNYC's standard wording. The license itself is unchanged (MIT).
 - **README follows the shared BetaNYC MCP layout

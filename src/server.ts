@@ -57,6 +57,17 @@ export function detectMode(): ServerMode {
 export async function startServer(): Promise<void> {
   const mode = detectMode();
 
+  if (!mode.hasLive && !mode.hasLocal && mode.dbPath) {
+    console.error(`
+Error: LEGISTAR_DB_PATH is set, but the index was not found at:
+  ${mode.dbPath}
+
+Build it with: npx @betanyc/nyc-council-mcp index --help
+Or set LEGISTAR_TOKEN to use the live Legistar API without an index.
+`);
+    process.exit(1);
+  }
+
   if (!mode.hasLive && !mode.hasLocal) {
     console.error(`
 Error: No data source configured.
