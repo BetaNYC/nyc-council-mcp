@@ -230,7 +230,19 @@ export async function handleLiveTool(
       case "get_council_member": {
         const { name: memberName } = z.object({ name: z.string() }).strict().parse(args);
         const results = await getCouncilMember(token, memberName);
-        return json(results);
+        if (results.length > 0) return json(results);
+        // Keep the answer a JSON list, and say why it is empty (found on home-hearth, 2026-11-13).
+        return {
+          content: [
+            json(results).content[0],
+            {
+              type: "text",
+              text:
+                `No active Council member in Legistar matches "${memberName}". This tool searches active members only; ` +
+                `former members are not searched. For a former member's votes, use get_voting_record (needs the local index).`,
+            },
+          ],
+        };
       }
 
       case "get_committee": {
