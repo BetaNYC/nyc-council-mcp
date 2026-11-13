@@ -144,7 +144,7 @@ export const LOCAL_TOOL_DEFS = [
   {
     name: "get_voting_record",
     description:
-      "All votes cast by a named council member, newest first.",
+      "All votes cast by a named council member, newest vote first. Each row has vote_date (when the roll call happened), vote_action and vote_body (e.g. 'Approved, by Council', 'City Council'). intro_date is the bill's introduction date, not the vote date.",
     inputSchema: {
       type: "object",
       additionalProperties: false,

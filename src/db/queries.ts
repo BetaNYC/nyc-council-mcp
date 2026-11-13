@@ -132,9 +132,15 @@ export interface PersonVoteRow {
   matter_id: number | null;
   file_number: string | null;
   title: string | null;
+  // The bill's introduction date (Legistar MatterIntroDate), NOT the vote date.
   intro_date: string | null;
   vote_value: string | null;
   event_item_id: number;
+  // When, where and what the vote was: the matter_history action this roll
+  // call belongs to (#41). Full ISO timestamp.
+  vote_date: string | null;
+  vote_action: string | null;
+  vote_body: string | null;
   legistar_url: string | null;
 }
 
@@ -548,11 +554,16 @@ export function getVotingRecord(
   const rows = db
     .prepare(
       `
-      SELECT b.matter_id, b.file_number, b.title, b.intro_date, v.vote_value, v.event_item_id
+      SELECT b.matter_id, b.file_number, b.title, b.intro_date, v.vote_value, v.event_item_id,
+             mh.action_date AS vote_date, mh.action_name AS vote_action, mh.body_name AS vote_body
       FROM votes v
       JOIN bills b ON v.matter_id = b.matter_id
+      LEFT JOIN matter_history mh
+        ON mh.matter_id = v.matter_id AND mh.event_item_id = v.event_item_id
       WHERE v.person_name IN (SELECT value FROM json_each(?))
-      ORDER BY b.intro_date DESC
+      -- Newest VOTE first (#41). Was the bill's intro date, which put a 2024
+      -- bill voted on in 2026 among the old votes.
+      ORDER BY mh.action_date DESC, b.intro_date DESC
       LIMIT ?
     `
     )

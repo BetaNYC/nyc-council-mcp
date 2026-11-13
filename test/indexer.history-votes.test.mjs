@@ -293,6 +293,24 @@ test("get_voting_record joins on matter_id and returns a member's votes", () => 
   }
 });
 
+test("get_voting_record rows carry the vote's date, action and body, newest vote first (#41)", () => {
+  const db = openRo();
+  try {
+    const rows = getVotingRecord(db, "Frank Morano");
+    // Council roll call (17:05) before committee (15:30): ordered by when the
+    // vote happened, not by the bill's intro date.
+    assert.deepEqual(
+      rows.map((r) => [r.vote_date, r.vote_action, r.vote_body, r.event_item_id]),
+      [
+        ["2026-06-30T17:05:00Z", "Approved, by Council", "City Council", 440128],
+        ["2026-06-30T15:30:00Z", "P-C Item Approved by Comm", "Committee on Finance", 440111],
+      ]
+    );
+  } finally {
+    db.close();
+  }
+});
+
 test("Land Use roll calls are indexed (density), not silently dropped", () => {
   const db = openRo();
   try {
