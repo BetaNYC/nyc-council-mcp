@@ -211,7 +211,7 @@ These require `LEGISTAR_DB_PATH` and a built index (see [Setup](#installation)).
 | `get_matter` | One matter by file number (`Int 1122-2024`) or Local Law number (`2025/153`): summary, version, Local Law number, attachments with download links, `legistar_url`, and the full text on request (`include_text`) |
 | `get_member_roles` | A member's committees (chairs listed separately), caucuses, party conferences, borough delegations and task forces, from Legistar's own membership records, plus the member's council `district` and every term. Today by default; `as_of` for a past date; `include_past` for the full history with dates. No party is inferred from caucus or conference |
 | `committee_roster` | Who sits on a committee, chair first, on a date or across its history |
-| `district_member` | Who held a Council district (1–51) on a date, from the City's terms list (NYC Open Data `uvw5-9znb`, shipped as a dated snapshot). A seat nobody held that day is `vacant`; the last member is `previous`, never current |
+| `district_member` | Who held a Council district (1–51) on a date, from the City's terms list (NYC Open Data `uvw5-9znb`, shipped as a dated snapshot). `status` is `filled`, `vacant` (nobody held it that day; the last member is `previous`, never current) or `unknown` (the City lists someone serving that day with no district, so the seat may be theirs). Overlapping terms are all shown |
 | `search_bills` | Alias for `search_legislation` (same tool, same results; kept so existing callers work) |
 | `search_events` | Full-text search across committee hearings |
 | `list_committees` | All committees with bill and event counts |
@@ -459,6 +459,8 @@ Why this shape, so nobody re-attempts the obvious-looking fix:
 
 ### Known traps
 
+- **Vote and history times are New York local time** (`2026-10-22T13:30:00`). The archive marks them as UTC by mistake; the indexer drops that marker.
+- **A partial name can match several members.** `get_voting_record("Williams")` returns votes by Jumaane D. Williams and Nantasha M. Williams; each row's `person_name` says whose vote it is.
 - **One vote row per roll call.** `get_voting_record` returns a row for each roll call a member voted in, so an item voted on in committee and then by the full Council appears twice. `vote_body` and `vote_date` tell them apart; dedupe by `file_number` to count distinct matters.
 - **The archive can miss a meeting status change.** Legistar sometimes changes a meeting's status (e.g. to Deferred) without updating its last-modified time, so the archive keeps the old one. With `LEGISTAR_TOKEN` set, `upcoming_events` checks status live; without it, use `get_upcoming_hearings` before relying on a date.
 - **`get_event_bills` is paged.** A stated meeting can have 170+ agenda items; read `total` and raise `offset` to get them all.

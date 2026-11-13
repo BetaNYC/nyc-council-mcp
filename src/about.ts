@@ -164,7 +164,10 @@ function sources(db: Database.Database | null, hasLive: boolean): Source[] {
         "inferred from a caucus or from Wikidata. Shipped in data/council-party.json.",
       as_of: fileDate("council-party.json"),
       tools: ["get_council_member", "get_member_roles"],
-      caveats: ["Covers the members seated on the check date only. A row not yet reviewed by a person says so."],
+      caveats: [
+        "Covers the members seated on the check date only.",
+        "Each row says how sure it is (status verified or likely) and how it was checked a second time (second_check). No person has reviewed the rows one by one.",
+      ],
     },
     {
       topic: "wikidata",

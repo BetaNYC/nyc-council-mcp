@@ -18,6 +18,7 @@ import Database from "better-sqlite3";
 import { buildIndex } from "../dist/db/indexer.js";
 import { memberRoles, districtMember, TERMS_SOURCE } from "../dist/db/queries.js";
 import { handleLocalTool, LOCAL_TOOL_DEFS } from "../dist/tools/local.js";
+import { CREATE_TABLES } from "../dist/db/schema.js";
 import { withMemberTerms } from "../dist/tools/member-terms.js";
 
 const row = (name, id, start, end, district, office) => ({
@@ -43,6 +44,13 @@ const SNAPSHOT = {
     row("Erik D. Bottcher", 7720, "2026-01-01", "2026-02-03", 3, 5790),
     row("Erik D. Bottcher", 7720, "2024-01-01", "2025-12-31", 3, 5200),
     row("Justin L. Brannan", 7748, "2024-01-01", "2025-12-31", null, 5218),
+    // Brannan held District 47 before; Treyger held it until 2021. The City's
+    // 2024-25 row for Brannan has no district (52 rows are like this).
+    row("Justin L. Brannan", 7748, "2022-01-01", "2023-12-31", 47, 4480),
+    row("Mark Treyger", 5400, "2014-01-01", "2021-12-31", 47, 3100),
+    // Real overlap in the City's file: Weprin to 2015-01-31, Grodenchik from 2014-01-01.
+    row("Mark S. Weprin", 5500, "2010-01-01", "2015-01-31", 23, 2700),
+    row("Barry S. Grodenchik", 5600, "2014-01-01", "2017-12-31", 23, 3200),
   ],
 };
 
@@ -51,6 +59,9 @@ const PEOPLE = {
   "helen-k-rosenthal.json": { ID: 5300, FullName: "Helen K. Rosenthal", IsActive: false, OfficeRecords: [] },
   "erik-d-bottcher.json": { ID: 7720, FullName: "Erik D. Bottcher", IsActive: false, OfficeRecords: [] },
   "justin-l-brannan.json": { ID: 7748, FullName: "Justin L. Brannan", IsActive: false, OfficeRecords: [] },
+  "mark-treyger.json": { ID: 5400, FullName: "Mark Treyger", IsActive: false, OfficeRecords: [] },
+  "mark-s-weprin.json": { ID: 5500, FullName: "Mark S. Weprin", IsActive: false, OfficeRecords: [] },
+  "barry-s-grodenchik.json": { ID: 5600, FullName: "Barry S. Grodenchik", IsActive: false, OfficeRecords: [] },
   // Real case, 2026-11-12: Legistar has Carl Wilson as a Council Member from
   // 2026-05-13, but the City's file (last updated 2026-04-10) has no term for him.
   "carl-wilson.json": {
@@ -150,7 +161,7 @@ test("a term with no district indexes and returns null", async () => {
   const d = await built();
   const [m] = memberRoles(d, "Brannan", { as_of: "2025-06-01" });
   assert.equal(m.district, null);
-  assert.equal(m.terms.length, 1);
+  assert.equal(m.terms.length, 2);
   assert.equal(m.terms[0].district, null);
   assert.equal(d.prepare("SELECT COUNT(*) AS n FROM member_terms").get().n, SNAPSHOT.rows.length);
   d.close();
@@ -206,4 +217,41 @@ test("a missing snapshot file does not break the build", async () => {
   const d = new Database(dbPath, { readonly: true });
   assert.equal(d.prepare("SELECT COUNT(*) AS n FROM member_terms").get().n, 0);
   d.close();
+});
+
+// Review findings, 2026-11-12 (#48).
+
+test("a seat held by someone the City lists with no district is 'unknown', not 'vacant'", async () => {
+  const d = await built();
+  const r = districtMember(d, 47, "2025-06-01");
+  assert.equal(r.status, "unknown");
+  assert.equal(r.member, null);
+  assert.deepEqual(r.terms_without_district.map((t) => t.person_id), [7748]);
+  assert.match(r.note, /no district/);
+  // Before that, the seat resolves normally.
+  assert.equal(districtMember(d, 47, "2023-06-01").member.person_id, 7748);
+  d.close();
+});
+
+test("two terms on one date are both shown, not silently resolved", async () => {
+  const d = await built();
+  const r = districtMember(d, 23, "2014-06-01");
+  assert.equal(r.status, "filled");
+  assert.deepEqual([r.member.person_id, ...r.overlapping_terms.map((t) => t.person_id)].sort(), [5500, 5600]);
+  assert.match(r.note, /overlap/);
+  assert.equal(districtMember(d, 23, "2016-06-01").overlapping_terms, undefined);
+  d.close();
+});
+
+test("impossible dates are rejected", async () => {
+  const d = await built();
+  assert.ok(handleLocalTool("district_member", { district: 3, as_of: "2026-02-30" }, d).isError);
+  assert.ok(handleLocalTool("get_member_roles", { member_name: "Brewer", as_of: "2026-13-01" }, d).isError);
+  d.close();
+});
+
+test("an index with no council terms is an error, not an empty seat", () => {
+  const db = new Database(":memory:");
+  db.exec(CREATE_TABLES);
+  assert.throws(() => districtMember(db, 3, "2026-06-01"), /Re-run the indexer/);
 });

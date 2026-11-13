@@ -415,7 +415,10 @@ function indexBills(
               matter.ID,
               action.ID ?? null,
               action.Action ?? null,
-              action.Date ?? null,
+              // The archive writes New York local time with a "Z" on the end
+              // (a 1:30pm Stated meeting reads 13:30:00Z). Drop the Z so no
+              // client converts it from UTC.
+              typeof action.Date === "string" ? action.Date.replace(/Z$/, "") : null,
               action.BodyName ?? null,
               action.EventID ?? null,
               action.PassedFlagName ?? null,

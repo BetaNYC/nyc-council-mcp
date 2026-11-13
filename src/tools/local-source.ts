@@ -106,7 +106,9 @@ type StatusFetcher = (
 export async function checkUpcomingLive(
   res: ToolResult,
   days: number,
-  fetchStatuses: StatusFetcher
+  fetchStatuses: StatusFetcher,
+  /** Which of these event ids the index has. The answer is cut at `limit`, so absence from it proves nothing. */
+  inIndex?: (ids: number[]) => Set<number>
 ): Promise<ToolResult> {
   if (res.isError) return res;
   const rows = JSON.parse(res.content[0].text) as EventRow[];
@@ -125,7 +127,10 @@ export async function checkUpcomingLive(
       ],
     };
   }
-  const { rows: checked, missing } = overlayLiveEventStatus(rows, live);
+  const overlay = overlayLiveEventStatus(rows, live);
+  const checked = overlay.rows;
+  const known = inIndex ? inIndex(overlay.missing.map((e) => e.EventId)) : new Set<number>();
+  const missing = overlay.missing.filter((e) => !known.has(e.EventId));
   const content = [{ type: "text", text: JSON.stringify(checked, null, 2) }];
   if (missing.length > 0) {
     const list = missing

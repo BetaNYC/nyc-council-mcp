@@ -29,7 +29,10 @@
    "checked_at": "2026-11-12",
    "status": "verified",
    "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
-   "reviewed_by": null
+   "second_check": {
+    "checked_at": "2026-11-12",
+    "result": "lines and votes re-read from the Board's certified CSV by script: no differences"
+   }
   },
   {
    "district": 2,
@@ -54,7 +57,10 @@
    "checked_at": "2026-11-12",
    "status": "verified",
    "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
-   "reviewed_by": null
+   "second_check": {
+    "checked_at": "2026-11-12",
+    "result": "lines and votes re-read from the Board's certified CSV by script: no differences"
+   }
   },
   {
    "district": 3,
@@ -71,11 +77,16 @@
    "uncontested": false,
    "source_url": "https://www.vote.nyc/sites/default/files/pdf/election_results/2026/20260428Special%20Election/202611V1_Council_Member_3rd_Council_District.pdf",
    "source_title": "Board of Elections in the City of New York, 2026 Special Election, Official Ranked Choice Rounds, Council Member 3rd Council District (certified May 12, 2026)",
-   "certified": true,
+   "certified": false,
    "checked_at": "2026-11-12",
    "status": "likely",
    "notes": "Special-election independent line, not a party. Votes are certified (BOE RCV report): 6,279 first-round votes; 7,885 in the final round (4 rounds) vs. Lindsey Boylan 5,391. The certified RCV report does not print ballot lines; the line name 'For All of Us' is from BOE's own pre-election contest list (https://vote.nyc/sites/default/files/pdf/candidates/2026/Contest%20List_April%2028%202026_Special%20Election.pdf, 'The Contest List, Special Election 3rd Council District - 04/28/2026', printed 3/13/2026, marked 'Tentative, subject to change'), consistent with Ballotpedia. Status 'likely' because the line is not on the certified document. total_votes is first-round (one line). Caution: Wilson also won the June 23, 2026 Democratic primary for this seat, so the 2026-11-03 general election may change his lines; that result was not checked here. Wilson also won the 2026-06-23 Democratic primary for this seat, so the 2026-11-03 general election may have given him new lines; on 2026-11-12 the Board had posted no 2026 general results. Re-check when they are certified.",
-   "reviewed_by": null
+   "second_check": {
+    "checked_at": "2026-11-12",
+    "result": "line confirmed on the Board's contest list; win confirmed on the certified ranked-choice report",
+    "evidence_url": "https://vote.nyc/sites/default/files/pdf/candidates/2026/Contest%20List_April%2028%202026_Special%20Election.pdf",
+    "evidence": "The Board's contest list (printed 2026-03-13, marked tentative) shows Carl Wilson on 'For All of Us'; the certified report shows him elected in round 4 with 7,885 votes. The line itself is not on a certified document, so the row stays 'likely' and certified is false."
+   }
   },
   {
    "district": 4,
@@ -96,7 +107,10 @@
    "checked_at": "2026-11-12",
    "status": "verified",
    "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
-   "reviewed_by": null
+   "second_check": {
+    "checked_at": "2026-11-12",
+    "result": "lines and votes re-read from the Board's certified CSV by script: no differences"
+   }
   },
   {
    "district": 5,
@@ -117,7 +131,10 @@
    "checked_at": "2026-11-12",
    "status": "verified",
    "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
-   "reviewed_by": null
+   "second_check": {
+    "checked_at": "2026-11-12",
+    "result": "lines and votes re-read from the Board's certified CSV by script: no differences"
+   }
   },
   {
    "district": 6,
@@ -142,7 +159,10 @@
    "checked_at": "2026-11-12",
    "status": "verified",
    "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
-   "reviewed_by": null
+   "second_check": {
+    "checked_at": "2026-11-12",
+    "result": "lines and votes re-read from the Board's certified CSV by script: no differences"
+   }
   },
   {
    "district": 7,
@@ -167,7 +187,10 @@
    "checked_at": "2026-11-12",
    "status": "verified",
    "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
-   "reviewed_by": null
+   "second_check": {
+    "checked_at": "2026-11-12",
+    "result": "lines and votes re-read from the Board's certified CSV by script: no differences"
+   }
   },
   {
    "district": 8,
@@ -192,7 +215,10 @@
    "checked_at": "2026-11-12",
    "status": "verified",
    "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line). Crossover district: figures from the BOE 'Crossover' recap combining both boroughs.",
-   "reviewed_by": null
+   "second_check": {
+    "checked_at": "2026-11-12",
+    "result": "lines and votes re-read from the Board's certified CSV by script: no differences"
+   }
   },
   {
    "district": 9,
@@ -213,7 +239,10 @@
    "checked_at": "2026-11-12",
    "status": "verified",
    "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
-   "reviewed_by": null
+   "second_check": {
+    "checked_at": "2026-11-12",
+    "result": "lines and votes re-read from the Board's certified CSV by script: no differences"
+   }
   },
   {
    "district": 10,
@@ -238,7 +267,10 @@
    "checked_at": "2026-11-12",
    "status": "verified",
    "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
-   "reviewed_by": null
+   "second_check": {
+    "checked_at": "2026-11-12",
+    "result": "lines and votes re-read from the Board's certified CSV by script: no differences"
+   }
   },
   {
    "district": 11,
@@ -259,7 +291,10 @@
    "checked_at": "2026-11-12",
    "status": "verified",
    "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
-   "reviewed_by": null
+   "second_check": {
+    "checked_at": "2026-11-12",
+    "result": "lines and votes re-read from the Board's certified CSV by script: no differences"
+   }
   },
   {
    "district": 12,
@@ -280,7 +315,10 @@
    "checked_at": "2026-11-12",
    "status": "verified",
    "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
-   "reviewed_by": null
+   "second_check": {
+    "checked_at": "2026-11-12",
+    "result": "lines and votes re-read from the Board's certified CSV by script: no differences"
+   }
   },
   {
    "district": 13,
@@ -305,7 +343,10 @@
    "checked_at": "2026-11-12",
    "status": "verified",
    "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
-   "reviewed_by": null
+   "second_check": {
+    "checked_at": "2026-11-12",
+    "result": "lines and votes re-read from the Board's certified CSV by script: no differences"
+   }
   },
   {
    "district": 14,
@@ -330,7 +371,10 @@
    "checked_at": "2026-11-12",
    "status": "verified",
    "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line). Name on ballot: 'Pierina A. Sanchez'.",
-   "reviewed_by": null
+   "second_check": {
+    "checked_at": "2026-11-12",
+    "result": "lines and votes re-read from the Board's certified CSV by script: no differences"
+   }
   },
   {
    "district": 15,
@@ -351,7 +395,10 @@
    "checked_at": "2026-11-12",
    "status": "verified",
    "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
-   "reviewed_by": null
+   "second_check": {
+    "checked_at": "2026-11-12",
+    "result": "lines and votes re-read from the Board's certified CSV by script: no differences"
+   }
   },
   {
    "district": 16,
@@ -376,7 +423,10 @@
    "checked_at": "2026-11-12",
    "status": "verified",
    "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
-   "reviewed_by": null
+   "second_check": {
+    "checked_at": "2026-11-12",
+    "result": "lines and votes re-read from the Board's certified CSV by script: no differences"
+   }
   },
   {
    "district": 17,
@@ -401,7 +451,10 @@
    "checked_at": "2026-11-12",
    "status": "verified",
    "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
-   "reviewed_by": null
+   "second_check": {
+    "checked_at": "2026-11-12",
+    "result": "lines and votes re-read from the Board's certified CSV by script: no differences"
+   }
   },
   {
    "district": 18,
@@ -426,7 +479,10 @@
    "checked_at": "2026-11-12",
    "status": "verified",
    "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
-   "reviewed_by": null
+   "second_check": {
+    "checked_at": "2026-11-12",
+    "result": "lines and votes re-read from the Board's certified CSV by script: no differences"
+   }
   },
   {
    "district": 19,
@@ -451,7 +507,10 @@
    "checked_at": "2026-11-12",
    "status": "verified",
    "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
-   "reviewed_by": null
+   "second_check": {
+    "checked_at": "2026-11-12",
+    "result": "lines and votes re-read from the Board's certified CSV by script: no differences"
+   }
   },
   {
    "district": 20,
@@ -472,7 +531,10 @@
    "checked_at": "2026-11-12",
    "status": "verified",
    "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
-   "reviewed_by": null
+   "second_check": {
+    "checked_at": "2026-11-12",
+    "result": "lines and votes re-read from the Board's certified CSV by script: no differences"
+   }
   },
   {
    "district": 21,
@@ -497,7 +559,10 @@
    "checked_at": "2026-11-12",
    "status": "verified",
    "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
-   "reviewed_by": null
+   "second_check": {
+    "checked_at": "2026-11-12",
+    "result": "lines and votes re-read from the Board's certified CSV by script: no differences"
+   }
   },
   {
    "district": 22,
@@ -522,7 +587,10 @@
    "checked_at": "2026-11-12",
    "status": "verified",
    "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line). Crossover district: figures from the BOE 'Crossover' recap combining both boroughs.",
-   "reviewed_by": null
+   "second_check": {
+    "checked_at": "2026-11-12",
+    "result": "lines and votes re-read from the Board's certified CSV by script: no differences"
+   }
   },
   {
    "district": 23,
@@ -543,7 +611,10 @@
    "checked_at": "2026-11-12",
    "status": "verified",
    "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
-   "reviewed_by": null
+   "second_check": {
+    "checked_at": "2026-11-12",
+    "result": "lines and votes re-read from the Board's certified CSV by script: no differences"
+   }
   },
   {
    "district": 24,
@@ -564,7 +635,10 @@
    "checked_at": "2026-11-12",
    "status": "verified",
    "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
-   "reviewed_by": null
+   "second_check": {
+    "checked_at": "2026-11-12",
+    "result": "lines and votes re-read from the Board's certified CSV by script: no differences"
+   }
   },
   {
    "district": 25,
@@ -589,7 +663,10 @@
    "checked_at": "2026-11-12",
    "status": "verified",
    "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
-   "reviewed_by": null
+   "second_check": {
+    "checked_at": "2026-11-12",
+    "result": "lines and votes re-read from the Board's certified CSV by script: no differences"
+   }
   },
   {
    "district": 26,
@@ -610,7 +687,10 @@
    "checked_at": "2026-11-12",
    "status": "verified",
    "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
-   "reviewed_by": null
+   "second_check": {
+    "checked_at": "2026-11-12",
+    "result": "lines and votes re-read from the Board's certified CSV by script: no differences"
+   }
   },
   {
    "district": 27,
@@ -631,7 +711,10 @@
    "checked_at": "2026-11-12",
    "status": "verified",
    "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
-   "reviewed_by": null
+   "second_check": {
+    "checked_at": "2026-11-12",
+    "result": "lines and votes re-read from the Board's certified CSV by script: no differences"
+   }
   },
   {
    "district": 28,
@@ -656,7 +739,10 @@
    "checked_at": "2026-11-12",
    "status": "verified",
    "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
-   "reviewed_by": null
+   "second_check": {
+    "checked_at": "2026-11-12",
+    "result": "lines and votes re-read from the Board's certified CSV by script: no differences"
+   }
   },
   {
    "district": 29,
@@ -677,7 +763,10 @@
    "checked_at": "2026-11-12",
    "status": "verified",
    "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
-   "reviewed_by": null
+   "second_check": {
+    "checked_at": "2026-11-12",
+    "result": "lines and votes re-read from the Board's certified CSV by script: no differences"
+   }
   },
   {
    "district": 30,
@@ -698,7 +787,10 @@
    "checked_at": "2026-11-12",
    "status": "verified",
    "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
-   "reviewed_by": null
+   "second_check": {
+    "checked_at": "2026-11-12",
+    "result": "lines and votes re-read from the Board's certified CSV by script: no differences"
+   }
   },
   {
    "district": 31,
@@ -719,7 +811,10 @@
    "checked_at": "2026-11-12",
    "status": "verified",
    "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
-   "reviewed_by": null
+   "second_check": {
+    "checked_at": "2026-11-12",
+    "result": "lines and votes re-read from the Board's certified CSV by script: no differences"
+   }
   },
   {
    "district": 32,
@@ -744,7 +839,10 @@
    "checked_at": "2026-11-12",
    "status": "verified",
    "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
-   "reviewed_by": null
+   "second_check": {
+    "checked_at": "2026-11-12",
+    "result": "lines and votes re-read from the Board's certified CSV by script: no differences"
+   }
   },
   {
    "district": 33,
@@ -769,7 +867,10 @@
    "checked_at": "2026-11-12",
    "status": "verified",
    "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
-   "reviewed_by": null
+   "second_check": {
+    "checked_at": "2026-11-12",
+    "result": "lines and votes re-read from the Board's certified CSV by script: no differences"
+   }
   },
   {
    "district": 34,
@@ -794,7 +895,10 @@
    "checked_at": "2026-11-12",
    "status": "verified",
    "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line). Crossover district: figures from the BOE 'Crossover' recap combining both boroughs.",
-   "reviewed_by": null
+   "second_check": {
+    "checked_at": "2026-11-12",
+    "result": "lines and votes re-read from the Board's certified CSV by script: no differences"
+   }
   },
   {
    "district": 35,
@@ -819,7 +923,10 @@
    "checked_at": "2026-11-12",
    "status": "verified",
    "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
-   "reviewed_by": null
+   "second_check": {
+    "checked_at": "2026-11-12",
+    "result": "lines and votes re-read from the Board's certified CSV by script: no differences"
+   }
   },
   {
    "district": 36,
@@ -840,7 +947,10 @@
    "checked_at": "2026-11-12",
    "status": "verified",
    "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line). Name on ballot: 'Chi Ajani Osse'.",
-   "reviewed_by": null
+   "second_check": {
+    "checked_at": "2026-11-12",
+    "result": "lines and votes re-read from the Board's certified CSV by script: no differences"
+   }
   },
   {
    "district": 37,
@@ -865,7 +975,10 @@
    "checked_at": "2026-11-12",
    "status": "verified",
    "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
-   "reviewed_by": null
+   "second_check": {
+    "checked_at": "2026-11-12",
+    "result": "lines and votes re-read from the Board's certified CSV by script: no differences"
+   }
   },
   {
    "district": 38,
@@ -890,7 +1003,10 @@
    "checked_at": "2026-11-12",
    "status": "verified",
    "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
-   "reviewed_by": null
+   "second_check": {
+    "checked_at": "2026-11-12",
+    "result": "lines and votes re-read from the Board's certified CSV by script: no differences"
+   }
   },
   {
    "district": 39,
@@ -915,7 +1031,10 @@
    "checked_at": "2026-11-12",
    "status": "verified",
    "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
-   "reviewed_by": null
+   "second_check": {
+    "checked_at": "2026-11-12",
+    "result": "lines and votes re-read from the Board's certified CSV by script: no differences"
+   }
   },
   {
    "district": 40,
@@ -940,7 +1059,10 @@
    "checked_at": "2026-11-12",
    "status": "verified",
    "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
-   "reviewed_by": null
+   "second_check": {
+    "checked_at": "2026-11-12",
+    "result": "lines and votes re-read from the Board's certified CSV by script: no differences"
+   }
   },
   {
    "district": 41,
@@ -961,7 +1083,10 @@
    "checked_at": "2026-11-12",
    "status": "verified",
    "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
-   "reviewed_by": null
+   "second_check": {
+    "checked_at": "2026-11-12",
+    "result": "lines and votes re-read from the Board's certified CSV by script: no differences"
+   }
   },
   {
    "district": 42,
@@ -982,7 +1107,10 @@
    "checked_at": "2026-11-12",
    "status": "verified",
    "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
-   "reviewed_by": null
+   "second_check": {
+    "checked_at": "2026-11-12",
+    "result": "lines and votes re-read from the Board's certified CSV by script: no differences"
+   }
   },
   {
    "district": 43,
@@ -1007,7 +1135,10 @@
    "checked_at": "2026-11-12",
    "status": "verified",
    "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
-   "reviewed_by": null
+   "second_check": {
+    "checked_at": "2026-11-12",
+    "result": "lines and votes re-read from the Board's certified CSV by script: no differences"
+   }
   },
   {
    "district": 44,
@@ -1032,7 +1163,10 @@
    "checked_at": "2026-11-12",
    "status": "verified",
    "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line). BOE prints the line as one combined label 'Democratic/Law & Order' with a single vote figure, in both Recap and ED-level files; the Democratic and Law & Order votes are not split. Ballotpedia lists Felder as Democratic, Conservative, and Law & Order, i.e. likely two lines combined in BOE reporting.",
-   "reviewed_by": null
+   "second_check": {
+    "checked_at": "2026-11-12",
+    "result": "lines and votes re-read from the Board's certified CSV by script: no differences"
+   }
   },
   {
    "district": 45,
@@ -1053,7 +1187,10 @@
    "checked_at": "2026-11-12",
    "status": "verified",
    "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
-   "reviewed_by": null
+   "second_check": {
+    "checked_at": "2026-11-12",
+    "result": "lines and votes re-read from the Board's certified CSV by script: no differences"
+   }
   },
   {
    "district": 46,
@@ -1074,7 +1211,10 @@
    "checked_at": "2026-11-12",
    "status": "verified",
    "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
-   "reviewed_by": null
+   "second_check": {
+    "checked_at": "2026-11-12",
+    "result": "lines and votes re-read from the Board's certified CSV by script: no differences"
+   }
   },
   {
    "district": 47,
@@ -1099,7 +1239,10 @@
    "checked_at": "2026-11-12",
    "status": "verified",
    "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
-   "reviewed_by": null
+   "second_check": {
+    "checked_at": "2026-11-12",
+    "result": "lines and votes re-read from the Board's certified CSV by script: no differences"
+   }
   },
   {
    "district": 48,
@@ -1124,7 +1267,10 @@
    "checked_at": "2026-11-12",
    "status": "verified",
    "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
-   "reviewed_by": null
+   "second_check": {
+    "checked_at": "2026-11-12",
+    "result": "lines and votes re-read from the Board's certified CSV by script: no differences"
+   }
   },
   {
    "district": 49,
@@ -1145,7 +1291,10 @@
    "checked_at": "2026-11-12",
    "status": "verified",
    "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line). Name on ballot: 'Kamillah M. Hanks'.",
-   "reviewed_by": null
+   "second_check": {
+    "checked_at": "2026-11-12",
+    "result": "lines and votes re-read from the Board's certified CSV by script: no differences"
+   }
   },
   {
    "district": 50,
@@ -1170,7 +1319,10 @@
    "checked_at": "2026-11-12",
    "status": "verified",
    "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line). Crossover district: figures from the BOE 'Crossover' recap combining both boroughs.",
-   "reviewed_by": null
+   "second_check": {
+    "checked_at": "2026-11-12",
+    "result": "lines and votes re-read from the Board's certified CSV by script: no differences"
+   }
   },
   {
    "district": 51,
@@ -1195,7 +1347,11 @@
    "checked_at": "2026-11-12",
    "status": "verified",
    "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
-   "reviewed_by": null
+   "second_check": {
+    "checked_at": "2026-11-12",
+    "result": "lines and votes re-read from the Board's certified CSV by script: no differences"
+   }
   }
- ]
+ ],
+ "second_check": "2026-11-12: every row checked a second time (see each row's second_check). No person has reviewed these rows one by one (Noel, 2026-11-12)."
 }

@@ -29,6 +29,15 @@ import { unknownParamMessage } from "./unknown-param.js";
 import { json } from "./json.js";
 import { withCurated } from "../curated.js";
 
+/** A real calendar date, YYYY-MM-DD (rejects 2026-02-30). */
+const isoDay = z
+  .string()
+  .regex(/^\d{4}-\d{2}-\d{2}$/, "as_of must be YYYY-MM-DD")
+  .refine((s) => {
+    const d = new Date(`${s}T00:00:00Z`);
+    return !Number.isNaN(d.getTime()) && d.toISOString().slice(0, 10) === s;
+  }, "as_of is not a real date");
+
 // #21: one search tool, two names. search_legislation is the main name because
 // it returns every matter type (Introductions, Resolutions, Land Use, Mayor's
 // Messages, …), not only bills. search_bills stays as an alias so existing
@@ -387,7 +396,7 @@ export function handleLocalTool(
 
       case "get_member_roles":
       case "committee_roster": {
-        const date = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "as_of must be YYYY-MM-DD");
+        const date = isoDay;
         if (name === "get_member_roles") {
           const { member_name, as_of, include_past } = z
             .object({ member_name: z.string(), as_of: date.optional(), include_past: z.boolean().optional() })
@@ -406,7 +415,7 @@ export function handleLocalTool(
         const { district, as_of } = z
           .object({
             district: z.number().int().min(1).max(51),
-            as_of: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "as_of must be YYYY-MM-DD").optional(),
+            as_of: isoDay.optional(),
           })
           .strict()
           .parse(args);

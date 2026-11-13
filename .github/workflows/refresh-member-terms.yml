@@ -6,6 +6,9 @@
 # maintainer reviews the diff and bumps the version so the new snapshot ships
 # (the version guard in ci.yml requires it).
 #
+# CI is started by workflow_dispatch, because a PR opened with GITHUB_TOKEN
+# triggers no workflows on its own.
+#
 # Opening a PR needs the repository setting "Allow GitHub Actions to create and
 # approve pull requests" (Settings → Actions → General). Without it the job
 # pushes the branch and fails at the PR step, which still shows the change.
@@ -20,6 +23,7 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  actions: write # to start CI on the PR: PRs opened with GITHUB_TOKEN trigger no workflows
 
 jobs:
   refresh:
@@ -41,7 +45,7 @@ jobs:
             echo "No change in the City's rows."
             exit 0
           fi
-          branch="data/member-terms-$(date -u +%Y-%m-%d)"
+          branch="data/member-terms-$(date -u +%Y-%m-%d)-${{ github.run_id }}"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout -b "$branch"
@@ -51,3 +55,5 @@ jobs:
           gh pr create --base main --head "$branch" \
             --title "data: refresh council terms (uvw5-9znb)" \
             --body "Monthly refresh of data/council-member-terms.json from NYC Open Data uvw5-9znb (#28). Review the diff, then bump the version so the new snapshot ships."
+          # A PR opened with GITHUB_TOKEN starts no workflows, so start CI here.
+          gh workflow run ci.yml --ref "$branch"

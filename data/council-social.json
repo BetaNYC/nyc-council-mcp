@@ -19,13 +19,18 @@
      "source_url": "https://www.instagram.com/nycdistrict1/",
      "method": "profile bio names office",
      "checked_at": "2026-11-12",
-     "status": "likely"
+     "status": "likely",
+     "second_check": {
+      "checked_at": "2026-11-12",
+      "evidence_url": null,
+      "evidence": "No council.nyc.gov page, newsletter, or PDF on her subsite names it; profile (category Government Official, bio 'NYC Council District 1 is represented by Council Member Christopher Marte') shows no campaign or donation links.",
+      "result": "no official source found; no red flag"
+     }
     },
     "threads": null,
     "linkedin": null
    },
-   "notes": "Threads unchecked: threads.com/@nycdistrict1 redirected to the login page (no public profile readable; may not exist). Bluesky chrismartenyc.bsky.social (in Council starter pack) left out: blank profile, nothing confirms office use. Instagram @chrismartenyc is self-described personal.",
-   "reviewed_by": null
+   "notes": "Threads unchecked: threads.com/@nycdistrict1 redirected to the login page (no public profile readable; may not exist). Bluesky chrismartenyc.bsky.social (in Council starter pack) left out: blank profile, nothing confirms office use. Instagram @chrismartenyc is self-described personal."
   },
   {
    "district": 2,
@@ -37,8 +42,7 @@
     "threads": null,
     "linkedin": null
    },
-   "notes": "Instagram @harveyforny left out: bio says \"Official Account\" and \"Council Member (CD-2)\" but handle is a \"for NY\" construction and bio carries #WorkingFamiliesParty; office/campaign unclear. @harvey4council is campaign. Bluesky harveyepstein.bsky.social has a blank profile; identity unconfirmed.",
-   "reviewed_by": null
+   "notes": "Instagram @harveyforny left out: bio says \"Official Account\" and \"Council Member (CD-2)\" but handle is a \"for NY\" construction and bio carries #WorkingFamiliesParty; office/campaign unclear. @harvey4council is campaign. Bluesky harveyepstein.bsky.social has a blank profile; identity unconfirmed. Instagram @harveyforny left out: council.nyc.gov names only his X handle, and Instagram lists it as a personal blog."
   },
   {
    "district": 3,
@@ -50,24 +54,35 @@
      "handle": "cmcarlwilson",
      "url": "https://www.instagram.com/cmcarlwilson/",
      "account_type": "office",
-     "source_url": "https://www.instagram.com/cmcarlwilson/",
-     "method": "profile bio names office",
+     "source_url": "https://council.nyc.gov/carl-wilson/social-media/",
+     "method": "council.nyc.gov page, post or document names the handle",
      "checked_at": "2026-11-12",
-     "status": "likely"
+     "status": "verified",
+     "second_check": {
+      "checked_at": "2026-11-12",
+      "evidence_url": "https://council.nyc.gov/carl-wilson/social-media/",
+      "evidence": "The member's council.nyc.gov 'Social Media' page links https://www.instagram.com/cmcarlwilson/ in its social-links block.",
+      "result": "confirmed by an official source"
+     }
     },
     "threads": {
      "handle": "cmcarlwilson",
      "url": "https://www.threads.com/@cmcarlwilson",
      "account_type": "office",
-     "source_url": "https://www.threads.com/@cmcarlwilson",
-     "method": "profile bio names office",
+     "source_url": "https://council.nyc.gov/carl-wilson/social-media/",
+     "method": "council.nyc.gov page, post or document names the handle",
      "checked_at": "2026-11-12",
-     "status": "likely"
+     "status": "verified",
+     "second_check": {
+      "checked_at": "2026-11-12",
+      "evidence_url": "https://council.nyc.gov/carl-wilson/social-media/",
+      "evidence": "Threads handle equals the Instagram handle that this council.nyc.gov page links (Threads accounts are created from Instagram); Threads bio reads 'Official Government Account for Council Member Carl Wilson'.",
+      "result": "confirmed by an official source"
+     }
     },
     "linkedin": null
    },
-   "notes": "Seat changed since 2026-09-23 workspace file (Carl Wilson, seated 2026-05-13). Instagram @carlmwilson is self-described personal and names @cmcarlwilson as the government account. No member-specific links on his council.nyc.gov page.",
-   "reviewed_by": null
+   "notes": "Seat changed since 2026-09-23 workspace file (Carl Wilson, seated 2026-05-13). Instagram @carlmwilson is self-described personal and names @cmcarlwilson as the government account. No member-specific links on his council.nyc.gov page."
   },
   {
    "district": 4,
@@ -88,15 +103,20 @@
      "handle": "cmvirginiamaloney",
      "url": "https://www.threads.com/@cmvirginiamaloney",
      "account_type": "office",
-     "source_url": "https://www.threads.com/@cmvirginiamaloney",
-     "method": "profile bio names office",
+     "source_url": "https://council.nyc.gov/virginia-maloney/",
+     "method": "council.nyc.gov page, post or document names the handle",
      "checked_at": "2026-11-12",
-     "status": "likely"
+     "status": "verified",
+     "second_check": {
+      "checked_at": "2026-11-12",
+      "evidence_url": "https://council.nyc.gov/virginia-maloney/",
+      "evidence": "Member page links instagram.com/cmvirginiamaloney/; the Threads handle is the same, so it is the same Instagram-derived account.",
+      "result": "confirmed by an official source"
+     }
     },
     "linkedin": null
    },
-   "notes": "Bluesky virginiamaloney.bsky.social is a campaign account (\"Candidate for NYC Council\"); excluded.",
-   "reviewed_by": null
+   "notes": "Bluesky virginiamaloney.bsky.social is a campaign account (\"Candidate for NYC Council\"); excluded."
   },
   {
    "district": 5,
@@ -125,15 +145,20 @@
      "handle": "speakermenin",
      "url": "https://www.threads.com/@speakermenin",
      "account_type": "office",
-     "source_url": "https://www.threads.com/@speakermenin",
-     "method": "profile bio names office",
+     "source_url": "https://council.nyc.gov/julie-menin/",
+     "method": "council.nyc.gov page, post or document names the handle",
      "checked_at": "2026-11-12",
-     "status": "likely"
+     "status": "verified",
+     "second_check": {
+      "checked_at": "2026-11-12",
+      "evidence_url": "https://council.nyc.gov/julie-menin/",
+      "evidence": "Member page links instagram.com/speakermenin (and the district-5 page does too); Threads handle is identical.",
+      "result": "confirmed by an official source"
+     }
     },
     "linkedin": null
    },
-   "notes": "",
-   "reviewed_by": null
+   "notes": ""
   },
   {
    "district": 6,
@@ -162,30 +187,27 @@
      "handle": "galeabrewer",
      "url": "https://www.threads.com/@galeabrewer",
      "account_type": "office",
-     "source_url": "https://www.threads.com/@galeabrewer",
-     "method": "profile bio names office",
+     "source_url": "https://council.nyc.gov/gale-brewer/",
+     "method": "council.nyc.gov page, post or document names the handle",
      "checked_at": "2026-11-12",
-     "status": "likely"
+     "status": "verified",
+     "second_check": {
+      "checked_at": "2026-11-12",
+      "evidence_url": "https://council.nyc.gov/gale-brewer/",
+      "evidence": "Member page links instagram.com/galeabrewer/ and galeabrewer.bsky.social; Threads handle is identical to the linked Instagram.",
+      "result": "confirmed by an official source"
+     }
     },
     "linkedin": null
    },
-   "notes": "LinkedIn https://www.linkedin.com/in/galebrewer/ is linked from her council.nyc.gov member page, but it is a personal-profile (/in/) URL; left out pending a ruling on whether a council-linked personal LinkedIn counts as office. Bluesky galebrewernyc.bsky.social is self-described \"Campaign account\"; excluded.",
-   "reviewed_by": null
+   "notes": "LinkedIn https://www.linkedin.com/in/galebrewer/ is linked from her council.nyc.gov member page, but it is a personal-profile (/in/) URL; left out pending a ruling on whether a council-linked personal LinkedIn counts as office. Bluesky galebrewernyc.bsky.social is self-described \"Campaign account\"; excluded."
   },
   {
    "district": 7,
    "person_id": 7804,
    "name": "Shaun Abreu",
    "accounts": {
-    "bluesky": {
-     "handle": "shaunabreu.bsky.social",
-     "url": "https://bsky.app/profile/shaunabreu.bsky.social",
-     "account_type": "office",
-     "source_url": "https://bsky.app/starter-pack/council.nyc.gov/3lb3tomerok2q",
-     "method": "Council Bluesky starter pack",
-     "checked_at": "2026-11-12",
-     "status": "likely"
-    },
+    "bluesky": null,
     "instagram": {
      "handle": "cmshaunabreu",
      "url": "https://www.instagram.com/cmshaunabreu/",
@@ -193,7 +215,13 @@
      "source_url": "https://www.instagram.com/cmshaunabreu/",
      "method": "profile bio names office",
      "checked_at": "2026-11-12",
-     "status": "likely"
+     "status": "likely",
+     "second_check": {
+      "checked_at": "2026-11-12",
+      "evidence_url": null,
+      "evidence": "Council.nyc.gov links only his X account (twitter.com/CMShaunAbreu, embedded timeline on the member page); nothing official names the Instagram. Bio: 'Council Member, District 7... Official government account for @shaunabreu'; linktree has no donation links.",
+      "result": "no official source found; no red flag"
+     }
     },
     "threads": {
      "handle": "cmshaunabreu",
@@ -202,12 +230,17 @@
      "source_url": "https://www.threads.com/@cmshaunabreu",
      "method": "profile bio names office",
      "checked_at": "2026-11-12",
-     "status": "likely"
+     "status": "likely",
+     "second_check": {
+      "checked_at": "2026-11-12",
+      "evidence_url": null,
+      "evidence": "Follows the Instagram, which itself has no independent corroboration; Threads bio 'NYC Council Member, tenant rights lawyer, and union advocate', no red flags.",
+      "result": "no official source found; no red flag"
+     }
     },
     "linkedin": null
    },
-   "notes": "Bluesky shaunabreu.bsky.social kept (Council starter pack; bio names office, no campaign link), but note his Instagram @shaunabreu points to @cmshaunabreu as the \"official government account\" and carries a \"get involved\" link, so the plain-name handle may be his non-government account; reverify Bluesky before tagging. Instagram @shaunabreu excluded. Bluesky downgraded to likely: the Council's starter pack lists shaunabreu.bsky.social, but his office Instagram describes @shaunabreu as his non-government account.",
-   "reviewed_by": null
+   "notes": "Bluesky shaunabreu.bsky.social kept (Council starter pack; bio names office, no campaign link), but note his Instagram @shaunabreu points to @cmshaunabreu as the \"official government account\" and carries a \"get involved\" link, so the plain-name handle may be his non-government account; reverify Bluesky before tagging. Instagram @shaunabreu excluded. Bluesky downgraded to likely: the Council's starter pack lists shaunabreu.bsky.social, but his office Instagram describes @shaunabreu as his non-government account. Bluesky shaunabreu.bsky.social removed on second check: Feed reposts his 2025 re-election endorsements (UFT 'proudly endorses Shaun Abreu for NYC Council', 2025-05-20; a 'We urge voters... to re-elect Shaun Abreu' post, 2025-06-22), and his office Instagram @cmshaunabreu describes itself as the 'Official government account for @shaunabreu', marking the shaunabreu name as his non-office identity. It does appear in the Council's own Bluesky starter pack, which also includes personal and campaign accounts."
   },
   {
    "district": 8,
@@ -219,8 +252,7 @@
     "threads": null,
     "linkedin": null
    },
-   "notes": "No office account found on any of the four platforms via council.nyc.gov, the starter pack, Bluesky search, or web search of Instagram.",
-   "reviewed_by": null
+   "notes": "No office account found on any of the four platforms via council.nyc.gov, the starter pack, Bluesky search, or web search of Instagram."
   },
   {
    "district": 9,
@@ -243,7 +275,13 @@
      "source_url": "https://www.instagram.com/cmsalaamdistrict9/",
      "method": "profile bio names office",
      "checked_at": "2026-11-12",
-     "status": "likely"
+     "status": "likely",
+     "second_check": {
+      "checked_at": "2026-11-12",
+      "evidence_url": null,
+      "evidence": "No council.nyc.gov page, post, or hosted PDF names it; bio 'Official Government Account for the Office of Councilmember Yusef Salaam, District 9' with district office address and council.nyc.gov/district-9 link; no red flags.",
+      "result": "no official source found; no red flag"
+     }
     },
     "threads": {
      "handle": "cmsalaamdistrict9",
@@ -252,12 +290,17 @@
      "source_url": "https://www.threads.com/@cmsalaamdistrict9",
      "method": "profile bio names office",
      "checked_at": "2026-11-12",
-     "status": "likely"
+     "status": "likely",
+     "second_check": {
+      "checked_at": "2026-11-12",
+      "evidence_url": null,
+      "evidence": "Same account family as the uncorroborated Instagram; no red flags.",
+      "result": "no official source found; no red flag"
+     }
     },
     "linkedin": null
    },
-   "notes": "",
-   "reviewed_by": null
+   "notes": ""
   },
   {
    "district": 10,
@@ -285,8 +328,7 @@
     "threads": null,
     "linkedin": null
    },
-   "notes": "Threads unchecked: threads.com/@cndelarosa redirected to the login page (no public profile readable; may not exist).",
-   "reviewed_by": null
+   "notes": "Threads unchecked: threads.com/@cndelarosa redirected to the login page (no public profile readable; may not exist)."
   },
   {
    "district": 11,
@@ -300,7 +342,13 @@
      "source_url": "https://bsky.app/profile/ericdinowitznyc.bsky.social",
      "method": "profile bio names office",
      "checked_at": "2026-11-12",
-     "status": "likely"
+     "status": "likely",
+     "second_check": {
+      "checked_at": "2026-11-12",
+      "evidence_url": null,
+      "evidence": "Not in the NYC Council's Bluesky member starter pack and not named on council.nyc.gov; one post total (2024-12-08), no bio; council.nyc.gov links only twitter.com/ericdinowitznyc.",
+      "result": "no official source found; no red flag"
+     }
     },
     "instagram": {
      "handle": "ericdinowitznyc",
@@ -309,7 +357,13 @@
      "source_url": "https://www.instagram.com/ericdinowitznyc/",
      "method": "profile bio names office",
      "checked_at": "2026-11-12",
-     "status": "likely"
+     "status": "likely",
+     "second_check": {
+      "checked_at": "2026-11-12",
+      "evidence_url": null,
+      "evidence": "Council.nyc.gov (news-alerts-and-events page) links only his X/Twitter account with this handle, not the Instagram; Instagram bio 'Official Government account', links council.nyc.gov/district-11; no red flags.",
+      "result": "no official source found; no red flag"
+     }
     },
     "threads": {
      "handle": "ericdinowitznyc",
@@ -318,12 +372,17 @@
      "source_url": "https://www.threads.com/@ericdinowitznyc",
      "method": "profile bio names office",
      "checked_at": "2026-11-12",
-     "status": "likely"
+     "status": "likely",
+     "second_check": {
+      "checked_at": "2026-11-12",
+      "evidence_url": null,
+      "evidence": "Threads bio 'Official Government account for NYC Council Member Dinowitz'; no independent corroboration of the underlying Instagram.",
+      "result": "no official source found; no red flag"
+     }
     },
     "linkedin": null
    },
-   "notes": "Bluesky ericdinowitznyc.bsky.social: display name \"Council Member Eric Dinowitz\", blank bio, 1 post; not in the starter pack. Recorded as likely only.",
-   "reviewed_by": null
+   "notes": "Bluesky ericdinowitznyc.bsky.social: display name \"Council Member Eric Dinowitz\", blank bio, 1 post; not in the starter pack. Recorded as likely only."
   },
   {
    "district": 12,
@@ -344,15 +403,20 @@
      "handle": "cmkevincriley",
      "url": "https://www.threads.com/@cmkevincriley",
      "account_type": "office",
-     "source_url": "https://www.threads.com/@cmkevincriley",
-     "method": "profile bio names office",
+     "source_url": "https://council.nyc.gov/kevin-riley/",
+     "method": "council.nyc.gov page, post or document names the handle",
      "checked_at": "2026-11-12",
-     "status": "likely"
+     "status": "verified",
+     "second_check": {
+      "checked_at": "2026-11-12",
+      "evidence_url": "https://council.nyc.gov/kevin-riley/",
+      "evidence": "Member page links instagram.com/cmkevincriley/; Threads handle is identical.",
+      "result": "confirmed by an official source"
+     }
     },
     "linkedin": null
    },
-   "notes": "",
-   "reviewed_by": null
+   "notes": ""
   },
   {
    "district": 13,
@@ -364,8 +428,7 @@
     "threads": null,
     "linkedin": null
    },
-   "notes": "Bluesky shirley4council.bsky.social and Instagram @shirley_4council are campaign accounts; excluded. No office account found.",
-   "reviewed_by": null
+   "notes": "Bluesky shirley4council.bsky.social and Instagram @shirley_4council are campaign accounts; excluded. No office account found."
   },
   {
    "district": 14,
@@ -394,15 +457,20 @@
      "handle": "cmpisanchez",
      "url": "https://www.threads.com/@cmpisanchez",
      "account_type": "office",
-     "source_url": "https://www.threads.com/@cmpisanchez",
-     "method": "profile bio names office",
+     "source_url": "https://council.nyc.gov/pierina-ana-sanchez/",
+     "method": "council.nyc.gov page, post or document names the handle",
      "checked_at": "2026-11-12",
-     "status": "likely"
+     "status": "verified",
+     "second_check": {
+      "checked_at": "2026-11-12",
+      "evidence_url": "https://council.nyc.gov/pierina-ana-sanchez/",
+      "evidence": "Member page (and district-14 page) links instagram.com/cmpisanchez/; Threads handle is identical.",
+      "result": "confirmed by an official source"
+     }
     },
     "linkedin": null
    },
-   "notes": "",
-   "reviewed_by": null
+   "notes": ""
   },
   {
    "district": 15,
@@ -414,8 +482,7 @@
     "threads": null,
     "linkedin": null
    },
-   "notes": "No office account found on any of the four platforms via council.nyc.gov, the starter pack, Bluesky search, or web search of Instagram.",
-   "reviewed_by": null
+   "notes": "No office account found on any of the four platforms via council.nyc.gov, the starter pack, Bluesky search, or web search of Instagram."
   },
   {
    "district": 16,
@@ -430,13 +497,18 @@
      "source_url": "https://www.instagram.com/a_stevensd16/",
      "method": "profile bio names office",
      "checked_at": "2026-11-12",
-     "status": "likely"
+     "status": "likely",
+     "second_check": {
+      "checked_at": "2026-11-12",
+      "evidence_url": null,
+      "evidence": "Nothing on council.nyc.gov names it; bio 'New York City Council Member of the 16th District' with district office address; linktree lists District16@council.nyc.gov and no donation links; display name 'Althea \"Black Girl Magic\" Stevens' is personal-styled but not a listed red flag.",
+      "result": "no official source found; no red flag"
+     }
     },
     "threads": null,
     "linkedin": null
    },
-   "notes": "Threads unchecked: threads.com/@a_stevensd16 redirected to the login page (no public profile readable; may not exist). Instagram @althea_stevens_d16 is her non-government account; it names @a_stevensd16 as the \"Gov't Page\".",
-   "reviewed_by": null
+   "notes": "Threads unchecked: threads.com/@a_stevensd16 redirected to the login page (no public profile readable; may not exist). Instagram @althea_stevens_d16 is her non-government account; it names @a_stevensd16 as the \"Gov't Page\"."
   },
   {
    "district": 17,
@@ -451,7 +523,13 @@
      "source_url": "https://www.instagram.com/councilmembersanchez/",
      "method": "profile bio names office",
      "checked_at": "2026-11-12",
-     "status": "likely"
+     "status": "likely",
+     "second_check": {
+      "checked_at": "2026-11-12",
+      "evidence_url": null,
+      "evidence": "Nothing on council.nyc.gov names it; category Government Official, bio 'NYC City Council District 17 - The Bronx', linktree nycdistrict17 with no donation links.",
+      "result": "no official source found; no red flag"
+     }
     },
     "threads": {
      "handle": "councilmembersanchez",
@@ -460,12 +538,17 @@
      "source_url": "https://www.threads.com/@councilmembersanchez",
      "method": "profile bio names office",
      "checked_at": "2026-11-12",
-     "status": "likely"
+     "status": "likely",
+     "second_check": {
+      "checked_at": "2026-11-12",
+      "evidence_url": null,
+      "evidence": "Mirrors the uncorroborated Instagram; Threads bio lists district neighborhoods, no red flags.",
+      "result": "no official source found; no red flag"
+     }
     },
     "linkedin": null
    },
-   "notes": "Instagram @thebronxsanchez is his non-government account; it names @councilmembersanchez.",
-   "reviewed_by": null
+   "notes": "Instagram @thebronxsanchez is his non-government account; it names @councilmembersanchez."
   },
   {
    "district": 18,
@@ -477,24 +560,35 @@
      "handle": "cmamandafarias",
      "url": "https://www.instagram.com/cmamandafarias/",
      "account_type": "office",
-     "source_url": "https://www.instagram.com/cmamandafarias/",
-     "method": "profile bio names office",
+     "source_url": "https://council.nyc.gov/amanda-farias/wp-content/uploads/sites/97/2025/07/062325.NL18.CM-Farias-NL1SUMMER-2025_v9-1.pdf",
+     "method": "council.nyc.gov page, post or document names the handle",
      "checked_at": "2026-11-12",
-     "status": "likely"
+     "status": "verified",
+     "second_check": {
+      "checked_at": "2026-11-12",
+      "evidence_url": "https://council.nyc.gov/amanda-farias/wp-content/uploads/sites/97/2025/07/062325.NL18.CM-Farias-NL1SUMMER-2025_v9-1.pdf",
+      "evidence": "Her Summer 2025 district newsletter, hosted on council.nyc.gov, shows Facebook, Instagram and X icons next to '@CMAmandaFarias' under 'Stay Connected'.",
+      "result": "confirmed by an official source"
+     }
     },
     "threads": {
      "handle": "cmamandafarias",
      "url": "https://www.threads.com/@cmamandafarias",
      "account_type": "office",
-     "source_url": "https://www.threads.com/@cmamandafarias",
-     "method": "profile bio names office",
+     "source_url": "https://council.nyc.gov/amanda-farias/wp-content/uploads/sites/97/2025/07/062325.NL18.CM-Farias-NL1SUMMER-2025_v9-1.pdf",
+     "method": "council.nyc.gov page, post or document names the handle",
      "checked_at": "2026-11-12",
-     "status": "likely"
+     "status": "verified",
+     "second_check": {
+      "checked_at": "2026-11-12",
+      "evidence_url": "https://council.nyc.gov/amanda-farias/wp-content/uploads/sites/97/2025/07/062325.NL18.CM-Farias-NL1SUMMER-2025_v9-1.pdf",
+      "evidence": "Threads handle equals the Instagram handle that her council.nyc.gov-hosted newsletter lists with an Instagram icon.",
+      "result": "confirmed by an official source"
+     }
     },
     "linkedin": null
    },
-   "notes": "Bluesky cmamandafarias.bsky.social exists but is blank (0 posts); left out.",
-   "reviewed_by": null
+   "notes": "Bluesky cmamandafarias.bsky.social exists but is blank (0 posts); left out."
   },
   {
    "district": 19,
@@ -514,21 +608,33 @@
     "threads": null,
     "linkedin": null
    },
-   "notes": "Threads unchecked: threads.com/@cmvpaladino redirected to the login page (no public profile readable; may not exist).",
-   "reviewed_by": null
+   "notes": "Threads unchecked: threads.com/@cmvpaladino redirected to the login page (no public profile readable; may not exist)."
   },
   {
    "district": 20,
    "person_id": 7812,
    "name": "Sandra Ung",
    "accounts": {
-    "bluesky": null,
+    "bluesky": {
+     "handle": "cmsandraung.bsky.social",
+     "url": "https://bsky.app/profile/cmsandraung.bsky.social",
+     "account_type": "office",
+     "source_url": "https://bsky.app/starter-pack/council.nyc.gov/3lb3tomerok2q",
+     "method": "Council's Bluesky starter pack (which also lists personal and campaign accounts); profile is blank",
+     "checked_at": "2026-11-12",
+     "status": "likely",
+     "second_check": {
+      "checked_at": "2026-11-12",
+      "evidence_url": "https://bsky.app/starter-pack/council.nyc.gov/3lb3tomerok2q",
+      "evidence": "The institutional NYC Council Bluesky account (council.nyc.gov) lists cmsandraung.bsky.social in its 'New York City Council Members' starter pack and curated list; 4 posts, all office content. The pack also holds some personal and campaign accounts, so it vouches for identity more than for office status.",
+      "result": "open call resolved on second check"
+     }
+    },
     "instagram": null,
     "threads": null,
     "linkedin": null
    },
-   "notes": "Bluesky cmsandraung.bsky.social is in the Council starter pack but display name and bio are blank (4 posts); left out, office nature unconfirmed (same ruling as 2026-10-13).",
-   "reviewed_by": null
+   "notes": "Bluesky cmsandraung.bsky.social is in the Council starter pack but display name and bio are blank (4 posts); left out, office nature unconfirmed (same ruling as 2026-10-13)."
   },
   {
    "district": 21,
@@ -540,16 +646,21 @@
      "handle": "cmshanelth",
      "url": "https://www.instagram.com/cmshanelth/",
      "account_type": "office",
-     "source_url": "https://www.instagram.com/cmshanelth/",
-     "method": "profile bio names office",
+     "source_url": "https://council.nyc.gov/shanel-thomas-henry/wp-content/uploads/sites/134/2026/09/Budget-Town-Hall-3.pdf",
+     "method": "council.nyc.gov page, post or document names the handle",
      "checked_at": "2026-11-12",
-     "status": "likely"
+     "status": "verified",
+     "second_check": {
+      "checked_at": "2026-11-12",
+      "evidence_url": "https://council.nyc.gov/shanel-thomas-henry/wp-content/uploads/sites/134/2026/09/Budget-Town-Hall-3.pdf",
+      "evidence": "Her budget town hall deck hosted on council.nyc.gov ends with a 'Stay Connected / Social' panel showing X, YouTube, Instagram and LinkedIn icons above '@CMSHANELTH' and council.nyc.gov/district-21/.",
+      "result": "confirmed by an official source"
+     }
     },
     "threads": null,
     "linkedin": null
    },
-   "notes": "Threads unchecked: threads.com/@cmshanelth redirected to the login page (no public profile readable; may not exist). Instagram @shanelforcouncil is campaign; excluded.",
-   "reviewed_by": null
+   "notes": "Threads unchecked: threads.com/@cmshanelth redirected to the login page (no public profile readable; may not exist). Instagram @shanelforcouncil is campaign; excluded."
   },
   {
    "district": 22,
@@ -561,8 +672,7 @@
     "threads": null,
     "linkedin": null
    },
-   "notes": "Bluesky tiffanycaban.bsky.social excluded (ActBlue DONATE link). Instagram @tiffany_caban names District 22 but does not present as official/government; left out as unclear.",
-   "reviewed_by": null
+   "notes": "Bluesky tiffanycaban.bsky.social excluded (ActBlue DONATE link). Instagram @tiffany_caban names District 22 but does not present as official/government; left out as unclear. @tiffany_caban left out: links an ActBlue donation page."
   },
   {
    "district": 23,
@@ -574,16 +684,21 @@
      "handle": "cmlindalee",
      "url": "https://www.instagram.com/cmlindalee/",
      "account_type": "office",
-     "source_url": "https://www.instagram.com/cmlindalee/",
-     "method": "profile bio names office",
+     "source_url": "https://council.nyc.gov/linda-lee/follow-council-member-lee-on-social-media/",
+     "method": "council.nyc.gov page, post or document names the handle",
      "checked_at": "2026-11-12",
-     "status": "likely"
+     "status": "verified",
+     "second_check": {
+      "checked_at": "2026-11-12",
+      "evidence_url": "https://council.nyc.gov/linda-lee/follow-council-member-lee-on-social-media/",
+      "evidence": "Council.nyc.gov page 'Follow Council Member Lee on Social Media' links https://www.instagram.com/cmlindalee/.",
+      "result": "confirmed by an official source"
+     }
     },
     "threads": null,
     "linkedin": null
    },
-   "notes": "Threads unchecked: threads.com/@cmlindalee redirected to the login page (no public profile readable; may not exist).",
-   "reviewed_by": null
+   "notes": "Threads unchecked: threads.com/@cmlindalee redirected to the login page (no public profile readable; may not exist)."
   },
   {
    "district": 24,
@@ -595,8 +710,7 @@
     "threads": null,
     "linkedin": null
    },
-   "notes": "No office account found on any of the four platforms via council.nyc.gov, the starter pack, Bluesky search, or web search of Instagram.",
-   "reviewed_by": null
+   "notes": "No office account found on any of the four platforms via council.nyc.gov, the starter pack, Bluesky search, or web search of Instagram."
   },
   {
    "district": 25,
@@ -611,42 +725,72 @@
      "source_url": "https://www.instagram.com/cmshekar25/",
      "method": "profile bio names office",
      "checked_at": "2026-11-12",
-     "status": "likely"
+     "status": "likely",
+     "second_check": {
+      "checked_at": "2026-11-12",
+      "evidence_url": null,
+      "evidence": "Nothing on council.nyc.gov names it (note: his council.nyc.gov events page links a different, campaign account, instagram.com/voteshekar); bio 'Government Account of Shekar Krishnan', no red flags.",
+      "result": "no official source found; no red flag"
+     }
     },
     "threads": null,
     "linkedin": null
    },
-   "notes": "Threads unchecked: threads.com/@cmshekar25 redirected to the login page (no public profile readable; may not exist).",
-   "reviewed_by": null
+   "notes": "Threads unchecked: threads.com/@cmshekar25 redirected to the login page (no public profile readable; may not exist)."
   },
   {
    "district": 26,
    "person_id": 7816,
    "name": "Julie Won",
    "accounts": {
-    "bluesky": null,
+    "bluesky": {
+     "handle": "cmjuliewon.bsky.social",
+     "url": "https://bsky.app/profile/cmjuliewon.bsky.social",
+     "account_type": "office",
+     "source_url": "https://bsky.app/starter-pack/council.nyc.gov/3lb3tomerok2q",
+     "method": "Council's Bluesky starter pack, and the same handle as her office Instagram and Threads, which council.nyc.gov press releases name",
+     "checked_at": "2026-11-12",
+     "status": "verified",
+     "second_check": {
+      "checked_at": "2026-11-12",
+      "evidence_url": "https://bsky.app/starter-pack/council.nyc.gov/3lb3tomerok2q",
+      "evidence": "Listed in the council.nyc.gov Bluesky 'New York City Council Members' starter pack and list; uses the same @CMJulieWon office name the council.nyc.gov press releases give; ~530 own posts, office content, voting posts are nonpartisan.",
+      "result": "open call resolved on second check"
+     }
+    },
     "instagram": {
      "handle": "cmjuliewon",
      "url": "https://www.instagram.com/cmjuliewon/",
      "account_type": "office",
-     "source_url": "https://www.instagram.com/cmjuliewon/",
-     "method": "profile bio names office",
+     "source_url": "https://council.nyc.gov/julie-won/2023/10/10/council-member-julie-won-announces-comprehensive-community-planning-for-district-26/",
+     "method": "council.nyc.gov page, post or document names the handle",
      "checked_at": "2026-11-12",
-     "status": "likely"
+     "status": "verified",
+     "second_check": {
+      "checked_at": "2026-11-12",
+      "evidence_url": "https://council.nyc.gov/julie-won/2023/10/10/council-member-julie-won-announces-comprehensive-community-planning-for-district-26/",
+      "evidence": "Council.nyc.gov press releases end 'Follow the Office of Council Member Julie Won via @CMJulieWon on Instagram & Twitter and FB.'",
+      "result": "confirmed by an official source"
+     }
     },
     "threads": {
      "handle": "cmjuliewon",
      "url": "https://www.threads.com/@cmjuliewon",
      "account_type": "office",
-     "source_url": "https://www.threads.com/@cmjuliewon",
-     "method": "profile bio names office",
+     "source_url": "https://council.nyc.gov/julie-won/2023/10/10/council-member-julie-won-announces-comprehensive-community-planning-for-district-26/",
+     "method": "council.nyc.gov page, post or document names the handle",
      "checked_at": "2026-11-12",
-     "status": "likely"
+     "status": "verified",
+     "second_check": {
+      "checked_at": "2026-11-12",
+      "evidence_url": "https://council.nyc.gov/julie-won/2023/10/10/council-member-julie-won-announces-comprehensive-community-planning-for-district-26/",
+      "evidence": "Threads handle equals the Instagram handle the office names on council.nyc.gov; Threads bio 'Official GOVT ACCT for @juliej_won... Page run by staff'.",
+      "result": "confirmed by an official source"
+     }
     },
     "linkedin": null
    },
-   "notes": "Bluesky cmjuliewon.bsky.social is in the Council starter pack (532 posts) but display name and bio are blank; left out per the 2026-10-13 rule, though her Instagram/Threads @cmjuliewon are official government accounts, which makes the Bluesky handle a strong candidate for a ruling.",
-   "reviewed_by": null
+   "notes": "Bluesky cmjuliewon.bsky.social is in the Council starter pack (532 posts) but display name and bio are blank; left out per the 2026-10-13 rule, though her Instagram/Threads @cmjuliewon are official government accounts, which makes the Bluesky handle a strong candidate for a ruling."
   },
   {
    "district": 27,
@@ -661,13 +805,18 @@
      "source_url": "https://www.instagram.com/cmnantashawilliams/",
      "method": "profile bio names office",
      "checked_at": "2026-11-12",
-     "status": "likely"
+     "status": "likely",
+     "second_check": {
+      "checked_at": "2026-11-12",
+      "evidence_url": null,
+      "evidence": "Nothing on council.nyc.gov names it; category Government Official, bio 'NYC Council Deputy Speaker #CD27'; linktree lists district27@council.nyc.gov, no donation links.",
+      "result": "no official source found; no red flag"
+     }
     },
     "threads": null,
     "linkedin": null
    },
-   "notes": "Threads unchecked: threads.com/@cmnantashawilliams redirected to the login page (no public profile readable; may not exist).",
-   "reviewed_by": null
+   "notes": "Threads unchecked: threads.com/@cmnantashawilliams redirected to the login page (no public profile readable; may not exist)."
   },
   {
    "district": 28,
@@ -682,13 +831,18 @@
      "source_url": "https://www.instagram.com/cmtyhankerson/",
      "method": "profile bio names office",
      "checked_at": "2026-11-12",
-     "status": "likely"
+     "status": "likely",
+     "second_check": {
+      "checked_at": "2026-11-12",
+      "evidence_url": null,
+      "evidence": "Council.nyc.gov links only a Constant Contact newsletter signup with the slug 'cmtyhankerson', not the Instagram; profile category Government Official, linktree CMTyHankersonD28 with no donation links.",
+      "result": "no official source found; no red flag"
+     }
     },
     "threads": null,
     "linkedin": null
    },
-   "notes": "Threads unchecked: threads.com/@cmtyhankerson redirected to the login page (no public profile readable; may not exist).",
-   "reviewed_by": null
+   "notes": "Threads unchecked: threads.com/@cmtyhankerson redirected to the login page (no public profile readable; may not exist)."
   },
   {
    "district": 29,
@@ -700,8 +854,7 @@
     "threads": null,
     "linkedin": null
    },
-   "notes": "Bluesky lynn4nyc.bsky.social (in starter pack) left out: blank profile, campaign-style handle.",
-   "reviewed_by": null
+   "notes": "Bluesky lynn4nyc.bsky.social (in starter pack) left out: blank profile, campaign-style handle."
   },
   {
    "district": 30,
@@ -713,8 +866,7 @@
     "threads": null,
     "linkedin": null
    },
-   "notes": "No office account found on any of the four platforms via council.nyc.gov, the starter pack, Bluesky search, or web search of Instagram.",
-   "reviewed_by": null
+   "notes": "No office account found on any of the four platforms via council.nyc.gov, the starter pack, Bluesky search, or web search of Instagram."
   },
   {
    "district": 31,
@@ -734,8 +886,7 @@
     "threads": null,
     "linkedin": null
    },
-   "notes": "Instagram @powers4queens excluded: bio reads \"Candidate\". No office Instagram found.",
-   "reviewed_by": null
+   "notes": "Instagram @powers4queens excluded: bio reads \"Candidate\". No office Instagram found."
   },
   {
    "district": 32,
@@ -743,12 +894,25 @@
    "name": "Joann Ariola",
    "accounts": {
     "bluesky": null,
-    "instagram": null,
+    "instagram": {
+     "handle": "joannariola32",
+     "url": "https://www.instagram.com/joannariola32",
+     "account_type": "office",
+     "source_url": "https://council.nyc.gov/joann-ariola/",
+     "method": "council.nyc.gov member page link",
+     "checked_at": "2026-11-12",
+     "status": "verified",
+     "second_check": {
+      "checked_at": "2026-11-12",
+      "evidence_url": "https://council.nyc.gov/joann-ariola/",
+      "evidence": "Her council.nyc.gov member page (and its News page) links https://www.instagram.com/joannariola32/, the account whose display name is 'Ariola2025'. CAUTION: that display name and the bio line 'Our Work Continues…' read as re-election branding; posts are office content ('Team Ariola' events). A separate @ariola2025 Instagram (0 posts, emoji name) is not hers and must not be used.",
+      "result": "open call resolved on second check"
+     }
+    },
     "threads": null,
     "linkedin": null
    },
-   "notes": "Instagram @joannariola32 is linked from her council.nyc.gov member page and the bio names District 32, but the display name is \"Ariola2025\" (campaign-style); left out as unclear.",
-   "reviewed_by": null
+   "notes": "Instagram @joannariola32 is linked from her council.nyc.gov member page and the bio names District 32, but the display name is \"Ariola2025\" (campaign-style); left out as unclear. Instagram display name reads 'Ariola2025', which looks like re-election branding, but council.nyc.gov links this account and its posts are office content. A separate @ariola2025 account is not hers."
   },
   {
    "district": 33,
@@ -777,15 +941,20 @@
      "handle": "cmrestler",
      "url": "https://www.threads.com/@cmrestler",
      "account_type": "office",
-     "source_url": "https://www.threads.com/@cmrestler",
-     "method": "profile bio names office",
+     "source_url": "https://council.nyc.gov/lincoln-restler/",
+     "method": "council.nyc.gov page, post or document names the handle",
      "checked_at": "2026-11-12",
-     "status": "likely"
+     "status": "verified",
+     "second_check": {
+      "checked_at": "2026-11-12",
+      "evidence_url": "https://council.nyc.gov/lincoln-restler/",
+      "evidence": "Member page links instagram.com/cmrestler/ (plus cmrestler.bsky.social); Threads handle is identical.",
+      "result": "confirmed by an official source"
+     }
     },
     "linkedin": null
    },
-   "notes": "",
-   "reviewed_by": null
+   "notes": ""
   },
   {
    "district": 34,
@@ -814,15 +983,20 @@
      "handle": "jengutierreznyc",
      "url": "https://www.threads.com/@jengutierreznyc",
      "account_type": "office",
-     "source_url": "https://www.threads.com/@jengutierreznyc",
-     "method": "profile bio names office",
+     "source_url": "https://council.nyc.gov/jennifer-gutierrez/",
+     "method": "council.nyc.gov page, post or document names the handle",
      "checked_at": "2026-11-12",
-     "status": "likely"
+     "status": "verified",
+     "second_check": {
+      "checked_at": "2026-11-12",
+      "evidence_url": "https://council.nyc.gov/jennifer-gutierrez/",
+      "evidence": "Member page links instagram.com/jengutierreznyc/; Threads handle is identical (Threads shows 0 posts but bio matches).",
+      "result": "confirmed by an official source"
+     }
     },
     "linkedin": null
    },
-   "notes": "",
-   "reviewed_by": null
+   "notes": ""
   },
   {
    "district": 35,
@@ -851,15 +1025,20 @@
      "handle": "cmcrystalhudson",
      "url": "https://www.threads.com/@cmcrystalhudson",
      "account_type": "office",
-     "source_url": "https://www.threads.com/@cmcrystalhudson",
-     "method": "profile bio names office",
+     "source_url": "https://council.nyc.gov/crystal-hudson/",
+     "method": "council.nyc.gov page, post or document names the handle",
      "checked_at": "2026-11-12",
-     "status": "likely"
+     "status": "verified",
+     "second_check": {
+      "checked_at": "2026-11-12",
+      "evidence_url": "https://council.nyc.gov/crystal-hudson/",
+      "evidence": "Member page links instagram.com/cmcrystalhudson/; Threads handle is identical, bio 'Official Government Account for @chudchud'.",
+      "result": "confirmed by an official source"
+     }
     },
     "linkedin": null
    },
-   "notes": "",
-   "reviewed_by": null
+   "notes": ""
   },
   {
    "district": 36,
@@ -874,7 +1053,13 @@
      "source_url": "https://www.instagram.com/cmchiosse/",
      "method": "profile bio names office",
      "checked_at": "2026-11-12",
-     "status": "likely"
+     "status": "likely",
+     "second_check": {
+      "checked_at": "2026-11-12",
+      "evidence_url": null,
+      "evidence": "Council.nyc.gov names only his X handle @CMChiOsse (in a tweet embedded on Carl Wilson's social-media page); nothing official names the Instagram. Bio 'Official Government account for Council Member Chi Ossé', no red flags.",
+      "result": "no official source found; no red flag"
+     }
     },
     "threads": {
      "handle": "cmchiosse",
@@ -883,12 +1068,17 @@
      "source_url": "https://www.threads.com/@cmchiosse",
      "method": "profile bio names office",
      "checked_at": "2026-11-12",
-     "status": "likely"
+     "status": "likely",
+     "second_check": {
+      "checked_at": "2026-11-12",
+      "evidence_url": null,
+      "evidence": "Mirrors the uncorroborated Instagram; Threads bio 'Official Gov account... Managed by Staff'.",
+      "result": "no official source found; no red flag"
+     }
     },
     "linkedin": null
    },
-   "notes": "Bluesky chiosse.bsky.social excluded (bio: \"Personal Account\"). Instagram @chiosse is personal per search snippet.",
-   "reviewed_by": null
+   "notes": "Bluesky chiosse.bsky.social excluded (bio: \"Personal Account\"). Instagram @chiosse is personal per search snippet."
   },
   {
    "district": 37,
@@ -911,13 +1101,18 @@
      "source_url": "https://www.instagram.com/cmsandynurse/",
      "method": "profile bio names office",
      "checked_at": "2026-11-12",
-     "status": "likely"
+     "status": "likely",
+     "second_check": {
+      "checked_at": "2026-11-12",
+      "evidence_url": null,
+      "evidence": "Nothing on council.nyc.gov or its hosted PDFs names it (the Council's Bluesky starter pack lists cmsandynurse.bsky.social, which does not point to Instagram); linktree lists district37@council.nyc.gov, no campaign links.",
+      "result": "no official source found; no red flag"
+     }
     },
     "threads": null,
     "linkedin": null
    },
-   "notes": "Threads unchecked: threads.com/@cmsandynurse redirected to the login page (no public profile readable; may not exist). Bluesky sandynurse.bsky.social excluded (donation link). Instagram @sandyforcouncil21 is campaign.",
-   "reviewed_by": null
+   "notes": "Threads unchecked: threads.com/@cmsandynurse redirected to the login page (no public profile readable; may not exist). Bluesky sandynurse.bsky.social excluded (donation link). Instagram @sandyforcouncil21 is campaign."
   },
   {
    "district": 38,
@@ -937,24 +1132,35 @@
      "handle": "nyc_council38",
      "url": "https://www.instagram.com/nyc_council38/",
      "account_type": "office",
-     "source_url": "https://www.instagram.com/nyc_council38/",
-     "method": "profile bio names office",
+     "source_url": "https://council.nyc.gov/alexa-aviles/sign-up-for-our-email-list/",
+     "method": "council.nyc.gov page, post or document names the handle",
      "checked_at": "2026-11-12",
-     "status": "likely"
+     "status": "verified",
+     "second_check": {
+      "checked_at": "2026-11-12",
+      "evidence_url": "https://council.nyc.gov/alexa-aviles/sign-up-for-our-email-list/",
+      "evidence": "Her council.nyc.gov email-signup page's social-links block links https://www.instagram.com/nyc_council38/.",
+      "result": "confirmed by an official source"
+     }
     },
     "threads": {
      "handle": "nyc_council38",
      "url": "https://www.threads.com/@nyc_council38",
      "account_type": "office",
-     "source_url": "https://www.threads.com/@nyc_council38",
-     "method": "profile bio names office",
+     "source_url": "https://council.nyc.gov/alexa-aviles/sign-up-for-our-email-list/",
+     "method": "council.nyc.gov page, post or document names the handle",
      "checked_at": "2026-11-12",
-     "status": "likely"
+     "status": "verified",
+     "second_check": {
+      "checked_at": "2026-11-12",
+      "evidence_url": "https://council.nyc.gov/alexa-aviles/sign-up-for-our-email-list/",
+      "evidence": "Threads handle equals the Instagram handle linked on council.nyc.gov; Threads bio 'Office of @NYCCouncil District 38'.",
+      "result": "confirmed by an official source"
+     }
     },
     "linkedin": null
    },
-   "notes": "",
-   "reviewed_by": null
+   "notes": ""
   },
   {
    "district": 39,
@@ -982,8 +1188,7 @@
     "threads": null,
     "linkedin": null
    },
-   "notes": "Threads unchecked: threads.com/@cmshahanahanif redirected to the login page (no public profile readable; may not exist).",
-   "reviewed_by": null
+   "notes": "Threads unchecked: threads.com/@cmshahanahanif redirected to the login page (no public profile readable; may not exist)."
   },
   {
    "district": 40,
@@ -1003,8 +1208,7 @@
     "threads": null,
     "linkedin": null
    },
-   "notes": "Threads unchecked: threads.com/@cmritajoseph redirected to the login page (no public profile readable; may not exist).",
-   "reviewed_by": null
+   "notes": "Threads unchecked: threads.com/@cmritajoseph redirected to the login page (no public profile readable; may not exist)."
   },
   {
    "district": 41,
@@ -1016,8 +1220,7 @@
     "threads": null,
     "linkedin": null
    },
-   "notes": "No office account found on any of the four platforms via council.nyc.gov, the starter pack, Bluesky search, or web search of Instagram.",
-   "reviewed_by": null
+   "notes": "No office account found on any of the four platforms via council.nyc.gov, the starter pack, Bluesky search, or web search of Instagram."
   },
   {
    "district": 42,
@@ -1029,8 +1232,7 @@
     "threads": null,
     "linkedin": null
    },
-   "notes": "Instagram/Threads @nyc_councilman_chrisbanks left out: display name names the office but the Threads bio reads \"2023 City Council Candidate\"; office/campaign unclear.",
-   "reviewed_by": null
+   "notes": "Instagram/Threads @nyc_councilman_chrisbanks left out: display name names the office but the Threads bio reads \"2023 City Council Candidate\"; office/campaign unclear. @nyc_councilman_chrisbanks left out: links a campaign site (voteforchrisbanks.com)."
   },
   {
    "district": 43,
@@ -1058,8 +1260,7 @@
     },
     "linkedin": null
    },
-   "notes": "",
-   "reviewed_by": null
+   "notes": ""
   },
   {
    "district": 44,
@@ -1071,8 +1272,7 @@
     "threads": null,
     "linkedin": null
    },
-   "notes": "Instagram @simchafelder names CD 44 but is a plain-name handle with no official/government statement; left out as unclear.",
-   "reviewed_by": null
+   "notes": "Instagram @simchafelder names CD 44 but is a plain-name handle with no official/government statement; left out as unclear. Instagram @simchafelder left out: dormant, and no official source names it."
   },
   {
    "district": 45,
@@ -1092,8 +1292,7 @@
     "threads": null,
     "linkedin": null
    },
-   "notes": "Threads unchecked: threads.com/@cmfarahlouis redirected to the login page (no public profile readable; may not exist).",
-   "reviewed_by": null
+   "notes": "Threads unchecked: threads.com/@cmfarahlouis redirected to the login page (no public profile readable; may not exist)."
   },
   {
    "district": 46,
@@ -1105,8 +1304,7 @@
     "threads": null,
     "linkedin": null
    },
-   "notes": "No office account found on any of the four platforms via council.nyc.gov, the starter pack, Bluesky search, or web search of Instagram.",
-   "reviewed_by": null
+   "notes": "No office account found on any of the four platforms via council.nyc.gov, the starter pack, Bluesky search, or web search of Instagram."
   },
   {
    "district": 47,
@@ -1121,7 +1319,13 @@
      "source_url": "https://www.instagram.com/councilmemberkayla/",
      "method": "profile bio names office",
      "checked_at": "2026-11-12",
-     "status": "likely"
+     "status": "likely",
+     "second_check": {
+      "checked_at": "2026-11-12",
+      "evidence_url": null,
+      "evidence": "Nothing on council.nyc.gov names it (her subsite has two pages); bio 'Official Page of CM Kayla Santosuosso'; recent posts are nonpartisan voting reminders, no donation links.",
+      "result": "no official source found; no red flag"
+     }
     },
     "threads": {
      "handle": "councilmemberkayla",
@@ -1130,12 +1334,17 @@
      "source_url": "https://www.threads.com/@councilmemberkayla",
      "method": "profile bio names office",
      "checked_at": "2026-11-12",
-     "status": "likely"
+     "status": "likely",
+     "second_check": {
+      "checked_at": "2026-11-12",
+      "evidence_url": null,
+      "evidence": "Mirrors the uncorroborated Instagram; same 'Official Page' bio.",
+      "result": "no official source found; no red flag"
+     }
     },
     "linkedin": null
    },
-   "notes": "Instagram @kaylaforcouncil2025 is campaign and @kaylakeepsgoing personal; both excluded.",
-   "reviewed_by": null
+   "notes": "Instagram @kaylaforcouncil2025 is campaign and @kaylakeepsgoing personal; both excluded."
   },
   {
    "district": 48,
@@ -1155,8 +1364,7 @@
     "threads": null,
     "linkedin": null
    },
-   "notes": "Threads unchecked: threads.com/@councilwoman_inna_vernikov redirected to the login page (no public profile readable; may not exist).",
-   "reviewed_by": null
+   "notes": "Threads unchecked: threads.com/@councilwoman_inna_vernikov redirected to the login page (no public profile readable; may not exist)."
   },
   {
    "district": 49,
@@ -1168,8 +1376,7 @@
     "threads": null,
     "linkedin": null
    },
-   "notes": "No office account found on any of the four platforms via council.nyc.gov, the starter pack, Bluesky search, or web search of Instagram.",
-   "reviewed_by": null
+   "notes": "No office account found on any of the four platforms via council.nyc.gov, the starter pack, Bluesky search, or web search of Instagram."
   },
   {
    "district": 50,
@@ -1181,8 +1388,7 @@
     "threads": null,
     "linkedin": null
    },
-   "notes": "No office account found on any of the four platforms via council.nyc.gov, the starter pack, Bluesky search, or web search of Instagram.",
-   "reviewed_by": null
+   "notes": "No office account found on any of the four platforms via council.nyc.gov, the starter pack, Bluesky search, or web search of Instagram."
   },
   {
    "district": 51,
@@ -1202,8 +1408,8 @@
     "threads": null,
     "linkedin": null
    },
-   "notes": "Threads unchecked: threads.com/@councilmanfrankmorano redirected to the login page (no public profile readable; may not exist).",
-   "reviewed_by": null
+   "notes": "Threads unchecked: threads.com/@councilmanfrankmorano redirected to the login page (no public profile readable; may not exist)."
   }
- ]
+ ],
+ "second_check": "2026-11-12: every 'likely' account and seven open calls were re-checked independently, looking for an official source (council.nyc.gov pages, posts and documents) that names the handle. Each account records the result in second_check. Accounts linked from council.nyc.gov member pages and the starter-pack handles were re-confirmed directly (saved pages; public Bluesky API). No person has reviewed these rows one by one (Noel, 2026-11-12)."
 }

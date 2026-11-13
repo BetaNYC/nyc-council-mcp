@@ -55,14 +55,24 @@ export function shippedCurated(): Curated {
 
 export interface CuratedFacts {
   label: string;
-  wikidata: { qid: string; wikipedia_url: string | null; method: unknown; evidence: unknown; checked_at: unknown } | null;
+  wikidata: {
+    qid: string;
+    wikipedia_url: string | null;
+    status: unknown;
+    method: unknown;
+    evidence: unknown;
+    checked_at: unknown;
+    second_check: unknown;
+  } | null;
   party: {
     ballot_lines: { line: string; votes?: number }[];
     election: unknown;
     source_url: unknown;
     source_title: unknown;
     certified: unknown;
+    status: unknown;
     checked_at: unknown;
+    second_check: unknown;
     notes?: unknown;
   } | null;
   social: Record<string, unknown> | null;
@@ -81,9 +91,11 @@ export function curatedFor(personId: number, c: Curated = shippedCurated()): Cur
       ? {
           qid: String(w.wikidata_qid),
           wikipedia_url: (w.wikipedia_url as string) ?? null,
+          status: w.status ?? null,
           method: w.method,
           evidence: w.evidence,
           checked_at: w.checked_at,
+          second_check: w.second_check ?? null,
         }
       : null,
     party:
@@ -94,7 +106,9 @@ export function curatedFor(personId: number, c: Curated = shippedCurated()): Cur
             source_url: p.source_url,
             source_title: p.source_title,
             certified: p.certified,
+            status: p.status ?? null,
             checked_at: p.checked_at,
+            second_check: p.second_check ?? null,
             ...(p.notes ? { notes: p.notes } : {}),
           }
         : null,
