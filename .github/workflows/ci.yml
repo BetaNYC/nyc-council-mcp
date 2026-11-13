@@ -178,9 +178,9 @@ jobs:
           echo "PR base SHA: $BASE_SHA"
           # Three-dot diff (merge-base..HEAD) restricted to files that ship in
           # the npm package. If nothing here changed, the guard does not apply.
-          CHANGED=$(git diff --name-only "$BASE_SHA...HEAD" -- src package.json data)
+          CHANGED=$(git diff --name-only "$BASE_SHA...HEAD" -- src package.json data DATA-SOURCES.json data.json)
           if [ -z "$CHANGED" ]; then
-            echo "No shipped files changed (src/, package.json, data/) — version guard not applicable. Passing."
+            echo "No shipped files changed (src/, package.json, data/, DATA-SOURCES.json, data.json) — version guard not applicable. Passing."
             exit 0
           fi
           echo "Shipped files changed in this PR:"

@@ -92,7 +92,7 @@ See README for full setup instructions.
 
   // Where the data comes from (#48), from DATA-SOURCES.json through BetaNYC's shared module.
   // Throws here, at startup, if the file does not describe this server.
-  const aboutData = createAboutData({ db, version: PACKAGE_VERSION });
+  const aboutData = createAboutData({ db, hasLive: Boolean(mode.hasLive && mode.token), version: PACKAGE_VERSION });
 
   // Build tool list. get_bill_history is defined in BOTH the local and live sets
   // (local is the default, token-free path; the live one remains for live-only

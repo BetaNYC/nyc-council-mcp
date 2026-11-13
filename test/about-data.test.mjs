@@ -37,8 +37,8 @@ function indexDb() {
   return db;
 }
 
-const ask = (args, db = null) => {
-  const res = createAboutData({ db, version: VERSION }).call(args);
+const ask = (args, db = null, hasLive = false) => {
+  const res = createAboutData({ db, hasLive, version: VERSION }).call(args);
   return { res, body: res.structuredContent };
 };
 const one = (body, topic) => body.sources.find((s) => s.topic === topic);
@@ -108,9 +108,39 @@ test("no index on this server: local sources say so instead of a date", () => {
 });
 
 test("live: fetched when asked, the Council's record passed on unchanged", () => {
-  const s = one(ask({ topic: "live" }).body, "live");
+  const { body } = ask({ topic: "live" }, indexDb(), true);
+  const s = one(body, "live");
   assert.equal(s.as_of_status, "live");
   assert.equal(s.figures_official, true);
+  assert.deepEqual(body.this_server, { live_api: true, local_index: true });
+});
+
+test("no token: the live source says it is not available here, not 'fetched when you ask'", () => {
+  const { res, body } = ask({ topic: "live" }, indexDb(), false);
+  const s = one(body, "live");
+  assert.equal(s.as_of_status, "unavailable");
+  assert.match(s.as_of, /not available on this server/);
+  assert.doesNotMatch(res.content[0].text, /fetched from the source when you ask/);
+  assert.match(res.content[0].text, /live Legistar API not set up; local index present/);
+  assert.deepEqual(body.this_server, { live_api: false, local_index: true });
+});
+
+test("the archive sources name the Council as publisher and jehiah/nyc_legislation as the unofficial mirror", () => {
+  for (const topic of ["bills", "votes", "events", "committees"]) {
+    const s = one(ask({ topic }).body, topic);
+    assert.equal(s.publisher, "New York City Council", topic);
+    assert.doesNotMatch(s.source_url, /jehiah/, topic);
+    assert.match(s.how_gathered, /unofficial mirror/, topic);
+  }
+  assert.deepEqual(one(ask({ topic: "events" }).body, "events").changed_by_betanyc.steps, ["reshaped"]);
+});
+
+test("an unreadable DATA-SOURCES.json: the note does not point at about_betanyc either", () => {
+  const res = createAboutData({ db: null, hasLive: false, version: VERSION, dataSourcesText: "{" }).call({});
+  const body = res.structuredContent;
+  assert.match(body.note, /cannot be read/);
+  assert.doesNotMatch(body.note, /about_betanyc/);
+  assert.doesNotMatch(res.content[0].text, /about_betanyc/);
 });
 
 test("a tool name works as a topic: get_council_member covers live, districts and the curated facts", () => {
@@ -137,7 +167,7 @@ test("nothing points at about_betanyc or whats_changed before 2.9.0 registers th
 
 test("the server fails at startup when DATA-SOURCES.json names another repo", () => {
   const other = DS_TEXT.replace('"repository": "https://github.com/BetaNYC/nyc-council-mcp"', '"repository": "https://github.com/BetaNYC/other"');
-  assert.throws(() => createAboutData({ db: null, version: VERSION, dataSourcesText: other }), /repository/);
+  assert.throws(() => createAboutData({ db: null, hasLive: false, version: VERSION, dataSourcesText: other }), /repository/);
 });
 
 test("the package ships DATA-SOURCES.json and data.json", () => {
@@ -165,13 +195,16 @@ test("about_data over MCP stdio: live, party and districts", async () => {
     const listed = (await client.listTools()).tools.find((t) => t.name === "about_data");
     assert.ok(listed, "about_data is listed");
     assert.match(listed.description, /Topics on this server: live, bills/);
-    assert.ok(listed.outputSchema);
+    assert.doesNotMatch(JSON.stringify(listed), /about_betanyc|whats_changed/);
+    assert.ok(listed.outputSchema.properties.this_server);
     assert.match(client.getInstructions() ?? "", /call about_data/);
     const names = (await client.listTools()).tools.map((t) => t.name);
     assert.ok(!names.includes("about_betanyc") && !names.includes("whats_changed"));
 
     const live = await client.callTool({ name: "about_data", arguments: { topic: "live" } });
-    assert.equal(live.structuredContent.sources[0].as_of_status, "live");
+    // local-only mode: no token, so live is not available on this server
+    assert.equal(live.structuredContent.sources[0].as_of_status, "unavailable");
+    assert.deepEqual(live.structuredContent.this_server, { live_api: false, local_index: true });
     assert.match(live.content[0].text, /Official record: yes, passed on as New York City Council publishes it/);
 
     const party = await client.callTool({ name: "about_data", arguments: { topic: "party" } });

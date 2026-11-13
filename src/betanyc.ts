@@ -8,8 +8,14 @@
  * 2.8.0 registers about_data only. whats_changed and about_betanyc, the other two shared tools,
  * come in 2.9.0 with a full WHATS-CHANGED.md history. Until then, two things the shared module
  * says about those tools are replaced here so nothing points at a tool this server lacks:
- * the last sentence of the server instructions, and about_data's who_built_this pointer.
- * Delete both replacements when about_betanyc is registered.
+ * the last sentence of the server instructions, the last sentence of about_data's description
+ * and its who_built_this description, and the who_built_this pointer in every answer (and in the
+ * note when DATA-SOURCES.json cannot be read). Delete these replacements when about_betanyc is
+ * registered.
+ *
+ * The wrapper also adds `this_server` ({ live_api, local_index }), and says the live source is
+ * not available when no LEGISTAR_TOKEN is set, as #67 did: the shared module always reports a
+ * `live` source as fetched when asked.
  *
  * How current each source is comes from real state, never typed into DATA-SOURCES.json:
  * the index's build time and the district snapshot's fetch time (hooks below), and the
@@ -36,13 +42,17 @@ export const WHO_BUILT_THIS =
   `Code, MIT license: ${REPO_URL}. Questions or corrections: ${REPO_URL}/issues.`;
 
 const POINTER_TO_ABOUT_BETANYC = `Call about_betanyc for who built ${SERVER_NAME} and how to reach them.`;
+const DESCRIPTION_POINTER = " For who built this server, use about_betanyc.";
+const LIVE_AS_OF = "live: fetched from the source when you ask";
+const LIVE_UNAVAILABLE = "not available on this server: the live Legistar API is not set up (no LEGISTAR_TOKEN)";
 const LAST_SENTENCE = / For who built this server, call about_betanyc; for recent fixes and corrections, call whats_changed\.$/;
 
 /** The shared instructions without the sentence about the two tools this server does not have yet. */
 export const SERVER_INSTRUCTIONS =
   "NYC Council legislation, votes, hearings and members, by BetaNYC. " +
   BETANYC_INSTRUCTIONS.replace(LAST_SENTENCE, "") +
-  " Facts in a 'curated' block are BetaNYC's hand-checked assertions, not official records: say so when you use them. " +
+  " Facts in a 'curated' block were checked by BetaNYC and are not official records: say so when you use them. " +
+  "Nothing is invented: a value with no source is left blank. " +
   `For who built this server: ${WHO_BUILT_THIS}`;
 
 function indexState(db: Database.Database | null, key: string): string | null {
@@ -66,6 +76,8 @@ function snapshotFetchedAt(): string | null {
 
 export interface AboutDataContext {
   db: Database.Database | null;
+  /** True when LEGISTAR_TOKEN is set, so the live tools can fetch. */
+  hasLive: boolean;
   version: string;
   /** Override for tests; defaults to the DATA-SOURCES.json that ships with the package. */
   dataSourcesText?: string;
@@ -94,20 +106,58 @@ export function createAboutData(ctx: AboutDataContext): {
         ctx.db ? indexState(ctx.db, "member_terms_fetched_at") : snapshotFetchedAt(),
     },
   });
-  const tool = shared.tools.find((t) => t.name === "about_data");
-  if (!tool) throw new Error("betanyc-tools: about_data is missing from the shared module");
+  const sharedTool = shared.tools.find((t) => t.name === "about_data");
+  if (!sharedTool) throw new Error("betanyc-tools: about_data is missing from the shared module");
+  const props = sharedTool.outputSchema.properties ?? {};
+  const tool: ToolDefinition = {
+    ...sharedTool,
+    description: sharedTool.description.split(DESCRIPTION_POINTER).join(""),
+    outputSchema: {
+      ...sharedTool.outputSchema,
+      properties: {
+        ...props,
+        who_built_this: { type: "string", description: "Who built this server and how to reach them" },
+        this_server: {
+          type: "object",
+          properties: { live_api: { type: "boolean" }, local_index: { type: "boolean" } },
+          required: ["live_api", "local_index"],
+        },
+      },
+    },
+  };
+  const thisServer = { live_api: ctx.hasLive, local_index: Boolean(ctx.db) };
+  const fixText = (t: string): string => {
+    let out = t.split(POINTER_TO_ABOUT_BETANYC).join(WHO_BUILT_THIS);
+    if (!ctx.hasLive) out = out.split(LIVE_AS_OF).join(LIVE_UNAVAILABLE);
+    return out;
+  };
   return {
     tool,
     instructions: SERVER_INSTRUCTIONS,
     call: (args) => {
       const res = shared.call("about_data", args);
       if (res.isError) return res;
-      const structured = res.structuredContent
-        ? { ...res.structuredContent, who_built_this: WHO_BUILT_THIS }
+      const sc = res.structuredContent as Record<string, unknown> | undefined;
+      const structured = sc
+        ? {
+            ...sc,
+            who_built_this: WHO_BUILT_THIS,
+            note: typeof sc.note === "string" ? fixText(sc.note) : sc.note,
+            sources: Array.isArray(sc.sources)
+              ? sc.sources.map((s: Record<string, unknown>) =>
+                  !ctx.hasLive && s.as_of_status === "live"
+                    ? { ...s, as_of: LIVE_UNAVAILABLE, as_of_status: "unavailable" }
+                    : s)
+              : sc.sources,
+            this_server: thisServer,
+          }
         : undefined;
+      const serverLine =
+        `This server: live Legistar API ${thisServer.live_api ? "set up" : "not set up"}; ` +
+        `local index ${thisServer.local_index ? "present" : "not present"}.`;
       return {
         ...res,
-        content: res.content.map((c) => ({ ...c, text: c.text.split(POINTER_TO_ABOUT_BETANYC).join(WHO_BUILT_THIS) })),
+        content: res.content.map((c, i) => ({ ...c, text: fixText(c.text) + (i === 0 ? `\n\n${serverLine}` : "") })),
         ...(structured ? { structuredContent: structured } : {}),
       };
     },

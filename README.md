@@ -481,7 +481,7 @@ LEGISTAR_LIVE_URL_TEST=1 npm test         # with LEGISTAR_TOKEN set: adds the li
 
 Tests use Node's built-in runner (`node --test test/*.test.mjs`) and never need the network unless `LEGISTAR_LIVE_URL_TEST` is set. [CI](.github/workflows/ci.yml) runs them on every pull request to `main`, on Ubuntu (Node 20 and 22) and Windows (Node 22), and a version guard fails any PR that changes shipped code without a version bump.
 
-CI also checks BetaNYC's about-data standard: `DATA-SOURCES.json` must be valid and list a source for every tool (a test fails too), and [`data.json`](data.json), a DCAT-US 3.0 catalog made from it, must be current and valid. Rebuild it with `python3 scripts/whats_changed.py about-data catalog DATA-SOURCES.json`. `src/betanyc-tools.ts`, `scripts/whats_changed.py`, `scripts/tests/catalog_validate.py` and `scripts/mcp_shared/` are copies of BetaNYC's shared files: do not edit them here.
+CI fails if `DATA-SOURCES.json` is invalid or leaves a tool without a source (a test checks this too), or if [`data.json`](data.json), the DCAT-US 3.0 catalog made from it, is out of date or invalid. These checks follow BetaNYC's about-data standard. Rebuild it with `python3 scripts/whats_changed.py about-data catalog DATA-SOURCES.json`. `src/betanyc-tools.ts`, `scripts/whats_changed.py`, `scripts/tests/catalog_validate.py` and `scripts/mcp_shared/` are copies of BetaNYC's shared files: do not edit them here.
 
 The council terms snapshot (`data/council-member-terms.json`) is refreshed by `node scripts/refresh-member-terms.mjs`. A [monthly workflow](.github/workflows/refresh-member-terms.yml) runs it and opens a PR when the City's rows change. The snapshot ships in the package, so a refresh needs a version bump like code does.
 
