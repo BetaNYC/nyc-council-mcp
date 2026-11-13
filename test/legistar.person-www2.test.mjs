@@ -35,18 +35,37 @@ const encarnacion = () => ({
   PersonWWW2: BAD,
 });
 
+// The Maloney entry as it shipped in 2.7.0. Upstream was fixed (checked
+// 2026-11-12), so it is no longer in PERSON_WWW2_OVERRIDES; the mechanism is
+// tested by passing it in.
+const MALONEY_OVERRIDE = [{
+  personId: 7894,
+  name: "Virginia Maloney",
+  badProfileId: "329370",
+  correct: MALONEY_CORRECT,
+  verified: "2026-09-30",
+  reference: "https://github.com/BetaNYC/nyc-council-mcp/issues/38",
+}];
+
 function mockFetch(body) {
   global.fetch = async () => ({ ok: true, json: async () => body });
 }
 
-test("get_council_member corrects Maloney's PersonWWW2 to her own profile (#38)", async () => {
-  mockFetch([maloney()]);
-  const res = await handleLiveTool("get_council_member", { name: "Maloney" }, "test-token");
-  const [rec] = JSON.parse(res.content[0].text);
+test("an override corrects a known-bad PersonWWW2 and keeps the upstream value (#38)", () => {
+  const [rec] = correctPersonProfiles([maloney()], MALONEY_OVERRIDE);
   assert.equal(rec.PersonWWW2, MALONEY_CORRECT);
   assert.equal(rec.PersonWWW2_upstream, BAD, "the upstream value is kept for transparency");
   assert.match(rec.PersonWWW2_warning, /Corrected/);
   assert.equal(rec.PersonWWW, "https://council.nyc.gov/district-4/", "other fields pass through");
+});
+
+test("upstream fixed: get_council_member returns Legistar's own link, no warning (#38)", async () => {
+  const fixed = { ...maloney(), PersonWWW2: MALONEY_CORRECT + "&Search=" };
+  mockFetch([fixed]);
+  const res = await handleLiveTool("get_council_member", { name: "Maloney" }, "test-token");
+  const [rec] = JSON.parse(res.content[0].text);
+  assert.equal(rec.PersonWWW2, fixed.PersonWWW2);
+  assert.equal(rec.PersonWWW2_warning, undefined);
 });
 
 test("Encarnación's own (correct) record is not altered (#38)", async () => {
@@ -59,7 +78,7 @@ test("Encarnación's own (correct) record is not altered (#38)", async () => {
 
 test("the override is a no-op once upstream is fixed (#38)", () => {
   const fixedUpstream = { ...maloney(), PersonWWW2: MALONEY_CORRECT + "&Search=" };
-  const [rec] = correctPersonProfiles([fixedUpstream]);
+  const [rec] = correctPersonProfiles([fixedUpstream], MALONEY_OVERRIDE);
   assert.equal(rec.PersonWWW2, fixedUpstream.PersonWWW2);
   assert.equal(rec.PersonWWW2_warning, undefined);
 });
@@ -74,7 +93,7 @@ test("two people sharing one profile link without an override are both flagged, 
 });
 
 test("both Maloney and Encarnación in one result: Maloney corrected, Encarnación unflagged", () => {
-  const [m, e] = correctPersonProfiles([maloney(), encarnacion()]);
+  const [m, e] = correctPersonProfiles([maloney(), encarnacion()], MALONEY_OVERRIDE);
   assert.equal(m.PersonWWW2, MALONEY_CORRECT);
   assert.equal(e.PersonWWW2, BAD);
   assert.equal(e.PersonWWW2_warning, undefined);
