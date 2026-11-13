@@ -18,6 +18,21 @@ The local index holds every matter in the [jehiah/nyc_legislation](https://githu
 
 ---
 
+## What's new in 2.8.0
+
+- **Who holds a district.** New tool `district_member` says who held Council District 1 to 51 on any date. It reads the City's list of every Council term since 1999 (NYC Open Data [`uvw5-9znb`](https://data.cityofnewyork.us/d/uvw5-9znb)), which ships with the package. When the City's file is behind, the answer names the missing member. On 2026-11-12 that was Carl Wilson, District 3. See [Known traps](#known-traps).
+- **Committees, chairs and caucuses.** New tools `get_member_roles` and `committee_roster` say who chairs what and who sits where, today or on a past date, from Legistar's own membership records. Party is never inferred from a caucus.
+- **Member facts curated by BetaNYC, labeled as such.** `get_council_member` and `get_member_roles` add a `curated` block with Wikidata and Wikipedia links, party as every ballot line the member won on (NYC has fusion voting), and office social accounts. Each fact carries its source and check date, and the block says it is not an official record. Rules: [`data/README.md`](data/README.md).
+- **"Where does this data come from?"** New tool `about_data` works in every mode. It gives each source, its publisher, whether it is official or BetaNYC's curation, how current it is on this server, its terms, a credit line and where to report an error. The same facts are in [`DATA-SOURCES.json`](DATA-SOURCES.json) and a DCAT-US 3.0 catalog, [`data.json`](data.json), with lab@beta.nyc as BetaNYC's contact. See [Where the data comes from](#where-the-data-comes-from-every-mode).
+- **Search the full text.** Local search now reads summaries and full text, not only titles. New tool `get_matter` finds one matter by file number or Local Law number, with its attachments. New live tool `get_bill_attachments` lists a matter's files with download links.
+- **Links for every matter type.** `legistar_url` now opens Resolutions, Land Use, M and T items, not only Introductions. See [`legistar_url`](#legistar_url--the-human-openable-link).
+- **Answers you can date and check.** Every local answer names when the index was built and from which archive commit. With a token, `upcoming_events` checks each meeting's status live. Vote times are New York local time, and voting records are ordered by vote date and name the member who voted.
+- **Upgrading:** the first `index` run after upgrading rebuilds the index in full, once (about 25 seconds on the 2026-11-11 archive).
+
+The full list is in [CHANGELOG.md](CHANGELOG.md).
+
+---
+
 ## Quick start
 
 The recommended setup, for Claude Code:
@@ -84,7 +99,7 @@ npx @betanyc/nyc-council-mcp index \
   --verbose
 ```
 
-This takes roughly 15 seconds and produces a `legistar.db` file of about 900 MB (it indexes ~21,500 matters, ~17,300 events, and ~509,000 roll-call vote rows).
+This takes roughly 25 seconds and produces a `legistar.db` file of about 1 GB. On the 2026-11-11 archive it indexed 21,803 matters, 17,532 events and 517,562 roll-call vote rows. It also loads the Council terms list that ships with the package, with no network call.
 
 **Step 4 — Configure your MCP client**
 
@@ -100,7 +115,7 @@ If you only want the live Legistar API tools and don't need local search, just s
 
 ### Local-only mode (no API key)
 
-If you only want fast local search (no real-time data), set `LEGISTAR_DB_PATH` and skip the API key. Note: `get_upcoming_hearings`, `get_bill` (current status), and similar live tools will be unavailable.
+If you only want fast local search (no real-time data), set `LEGISTAR_DB_PATH` and skip the API key. Note: `get_upcoming_hearings`, `get_bill` (current status), and similar live tools will be unavailable. `about_data`, `district_member` and the other local tools work without a token.
 
 ### Build from source
 
@@ -366,6 +381,15 @@ You can also pass a full name: `agency="department of transportation"` or `agenc
 3. search_bills("bicycle", committee="Transportation")  → bills in their area
 ```
 
+### Who represents a district, and what do they chair?
+
+```
+1. district_member(district=3)                 → who held the seat today (or as_of a past date)
+2. get_member_roles("Brewer")                  → committees, chairs, caucuses, district and terms
+3. get_council_member("Gale Brewer")           → live contact info, plus the curated block
+4. about_data(topic="party")                   → where the party lines came from, and that they are BetaNYC's curation
+```
+
 ### Track upcoming hearings
 
 ```
@@ -415,8 +439,13 @@ Options:
 This matters because an incremental run skips files by modification time, so widening
 coverage would otherwise leave older files permanently unindexed. When a trigger fires,
 `--verbose` names it and the run drops and recreates the data tables before indexing.
-Upgrading to 2.6.0 fires the schema trigger once, so your **first index after upgrading
-takes a full rebuild** (~15 seconds) and picks up roll-call votes and matter history.
+Upgrading to 2.8.0 (schema version 6) fires the schema trigger once, so your **first index
+after upgrading takes a full rebuild** (about 25 seconds) and picks up full text, Local Law
+numbers, attachments, membership records and Council terms. Until then, an older index keeps
+working: search returns null `version` and `local_law`, and the new tools say to re-index.
+
+Every run, full or incremental, also reloads the Council terms snapshot that ships in the
+package (`data/council-member-terms.json`). It needs no network.
 
 **An archive with no matching files is an error, not an empty index.** If `--archive`
 points at a directory where none of `people/*.json`, `introduction/**/*.json`,
