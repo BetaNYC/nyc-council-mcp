@@ -7,6 +7,7 @@ import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 import Database from "better-sqlite3";
 
 import { CREATE_TABLES } from "../dist/db/schema.js";
@@ -63,7 +64,7 @@ test("a database path that does not exist is named at startup, not 'no data sour
   const missing = join(tmpdir(), "nyc-council-mcp-no-such-dir", "legistar.db");
   const env = { ...process.env, LEGISTAR_DB_PATH: missing };
   delete env.LEGISTAR_TOKEN;
-  const r = spawnSync(process.execPath, [new URL("../dist/index.js", import.meta.url).pathname], { env, input: "", encoding: "utf8", timeout: 20000 });
+  const r = spawnSync(process.execPath, [fileURLToPath(new URL("../dist/index.js", import.meta.url))], { env, input: "", encoding: "utf8", timeout: 20000 });
   assert.equal(r.status, 1);
   assert.match(r.stderr, /not found/);
   assert.ok(r.stderr.includes(missing), "names the path it looked at");
