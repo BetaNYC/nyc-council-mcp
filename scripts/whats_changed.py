@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-# betanyc-shared: whats_changed.py v1.3.2
-# betanyc-shared-sha256: 733b1662ab0d54a55bcf09a6fcbafd1bfcec37bfefc982ede00071f190d3bf99
+# betanyc-shared: whats_changed.py v1.3.3
+# betanyc-shared-sha256: 78b8358a83ac595de8925079625130e8939e5d2e6052b5bda77ae2106127b7ba
 # Canonical copy: betanyc-ai-workspace scripts/whats_changed.py. Do not edit a copy in
 # another repo; change the canonical file, re-stamp it, and copy it again.
 # Drift check: scripts/whats_changed_drift.py. Standard: platform/system/whats-changed-standard.md.
@@ -1117,6 +1117,11 @@ DS_NOT_ENDPOINT_RE = re.compile(r"^https?://(?:www\.)?(?:npmjs\.com|github\.com)
 DS_CONTACT_PLACEHOLDER = "contact-not-yet-named@example.invalid"
 # What BetaNYC did to the data. Plain verbs a reader understands; the standard defines each.
 DS_STEPS = ("cleaned", "filtered", "reshaped", "address-matched", "merged", "counted", "curated")
+# Steps that change only format or structure, never a value. Every other step changes values:
+# cleaned (fixes or drops records), filtered (drops records), address-matched (adds values),
+# merged (adds another source's values), counted (new figures), curated (hand-collected).
+# Only these keep "Official record: yes"; any other step makes the figures BetaNYC's.
+DS_FORMAT_ONLY_STEPS = ("reshaped",)
 # ISO 19115 maintenance frequency codes, as listed in DCAT-US 3.0 definitions/Dataset.json
 # (accrualPeriodicity, first enum), GSA/dcat-us@4996591.
 DS_FREQUENCIES = ("continual", "daily", "weekly", "fortnightly", "monthly", "quarterly", "biannually",
@@ -1603,14 +1608,22 @@ def _ds_rights(t: dict, *, credit: bool) -> list[str]:
     return rights
 
 
+def values_changed(s: dict) -> bool:
+    """True when BetaNYC changed any value: any step but `reshaped` (DS_FORMAT_ONLY_STEPS)."""
+    ch = s["changes"]
+    return bool(ch["changed"]) and any(step not in DS_FORMAT_ONLY_STEPS for step in ch["steps"])
+
+
 def official_wording(s: dict) -> str:
-    """What to say about officialness. Same words as the about_data tool's text."""
+    """What to say about officialness. Same words as officialWording() in the TS module."""
     pub = s["publisher"]["name"]
     if not s["official"]:
         return f"Not an official record: curated by {BETANYC_NAME} from material published by {pub}."
-    if s["changes"]["changed"]:
+    if values_changed(s):
         return (f"Official source: yes. These figures are {BETANYC_NAME}'s, derived from it, "
                 f"not an official {pub} report.")
+    if s["changes"]["changed"]:
+        return f"Official record: yes, reshaped by {BETANYC_NAME} (values unchanged)."
     return f"Official record: yes, passed on as {pub} publishes it."
 
 
@@ -1674,9 +1687,11 @@ def build_dcat(doc: dict) -> dict:
         cov = s["coverage"]
         ds_id = f"{src_file}#{s['id']}"
         provenance = [official_wording(s), s["how_gathered"]]
-        if s["changes"]["changed"]:
+        if values_changed(s):
             provenance.append(f"Changed by {BETANYC_NAME}: {s['changes']['detail']}")
-        if s["official"] and not s["changes"]["changed"]:
+        elif s["changes"]["changed"]:
+            provenance.append(f"Reshaped by {BETANYC_NAME} (values unchanged): {s['changes']['detail']}")
+        if s["official"] and not values_changed(s):
             # Passed on unchanged: errors in the figures are the publisher's to fix.
             served_contact = {**contact, "fn": (
                 f"{BETANYC_NAME} (serves this dataset; report errors in the data to {s['publisher']['name']}: "

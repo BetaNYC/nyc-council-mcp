@@ -487,7 +487,7 @@
       "identifier": "https://github.com/BetaNYC/nyc-council-mcp/blob/HEAD/DATA-SOURCES.json#events",
       "contactPoint": {
         "@type": "Kind",
-        "fn": "BetaNYC",
+        "fn": "BetaNYC (serves this dataset; report errors in the data to New York City Council: https://council.nyc.gov/legislation/api/; errors in this server: https://github.com/BetaNYC/nyc-council-mcp/issues)",
         "hasEmail": "mailto:contact-not-yet-named@example.invalid"
       },
       "publisher": {
@@ -537,9 +537,9 @@
         }
       ],
       "provenance": [
-        "Official source: yes. These figures are BetaNYC's, derived from it, not an official New York City Council report.",
+        "Official record: yes, reshaped by BetaNYC (values unchanged).",
         "This server answers from a local SQLite index, with no network call. The index is built from a clone of jehiah/nyc_legislation (https://github.com/jehiah/nyc_legislation), an unofficial mirror that copies the Council's Legistar records through the Legistar API. Every local answer ends with a line naming when the index was built and the archive commit it was built from.",
-        "Changed by BetaNYC: Records are restructured into database tables with their values unchanged."
+        "Reshaped by BetaNYC (values unchanged): Records are restructured into database tables with their values unchanged."
       ],
       "page": [
         {

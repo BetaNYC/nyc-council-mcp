@@ -228,7 +228,7 @@
                 "type": "boolean"
               },
               "steps": {
-                "description": "What BetaNYC did: cleaned, filtered, reshaped, address-matched, merged, counted, curated (defined in the standard).",
+                "description": "What BetaNYC did: cleaned, filtered, reshaped, address-matched, merged, counted, curated (defined in the standard). Only reshaped (format or structure, values unchanged) keeps \"Official record: yes\"; every other step makes the figures BetaNYC's.",
                 "type": "array",
                 "items": {
                   "type": "string",

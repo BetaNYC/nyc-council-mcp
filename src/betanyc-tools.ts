@@ -1,5 +1,5 @@
-// betanyc-shared: betanyc-tools.ts v1.3.2
-// betanyc-shared-sha256: 2e5367fe2c300e3842d0184a32048ca8f03b22f09d57f2751e563cb046c0826e
+// betanyc-shared: betanyc-tools.ts v1.3.3
+// betanyc-shared-sha256: 1099e678e42046265788216d3d1efaddfa4d0ceb2a63a5b2d1c440fde4b0d6f9
 // Canonical copy: betanyc-ai-workspace scripts/mcp_shared/betanyc-tools.ts. Do not edit a copy
 // in a server repo; change the canonical file, re-stamp it, and copy it again.
 // Drift check: scripts/whats_changed_drift.py. Standard: platform/system/whats-changed-standard.md.
@@ -23,7 +23,7 @@
 import { readFileSync } from "node:fs";
 import { pathToFileURL } from "node:url";
 
-export const SHARED_MODULE_VERSION = "1.3.2";
+export const SHARED_MODULE_VERSION = "1.3.3";
 
 // --------------------------------------------------------------------------- types
 
@@ -1527,7 +1527,7 @@ export const ABOUT_DATA_TOOL: ToolDefinition = {
             official: { type: "boolean", description: "The source is an official record (false: BetaNYC's curation)" },
             figures_official: {
               type: "boolean",
-              description: "True only when the source is official and BetaNYC passes it on unchanged. False means these figures are BetaNYC's, not an official report",
+              description: "True when the source is official and BetaNYC changed no value (passed on as published, or only reshaped). False means these figures are BetaNYC's, not an official report",
             },
             how_gathered: { type: "string" },
             changed_by_betanyc: {
@@ -1713,10 +1713,20 @@ function dsFileUrl(config: BetanycServerConfig): string {
   return `${repoBase(config.repoUrl)}/blob/HEAD/${DATA_SOURCES_FILE}`;
 }
 
+/** Steps that change only format or structure, never a value (see DS_FORMAT_ONLY_STEPS in
+ * whats_changed.py). Every other step changes values and makes the figures BetaNYC's. */
+export const DS_FORMAT_ONLY_STEPS: readonly string[] = ["reshaped"];
+
+/** True when BetaNYC changed any value: any step but a format-only one. */
+export function valuesChanged(changed: boolean, steps: readonly string[]): boolean {
+  return changed && steps.some((st) => !DS_FORMAT_ONLY_STEPS.includes(st));
+}
+
 /** What to say about officialness. Same words as official_wording() in whats_changed.py. */
-export function officialWording(official: boolean, changed: boolean, publisher: string): string {
+export function officialWording(official: boolean, changed: boolean, publisher: string, steps: readonly string[] = []): string {
   if (!official) return `Not an official record: curated by BetaNYC from material published by ${publisher}.`;
-  if (changed) return `Official source: yes. These figures are BetaNYC's, derived from it, not an official ${publisher} report.`;
+  if (valuesChanged(changed, steps)) return `Official source: yes. These figures are BetaNYC's, derived from it, not an official ${publisher} report.`;
+  if (changed) return "Official record: yes, reshaped by BetaNYC (values unchanged).";
   return `Official record: yes, passed on as ${publisher} publishes it.`;
 }
 
@@ -1796,7 +1806,7 @@ export function handleAboutData(config: BetanycServerConfig, args: unknown, now:
       publisher: s.publisher!.name!,
       source_url: s.source_url!,
       official: s.official!,
-      figures_official: s.official! && !s.changes!.changed,
+      figures_official: s.official! && !valuesChanged(s.changes!.changed!, s.changes!.steps),
       how_gathered: s.how_gathered!,
       changed_by_betanyc: { changed: s.changes!.changed!, steps: s.changes!.steps, detail: s.changes!.detail },
       ...fresh,
@@ -1834,7 +1844,7 @@ export function handleAboutData(config: BetanycServerConfig, args: unknown, now:
       `${s.title} [topic: ${s.topic}]`,
       `What it is: ${s.what}`,
       `Source: ${s.source}, published by ${s.publisher}. ${s.source_url}`,
-      officialWording(s.official, s.changed_by_betanyc.changed, s.publisher),
+      officialWording(s.official, s.changed_by_betanyc.changed, s.publisher, s.changed_by_betanyc.steps),
       `How it is gathered: ${s.how_gathered}`,
       s.changed_by_betanyc.changed
         ? `Changed by BetaNYC (${s.changed_by_betanyc.steps.join(", ")}): ${s.changed_by_betanyc.detail}`
