@@ -124,4 +124,11 @@ Automated daily updates (launchd / cron):
       `votes=${stats.votes} history=${stats.matterHistory} ` +
       `skipped=${stats.skipped} errors=${stats.errors} (${elapsed}s)`
   );
+  // What was read can exceed what is stored (a matter in two archive files).
+  const { indexTotals } = await import("./db/indexer.js");
+  const t = indexTotals(resolvedDb);
+  console.log(
+    `Index now holds: bills=${t.bills} events=${t.events} people=${t.people} ` +
+      `votes=${t.votes} history=${t.history} terms=${t.terms}`
+  );
 }

@@ -69,3 +69,18 @@ test("a database path that does not exist is named at startup, not 'no data sour
   assert.match(r.stderr, /not found/);
   assert.ok(r.stderr.includes(missing), "names the path it looked at");
 });
+
+test("the index summary can report what is stored, not only what was read", async () => {
+  // The archive can hold one matter in two files; it is read twice and stored once.
+  const { mkdtempSync, mkdirSync, writeFileSync } = await import("node:fs");
+  const { buildIndex, indexTotals } = await import("../dist/db/indexer.js");
+  const root = mkdtempSync(join(tmpdir(), "legistar-totals-"));
+  mkdirSync(join(root, "resolution", "2026"), { recursive: true });
+  const matter = { ID: 79300, File: "Res 0704-2026", Title: "x", TypeName: "Resolution", History: [] };
+  writeFileSync(join(root, "resolution", "2026", "0704.json"), JSON.stringify(matter));
+  writeFileSync(join(root, "resolution", "2026", "0704-copy.json"), JSON.stringify(matter));
+  const dbPath = join(root, "t.db");
+  const stats = await buildIndex({ archiveRoot: root, dbPath, full: true, termsPath: join(root, "none.json") });
+  assert.equal(stats.bills, 2, "two files read");
+  assert.equal(indexTotals(dbPath).bills, 1, "one matter stored");
+});

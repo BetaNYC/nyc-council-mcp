@@ -694,6 +694,28 @@ function indexMemberTerms(db: Sqlite.Database, path: string | URL, verbose?: boo
   return n;
 }
 
+/**
+ * Rows stored in the index. buildIndex's stats count records read this run,
+ * which can be higher: the archive can hold one matter in two files, read
+ * twice and stored once (found on home-hearth, 2026-11-13).
+ */
+export function indexTotals(dbPath: string): Record<"bills" | "events" | "people" | "votes" | "history" | "terms", number> {
+  const db = new Sqlite(dbPath, { readonly: true });
+  try {
+    const n = (table: string) => (db.prepare(`SELECT COUNT(*) AS n FROM ${table}`).get() as { n: number }).n;
+    return {
+      bills: n("bills"),
+      events: n("events"),
+      people: n("people"),
+      votes: n("votes"),
+      history: n("matter_history"),
+      terms: n("member_terms"),
+    };
+  } finally {
+    db.close();
+  }
+}
+
 export async function buildIndex(opts: IndexOptions): Promise<IndexStats> {
   const stats: IndexStats = { bills: 0, events: 0, people: 0, votes: 0, matterHistory: 0, skipped: 0, errors: 0 };
 
