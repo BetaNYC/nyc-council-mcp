@@ -14,31 +14,35 @@ export function odataString(value: string): string {
 }
 
 /**
- * Build a human-openable Legistar URL for a matter, from its file number
- * (e.g. "Int 0976-2026"). Returns null when no safe link can be built.
+ * Build a human-openable Legistar URL for a matter, from its WebAPI MatterId.
+ * Returns null when there is no usable id. Works for every matter type
+ * (Int, Res, LU, M, T, …) — #45.
  *
- * WHY intro.nyc and NOT LegislationDetail.aspx: NYC runs two independent
- * Legistar backends with DIFFERENT ids. The OData WebAPI this server reads
- * exposes MatterId/MatterGuid; the public LegislationDetail.aspx page keys on a
- * SEPARATE ID/GUID that appears nowhere in the OData record. So
- * `LegislationDetail.aspx?ID={MatterId}&GUID={MatterGuid}` returns "Invalid
- * parameters!" — there is no formula from the OData id to the website id.
- * (Verified 2026-07-16 for Int 0976-2026: OData MatterId=78436 vs website
- * ID=8138338; both the numeric id and the GUID differ.)
+ * WHY gateway.aspx and NOT LegislationDetail.aspx: NYC runs two Legistar
+ * backends with DIFFERENT ids. The OData WebAPI exposes MatterId/MatterGuid;
+ * the public LegislationDetail.aspx page keys on a SEPARATE ID/GUID found
+ * nowhere in the OData record, so `LegislationDetail.aspx?ID={MatterId}`
+ * returns "Invalid parameters!". But
+ * `legistar.council.nyc.gov/gateway.aspx?M=L&ID={MatterId}` takes the WebAPI id
+ * and 302-redirects to the right LegislationDetail page.
  *
- * intro.nyc (Jehiah Czebotar's redirector, built on the same nyc_legislation
- * archive) 302-redirects `/{NNNN-YYYY}` to the correct Legistar page — but it
- * keys on the bare number and ASSUMES type = Introduction. Verified 2026-07-16:
- * intro.nyc/0232-2024.json returns File "Int 0232-2024", i.e. it has exactly
- * one record per number, the Introduction. So `/0052-2026` resolves to Int
- * 0052-2026, never the same-numbered M (Land Use Call-Up). We therefore emit a
- * link ONLY for Introductions (MatterFile prefix "Int "); Resolutions, LU, M,
- * T, Oversight, etc. return null, because a wrong link is worse than no link.
+ * Verified live 2026-11-12 (MatterId → website ID): Res 0551-2026 79177 →
+ * 8134167; Res 0595-2026 79255 → 8166249; Res 0652-2026 79533 → 8219009;
+ * Res 0695-2026 79639 → 8286520; T2026-2764 79717 → 8315915; plus an Int. An
+ * unknown id gets a 200 "This record is currently unavailable." page.
+ *
+ * gateway.aspx is NOT in Granicus's published WebAPI docs: it is how the
+ * Legistar site itself links to records, observed behavior rather than a
+ * documented contract. The live test in test/legistar.url.test.mjs
+ * (LEGISTAR_LIVE_URL_TEST=1) re-checks it.
+ *
+ * Before #45 this emitted intro.nyc links for Introductions only and null for
+ * everything else, because intro.nyc keys on the bare number and assumes type
+ * = Introduction.
  */
-export function legistarUrl(matterFile: string | null | undefined): string | null {
-  if (!matterFile) return null;
-  const m = /^Int\s+(\d{4}-\d{4})$/i.exec(matterFile.trim());
-  return m ? `https://intro.nyc/${m[1]}` : null;
+export function legistarUrl(matterId: number | null | undefined): string | null {
+  if (typeof matterId !== "number" || !Number.isInteger(matterId) || matterId <= 0) return null;
+  return `https://legistar.council.nyc.gov/gateway.aspx?M=L&ID=${matterId}`;
 }
 
 export type LegistarMatter = {

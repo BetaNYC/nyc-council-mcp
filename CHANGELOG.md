@@ -7,7 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Dates are npm publish dates (`npm view @betanyc/nyc-council-mcp time`).
 
-## [2.7.1] - unreleased
+## [2.8.0] - unreleased
+
+### Fixed
+- **`legistar_url` now works for every matter type, not just Introductions
+  ([#45](https://github.com/BetaNYC/nyc-council-mcp/issues/45)).** Resolutions, Land
+  Use, M, T and the rest were always `null`. The link is now
+  `https://legistar.council.nyc.gov/gateway.aspx?M=L&ID={MatterId}`, which redirects
+  from the WebAPI id to the right `LegislationDetail.aspx` page. Checked live on five
+  Resolutions/T-items and an Introduction. `gateway.aspx` is not in Granicus's API
+  docs; the README says so.
+
+### Changed
+- Introductions now link through `gateway.aspx` too, not intro.nyc, so one rule
+  covers every type.
+- `get_bill_hearings`, `get_event_bills` and `get_voting_record` rows now include
+  `matter_id`, the id the link is built from.
+
+## [2.7.1] - 2026-11-09
 
 ### Added
 - **Listing in the official MCP Registry as `io.github.BetaNYC/nyc-council-mcp`.**
