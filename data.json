@@ -180,7 +180,7 @@
       "accrualPeriodicity": "asNeeded",
       "license": "https://creativecommons.org/publicdomain/zero/1.0/",
       "rights": [
-        "License: CC0 1.0 (Wikidata structured data). Only links to Wikipedia articles are used, no article text (that text is CC BY-SA).",
+        "License: CC0 1.0 (Wikidata structured data). Only links to Wikipedia articles are used, no article text (that text is CC BY-SA)",
         "Terms of use: https://www.wikidata.org/wiki/Wikidata:Licensing"
       ]
     },
@@ -743,7 +743,7 @@
       "accrualPeriodicity": "irregular",
       "rights": [
         "License: No restrictions on use: NYC Administrative Code § 23-502(d) (the Open Data Law, Local Law 11 of 2012)",
-        "Credit: Source: New York City Council, City Council Members (1999 to Present), NYC Open Data uvw5-9znb, in the snapshot dated by about_data; used as published.",
+        "Credit: Source: New York City Council, City Council Members (1999 to Present), NYC Open Data uvw5-9znb; used as published.",
         "Terms of use: https://codelibrary.amlegal.com/codes/newyorkcity/latest/NYCadmin/0-0-0-216807"
       ],
       "scopeNote": "Known gap: The City updates this file late. A seat that looks vacant may have a new member; the answer then names anyone Legistar lists who is missing from the file. Caveat: How current is when this server's copy was fetched from NYC Open Data. Caveat: District lines are redrawn, so a past district number may not match today's map."
@@ -890,7 +890,7 @@
           "accrualPeriodicity": "asNeeded",
           "license": "https://creativecommons.org/publicdomain/zero/1.0/",
           "rights": [
-            "License: CC0 1.0 (Wikidata structured data). Only links to Wikipedia articles are used, no article text (that text is CC BY-SA).",
+            "License: CC0 1.0 (Wikidata structured data). Only links to Wikipedia articles are used, no article text (that text is CC BY-SA)",
             "Terms of use: https://www.wikidata.org/wiki/Wikidata:Licensing"
           ]
         }
@@ -920,7 +920,7 @@
       "accrualPeriodicity": "asNeeded",
       "license": "https://creativecommons.org/publicdomain/zero/1.0/",
       "rights": [
-        "License: CC0 1.0 (Wikidata structured data). Only links to Wikipedia articles are used, no article text (that text is CC BY-SA).",
+        "License: CC0 1.0 (Wikidata structured data). Only links to Wikipedia articles are used, no article text (that text is CC BY-SA)",
         "Terms of use: https://www.wikidata.org/wiki/Wikidata:Licensing"
       ],
       "scopeNote": "Known gap: Former members are not covered. Caveat: Most errors here would be in BetaNYC's copying or matching, so report them first at https://github.com/BetaNYC/nyc-council-mcp/issues. To check a row, use the Wikidata item and Wikipedia article each row links. Caveat: How current is the date BetaNYC last checked the file, not a build date. Caveat: All 51 rows have status verified, and each records its second check (second_check). No person has reviewed the rows one by one."

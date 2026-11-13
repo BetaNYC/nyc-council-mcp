@@ -321,7 +321,7 @@
       "terms": {
         "license_name": "No restrictions on use: NYC Administrative Code § 23-502(d) (the Open Data Law, Local Law 11 of 2012)",
         "terms_url": "https://codelibrary.amlegal.com/codes/newyorkcity/latest/NYCadmin/0-0-0-216807",
-        "credit_line": "Source: New York City Council, City Council Members (1999 to Present), NYC Open Data uvw5-9znb, in the snapshot dated by about_data; used as published."
+        "credit_line": "Source: New York City Council, City Council Members (1999 to Present), NYC Open Data uvw5-9znb; used as published."
       },
       "report_errors": {
         "upstream_url": "https://www.nyc.gov/opendata/contact-us"
@@ -426,7 +426,7 @@
         ]
       },
       "terms": {
-        "license_name": "CC0 1.0 (Wikidata structured data). Only links to Wikipedia articles are used, no article text (that text is CC BY-SA).",
+        "license_name": "CC0 1.0 (Wikidata structured data). Only links to Wikipedia articles are used, no article text (that text is CC BY-SA)",
         "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
         "terms_url": "https://www.wikidata.org/wiki/Wikidata:Licensing"
       },
