@@ -10,6 +10,15 @@ Dates are npm publish dates (`npm view @betanyc/nyc-council-mcp time`).
 ## [2.8.0] - unreleased
 
 ### Added
+- **`about_data`: ask where the data comes from
+  ([#48](https://github.com/BetaNYC/nyc-council-mcp/issues/48)).** A new tool, available in
+  every mode, answers "where does this come from?", "how current is it?" and "who made
+  this?". It names BetaNYC and the Fund for the City of New York, the repo, the license and
+  how to send a correction. For each kind of data it gives the source, whether the data is
+  official or curated by BetaNYC, how it was gathered, and its date on this server (index
+  build and archive commit, district snapshot, curated check dates). The server's MCP
+  `instructions` tell AI apps to call it when someone asks about sources. A test fails if a
+  new tool ships without a documented source.
 - **Committees, chairs, caucuses and delegations for every member
   ([#28](https://github.com/BetaNYC/nyc-council-mcp/issues/28), first of its four
   layers).** The indexer now keeps each person's Legistar `OfficeRecords` (6,027 rows over
