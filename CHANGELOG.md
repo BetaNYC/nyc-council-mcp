@@ -17,6 +17,15 @@ Dates are npm publish dates (`npm view @betanyc/nyc-council-mcp time`).
   files its website page lists, and the files match byte for byte.
 
 ### Fixed
+- **Member names match the way people type them
+  ([#40](https://github.com/BetaNYC/nyc-council-mcp/issues/40)).** `get_council_member`,
+  `get_voting_record` and `co_sponsors` found nobody for "Carmen De La Rosa", because
+  Legistar stores "Carmen N. De La Rosa". About 30 of 181 active Legistar people have a
+  middle initial, a trailing or double space, or an accent ("Amanda C. Farías"). Names
+  now match word by word, in any order, ignoring case, accents, middle initials and
+  extra spaces. Every word you type must match, so "Carmen De La Rosa" no longer
+  matches "John LaRosa". `get_council_member` now fetches the active members and
+  matches in code, because Legistar's search cannot ignore accents.
 - **`legistar_url` now works for every matter type, not just Introductions
   ([#45](https://github.com/BetaNYC/nyc-council-mcp/issues/45)).** Resolutions, Land
   Use, M, T and the rest were always `null`. The link is now

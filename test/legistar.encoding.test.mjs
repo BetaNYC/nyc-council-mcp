@@ -105,7 +105,8 @@ test("getCouncilMember and getCommittee: names with spaces survive one encoding 
   const urls = mockFetch([[]]);
   await getCouncilMember(TOKEN, "Sandy Nurse");
   await getCommittee(TOKEN, "Technology and Innovation");
-  assert.ok(filterOf(urls[0]).includes("substringof('Sandy Nurse',PersonFullName)"));
+  // #40: the member name is matched in code (names.ts), not sent upstream.
+  assert.equal(filterOf(urls[0]), "PersonActiveFlag eq 1");
   assert.ok(filterOf(urls[1]).includes("substringof('Technology and Innovation',BodyName)"));
 });
 

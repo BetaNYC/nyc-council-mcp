@@ -1,4 +1,5 @@
 import { nyDateString } from "./dates.js";
+import { nameMatches } from "./names.js";
 
 const BASE_URL = "https://webapi.legistar.com/v1/nyc";
 
@@ -538,11 +539,13 @@ export async function getCouncilMember(
   token: string,
   name: string
 ): Promise<CouncilMemberRecord[]> {
-  const url = buildUrl("/persons", token, {
-    $filter: `substringof('${odataString(name)}',PersonFullName) and PersonActiveFlag eq 1`,
-    $top: "10",
-  });
-  return correctPersonProfiles(await legistarFetch<LegistarPerson[]>(url));
+  // Fetch every active member (about 180 rows, one request) and match the name
+  // here: upstream substringof misses middle initials, odd spacing and accents
+  // (#40). See names.ts.
+  const url = buildUrl("/persons", token, { $filter: "PersonActiveFlag eq 1" });
+  const people = await legistarFetch<LegistarPerson[]>(url);
+  const matched = people.filter((p) => nameMatches(name, p.PersonFullName)).slice(0, 10);
+  return correctPersonProfiles(matched);
 }
 
 export async function getCommittee(

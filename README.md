@@ -66,7 +66,7 @@ These require `LEGISTAR_TOKEN`.
 | `get_bill_history` | *Local by default* (served from the index, no token; takes a file number). In **live-only** mode this live variant answers instead — authoritative action trail by numeric matter id |
 | `get_bill_attachments` | Files attached to a matter (committee reports, resolution text, charts, transcripts), each with a direct download link. Takes the numeric matter id |
 | `get_upcoming_hearings` | Real-time upcoming committee hearings and Stated meetings, each with its agenda items (bills/matters) in `EventItems` |
-| `get_council_member` | Current contact info and active status for a council member. `PersonWWW2` (the Legistar profile page) is checked: a known-bad upstream link is corrected from a small dated override list (`PERSON_WWW2_OVERRIDES` in `src/legistar.ts`, with the original kept in `PersonWWW2_upstream`), and a link shared by two people in one result gets a `PersonWWW2_warning` |
+| `get_council_member` | Current contact info and active status for a council member. The name matches word by word, ignoring case, accents and middle initials ("Amanda Farias" finds "Amanda C. Farías"); `get_voting_record` and `co_sponsors` match names the same way. `PersonWWW2` (the Legistar profile page) is checked: a known-bad upstream link is corrected from a small dated override list (`PERSON_WWW2_OVERRIDES` in `src/legistar.ts`, with the original kept in `PersonWWW2_upstream`), and a link shared by two people in one result gets a `PersonWWW2_warning` |
 | `get_committee` | Current membership count and details for a committee |
 | `get_votes` | Per-item vote breakdown by event item ID |
 | `list_recent_legislation` | Most recently introduced legislation (catches bills since last index) |
