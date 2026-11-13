@@ -241,6 +241,12 @@ These require `LEGISTAR_TOKEN`.
 | `list_recent_legislation` | Most recently introduced legislation (catches bills since last index) |
 | `search_legislation_live` | Live Legistar search (slower than local, always current). Multi-word queries match all words in any order; quote a `"phrase"` for adjacency. No relevance ranking upstream — results are ordered by intro date (`order='date_asc'` for oldest-first). |
 
+### Where the data comes from (every mode)
+
+| Tool | Description |
+|---|---|
+| `about_data` | Ask the server where its data comes from. It answers with who made it (BetaNYC, a project of the Fund for the City of New York), how it works, and, for each kind of data, the source, whether it is official or curated by BetaNYC, how it was gathered and how current it is on this server. `topic` narrows it to one kind (for example `party`, `districts`, `votes`, or `members` for everything about council members). Needs no token or index. The server's MCP instructions tell the AI app to call it whenever someone asks about sources, freshness or who is behind the answers. |
+
 ### Tool details
 
 #### `search_legislation` / `search_bills`
