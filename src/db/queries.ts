@@ -54,6 +54,10 @@ export interface BillRow {
   sponsor_names: string | null;
   // Human-openable Legistar link (any matter type; null with no matter id) — see legistarUrl.
   legistar_url: string | null;
+  // #31: "*" is the original text, "A"/"B"… an amended version. local_law is
+  // set only for enacted legislation (e.g. "2025/153"), otherwise null.
+  version?: string | null;
+  local_law?: string | null;
   snippet?: string | null;
 }
 
@@ -190,9 +194,11 @@ export function searchBills(
   const ftsQuery = buildFtsQuery(query);
   if (!ftsQuery) return [];
 
+  const v6 = hasMatterAttributes(db);
   let sql = `
     SELECT b.matter_id, b.file_number, b.title, b.type_name, b.status_name,
            b.body_name, b.intro_date, b.passed_date, b.sponsor_names,
+           ${v6 ? "b.version, b.local_law," : "NULL AS version, NULL AS local_law,"}
            b.source_json
     FROM bills_fts
     JOIN bills b ON bills_fts.rowid = b.rowid
@@ -222,7 +228,11 @@ export function searchBills(
     params.push(`%${opts.committee}%`);
   }
 
-  sql += " ORDER BY rank LIMIT ?";
+  // #31 widened the index to summary and full text. Weight the columns so a
+  // title or file-number hit still outranks a word buried in a long body text,
+  // and queries that worked before keep their order: file_number, title,
+  // sponsor_names, summary, text.
+  sql += v6 ? " ORDER BY bm25(bills_fts, 10.0, 10.0, 5.0, 2.0, 1.0) LIMIT ?" : " ORDER BY rank LIMIT ?";
   params.push(limit);
 
   const rows = db.prepare(sql).all(...params) as (BillRow & { source_json: string })[];
@@ -710,4 +720,89 @@ export function getEventBills(
     limit,
     items: rows.map((r) => ({ ...r, legistar_url: legistarUrl(r.matter_id) })),
   };
+}
+
+// ---------------------------------------------------------------------------
+// Matter attributes (#31): schema check and get_matter
+// ---------------------------------------------------------------------------
+
+const matterAttrsKnown = new WeakMap<Database.Database, boolean>();
+
+/**
+ * True when the corpus was built under schema v6 (bills has the generated
+ * columns). A corpus built by older code keeps working until the next index
+ * run rebuilds it: search returns null version/local_law, and get_matter says
+ * to re-index.
+ */
+export function hasMatterAttributes(db: Database.Database): boolean {
+  const known = matterAttrsKnown.get(db);
+  if (known !== undefined) return known;
+  const cols = db.prepare("PRAGMA table_xinfo(bills)").all() as { name: string }[];
+  const ok = cols.some((c) => c.name === "local_law");
+  matterAttrsKnown.set(db, ok);
+  return ok;
+}
+
+export const MATTER_ATTRS_NOT_INDEXED_MESSAGE =
+  "This index was built before matter text, summaries, Local Law numbers and attachments " +
+  "were indexed (schema v6). Re-run `nyc-council-mcp index`; it rebuilds in full automatically.";
+
+export interface MatterAttachmentRow {
+  attachment_id: number;
+  name: string | null;
+  link: string | null;
+  sort: number | null;
+  last_modified: string | null;
+}
+
+export interface MatterRecord {
+  matter_id: number;
+  file_number: string;
+  title: string;
+  type_name: string | null;
+  status_name: string | null;
+  body_name: string | null;
+  intro_date: string | null;
+  passed_date: string | null;
+  enact_date: string | null;
+  sponsor_names: string | null;
+  version: string | null;
+  local_law: string | null;
+  summary: string | null;
+  legistar_url: string | null;
+  attachments: MatterAttachmentRow[];
+  text?: string | null;
+}
+
+/** One matter with its attributes and attachments, by file number or Local Law number. */
+export function getMatter(
+  db: Database.Database,
+  opts: { file_number?: string; local_law?: string; include_text?: boolean }
+): MatterRecord | null {
+  if (!hasMatterAttributes(db)) throw new Error(MATTER_ATTRS_NOT_INDEXED_MESSAGE);
+  let matterId: number | null = null;
+  if (opts.file_number) {
+    matterId = resolveMatter(db, opts.file_number)?.matter_id ?? null;
+  } else if (opts.local_law) {
+    const row = db
+      .prepare("SELECT matter_id FROM bills WHERE local_law = ? LIMIT 1")
+      .get(opts.local_law.trim()) as { matter_id: number } | undefined;
+    matterId = row?.matter_id ?? null;
+  }
+  if (matterId == null) return null;
+  const m = db
+    .prepare(
+      `SELECT matter_id, file_number, title, type_name, status_name, body_name,
+              intro_date, passed_date, enact_date, sponsor_names,
+              version, local_law, summary${opts.include_text ? ", text" : ""}
+       FROM bills WHERE matter_id = ?`
+    )
+    .get(matterId) as Omit<MatterRecord, "attachments" | "legistar_url">;
+  const attachments = db
+    .prepare(
+      `SELECT attachment_id, name, link, sort, last_modified
+       FROM matter_attachments WHERE matter_id = ? ORDER BY sort, attachment_id`
+    )
+    .all(matterId) as MatterAttachmentRow[];
+  return { ...m, legistar_url: legistarUrl(m.matter_id), attachments };
 }

@@ -10,6 +10,20 @@ Dates are npm publish dates (`npm view @betanyc/nyc-council-mcp time`).
 ## [2.8.0] - unreleased
 
 ### Added
+- **Search the full text and summaries of legislation; Local Law numbers, versions and
+  attachments ([#31](https://github.com/BetaNYC/nyc-council-mcp/issues/31)).** Local search
+  now covers each matter's summary and full text, not only its title and sponsors. A title
+  hit still ranks above a body hit. Search rows carry `version` (`*` is the original text)
+  and `local_law` (null unless enacted). New local tool **`get_matter`**: one matter by file
+  number or Local Law number, with its summary, version, Local Law number, attachments
+  (`[]` when none) and, on request, its full text. No token needed.
+  - **Size, on the record:** a full build of the 2026-11-11 archive goes from 954 MB to
+    1,024 MB (+70 MB). The search index grows from 7 MB to 46 MB, and the new attachments
+    table (161,711 rows) takes 28 MB. The text is not stored twice: `text`, `summary`,
+    `version` and `local_law` are virtual generated columns over the stored source JSON.
+  - **Schema v6.** The next `index` run rebuilds the corpus in full by itself (about 25
+    seconds on the real archive). Until then, an index built by older code keeps working:
+    search returns null `version`/`local_law`, and `get_matter` says to re-index.
 - **`get_bill_attachments`** (live, needs `LEGISTAR_TOKEN`): the files attached to a
   matter, from the documented `GET /matters/{MatterId}/attachments` endpoint
   ([#45](https://github.com/BetaNYC/nyc-council-mcp/issues/45)). Each row has a name

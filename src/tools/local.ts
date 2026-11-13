@@ -19,6 +19,7 @@ import {
   coSponsors,
   getBillHearings,
   getEventBills,
+  getMatter,
 } from "../db/queries.js";
 import { unknownParamMessage } from "./unknown-param.js";
 
@@ -62,6 +63,23 @@ export const LOCAL_TOOL_DEFS = [
     name: "search_bills",
     description:
       "Alias for search_legislation (same tool, same results). Despite the name, it returns every matter type, not only bills.",
+  },
+  {
+    name: "get_matter",
+    description:
+      "One matter from the local index, by file number (e.g. 'Int 1122-2024') or Local Law number (e.g. '2025/153'). " +
+      "Returns its summary, version ('*' = original text, 'A', 'B'… = amended), Local Law number (null unless enacted), " +
+      "attachments (committee reports, fiscal impact statements, transcripts; each with a download link; [] when none), " +
+      "legistar_url, and the full text only when include_text is true. No token needed.",
+    inputSchema: {
+      type: "object",
+      additionalProperties: false,
+      properties: {
+        file_number: { type: "string", description: "Type-prefixed file number, e.g. 'Int 1122-2024'" },
+        local_law: { type: "string", description: "Local Law number as 'YYYY/NNN', e.g. '2025/153'" },
+        include_text: { type: "boolean", description: "Also return the full text (can be over 200,000 characters). Default false." },
+      },
+    },
   },
   {
     name: "search_events",
@@ -306,6 +324,27 @@ export function handleLocalTool(
         const { file_number } = z.object({ file_number: z.string() }).strict().parse(args);
         const results = getBillHearings(db, file_number);
         return json(results);
+      }
+
+      case "get_matter": {
+        const { file_number, local_law, include_text } = z
+          .object({
+            file_number: z.string().optional(),
+            local_law: z.string().optional(),
+            include_text: z.boolean().optional(),
+          })
+          .strict()
+          .parse(args ?? {});
+        if (Boolean(file_number) === Boolean(local_law)) {
+          throw new Error("get_matter needs exactly one of file_number or local_law.");
+        }
+        const m = getMatter(db, { file_number, local_law, include_text });
+        if (!m) {
+          throw new Error(
+            `No matter with ${file_number ? `file number "${file_number}"` : `Local Law number "${local_law}"`} in the local index.`
+          );
+        }
+        return json(m);
       }
 
       case "get_event_bills": {
