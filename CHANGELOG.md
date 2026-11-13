@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Dates are npm publish dates (`npm view @betanyc/nyc-council-mcp time`).
 
-## [2.8.0] - unreleased
+## [2.8.0] - 2026-11-12
 
 ### Added
 - **`about_data`: ask where the data comes from
@@ -75,6 +75,23 @@ Dates are npm publish dates (`npm view @betanyc/nyc-council-mcp time`).
   files its website page lists, and the files match byte for byte.
 
 ### Fixed
+- **Fixes from an independent review of this release (2026-11-12,
+  [#48](https://github.com/BetaNYC/nyc-council-mcp/issues/48)).**
+  - `district_member` no longer calls a seat vacant when the City's file lists someone serving
+    that day with no district (52 rows). The seat is now `unknown`, with those people listed.
+    Overlapping terms are all shown. An index with no terms loaded is an error.
+  - `get_member_roles` and `committee_roster` on an index not yet rebuilt now say "re-run the
+    indexer" instead of answering that a member sits on nothing.
+  - `upcoming_events` no longer reports meetings as missing from the index when they were only
+    past `limit`.
+  - `get_matter` finds a Local Law however it is written ("2009/1", "Local Law 1 of 2009").
+  - The `curated` block now shows each fact's `status` and `second_check`.
+  - `get_voting_record` rows carry `person_name`.
+  - Vote and history times are New York local time, without the archive's false "Z".
+  - Impossible dates such as 2026-02-30 are rejected.
+  - A server started on an old index notices the nightly rebuild without a restart.
+  - CI and the version guard now cover every shipped data file. The monthly terms refresh starts
+    CI on its own PR and never reuses a branch name.
 - **Retired the Maloney profile-link override
   ([#38](https://github.com/BetaNYC/nyc-council-mcp/issues/38)).** The Council fixed the
   record upstream: on 2026-11-12 the Legistar API returned Council Member Maloney's own

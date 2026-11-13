@@ -298,12 +298,13 @@ test("get_voting_record rows carry the vote's date, action and body, newest vote
   try {
     const rows = getVotingRecord(db, "Frank Morano");
     // Council roll call (17:05) before committee (15:30): ordered by when the
-    // vote happened, not by the bill's intro date.
+    // vote happened, not by the bill's intro date. Times are New York local:
+    // the archive's trailing "Z" is dropped at index time (review, 2026-11-12).
     assert.deepEqual(
       rows.map((r) => [r.vote_date, r.vote_action, r.vote_body, r.event_item_id]),
       [
-        ["2026-06-30T17:05:00Z", "Approved, by Council", "City Council", 440128],
-        ["2026-06-30T15:30:00Z", "P-C Item Approved by Comm", "Committee on Finance", 440111],
+        ["2026-06-30T17:05:00", "Approved, by Council", "City Council", 440128],
+        ["2026-06-30T15:30:00", "P-C Item Approved by Comm", "Committee on Finance", 440111],
       ]
     );
   } finally {

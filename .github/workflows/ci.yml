@@ -32,7 +32,7 @@ on:
       - "**/*.mjs"
       - "package.json"
       - "package-lock.json"
-      - "data/council-member-terms.json"
+      - "data/**"
       - ".github/workflows/ci.yml"
   push:
     branches: [main]
@@ -41,7 +41,7 @@ on:
       - "**/*.mjs"
       - "package.json"
       - "package-lock.json"
-      - "data/council-member-terms.json"
+      - "data/**"
       - ".github/workflows/ci.yml"
   # Manual trigger — lets us fire a run on any branch. Needed here because a
   # path-scoped pull_request/push event does not fire on the very PR that
@@ -118,9 +118,9 @@ jobs:
           echo "PR base SHA: $BASE_SHA"
           # Three-dot diff (merge-base..HEAD) restricted to files that ship in
           # the npm package. If nothing here changed, the guard does not apply.
-          CHANGED=$(git diff --name-only "$BASE_SHA...HEAD" -- src package.json data/council-member-terms.json)
+          CHANGED=$(git diff --name-only "$BASE_SHA...HEAD" -- src package.json data)
           if [ -z "$CHANGED" ]; then
-            echo "No shipped files changed (src/, package.json, data/council-member-terms.json) — version guard not applicable. Passing."
+            echo "No shipped files changed (src/, package.json, data/) — version guard not applicable. Passing."
             exit 0
           fi
           echo "Shipped files changed in this PR:"

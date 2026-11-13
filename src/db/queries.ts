@@ -140,10 +140,12 @@ export interface PersonVoteRow {
   title: string | null;
   // The bill's introduction date (Legistar MatterIntroDate), NOT the vote date.
   intro_date: string | null;
+  // Who voted, as recorded. A partial name can match several members.
+  person_name: string | null;
   vote_value: string | null;
   event_item_id: number;
   // When, where and what the vote was: the matter_history action this roll
-  // call belongs to (#41). Full ISO timestamp.
+  // call belongs to (#41). New York local time, YYYY-MM-DDTHH:MM:SS.
   vote_date: string | null;
   vote_action: string | null;
   vote_body: string | null;
@@ -566,7 +568,7 @@ export function getVotingRecord(
   const rows = db
     .prepare(
       `
-      SELECT b.matter_id, b.file_number, b.title, b.intro_date, v.vote_value, v.event_item_id,
+      SELECT b.matter_id, b.file_number, b.title, b.intro_date, TRIM(v.person_name) AS person_name, v.vote_value, v.event_item_id,
              mh.action_date AS vote_date, mh.action_name AS vote_action, mh.body_name AS vote_body
       FROM votes v
       JOIN bills b ON v.matter_id = b.matter_id
@@ -741,7 +743,9 @@ export function hasMatterAttributes(db: Database.Database): boolean {
   if (known !== undefined) return known;
   const cols = db.prepare("PRAGMA table_xinfo(bills)").all() as { name: string }[];
   const ok = cols.some((c) => c.name === "local_law");
-  matterAttrsKnown.set(db, ok);
+  // Cache only "yes": a server started on a v5 index must notice the nightly
+  // rebuild without a restart.
+  if (ok) matterAttrsKnown.set(db, ok);
   return ok;
 }
 
@@ -777,6 +781,19 @@ export interface MatterRecord {
 }
 
 /** One matter with its attributes and attachments, by file number or Local Law number. */
+/**
+ * A Local Law number in the stored form "YYYY/NNN", from what people type:
+ * "2009/1", "Local Law 1 of 2009", "LL 153/2025", "1/2009". Null if no year
+ * and number can be found.
+ */
+export function normalizeLocalLaw(raw: string): string | null {
+  const nums = raw.match(/\d+/g) ?? [];
+  const year = nums.find((n) => /^(19|20)\d\d$/.test(n));
+  const num = nums.find((n) => n !== year && /^\d{1,4}$/.test(n));
+  if (!year || !num) return null;
+  return `${year}/${String(Number(num)).padStart(3, "0")}`;
+}
+
 export function getMatter(
   db: Database.Database,
   opts: { file_number?: string; local_law?: string; include_text?: boolean }
@@ -788,7 +805,7 @@ export function getMatter(
   } else if (opts.local_law) {
     const row = db
       .prepare("SELECT matter_id FROM bills WHERE local_law = ? LIMIT 1")
-      .get(opts.local_law.trim()) as { matter_id: number } | undefined;
+      .get(normalizeLocalLaw(opts.local_law) ?? opts.local_law.trim()) as { matter_id: number } | undefined;
     matterId = row?.matter_id ?? null;
   }
   if (matterId == null) return null;
@@ -865,7 +882,17 @@ const byRoleThenName = (a: RoleRow, b: RoleRow) =>
  * borough delegations and task forces, active on a date or across their whole
  * history. Party is never derived from any of these (#28).
  */
+export const ROLES_NOT_INDEXED_MESSAGE =
+  "Committee and membership records are not in this local index yet. Re-run the indexer " +
+  "(npx @betanyc/nyc-council-mcp index --archive <path> --db <path>) to rebuild it under the current schema.";
+
+function assertRolesIndexed(db: Database.Database): void {
+  const ok = hasTable(db, "office_records") && Boolean(db.prepare("SELECT 1 FROM office_records LIMIT 1").get());
+  if (!ok) throw new Error(ROLES_NOT_INDEXED_MESSAGE);
+}
+
 export function memberRoles(db: Database.Database, memberName: string, opts: RoleOpts = {}): MemberRoles[] {
+  assertRolesIndexed(db);
   const people = (db.prepare("SELECT person_id, full_name FROM people ORDER BY person_id").all() as {
     person_id: number;
     full_name: string;
@@ -962,14 +989,23 @@ export interface DistrictHolder {
 export interface DistrictMember {
   district: number;
   as_of: string;
-  status: "filled" | "vacant";
+  /**
+   * filled: someone held the seat that day. vacant: nobody did. unknown: the
+   * City's file lists someone serving that day with no district, so the seat
+   * may be theirs.
+   */
+  status: "filled" | "vacant" | "unknown";
   member: DistrictHolder | null;
-  /** On a vacant seat, the last member before as_of. Never reported as current. */
+  /** Other terms for this seat on the same date (the City's file has a few overlaps). */
+  overlapping_terms?: DistrictHolder[];
+  /** On an empty or unknown seat, the last member before as_of. Never reported as current. */
   previous: DistrictHolder | null;
+  /** status "unknown": terms on as_of that the City's file gives no district. */
+  terms_without_district?: DistrictHolder[];
   source: string;
   snapshot_fetched_at: string | null;
   /**
-   * On a vacant seat: people Legistar lists as Council Members on as_of who
+   * On an empty seat: people Legistar lists as Council Members on as_of who
    * have no term in the City's file on that date. One may hold this seat; the
    * district is not guessed.
    */
@@ -978,33 +1014,61 @@ export interface DistrictMember {
   warning?: string;
 }
 
+export const TERMS_NOT_INDEXED_MESSAGE =
+  "Council terms are not in this local index yet. Re-run the indexer " +
+  "(npx @betanyc/nyc-council-mcp index --archive <path> --db <path>) to load the snapshot that ships with the server.";
+
+const HOLDER_SQL = `SELECT t.person_id, TRIM(COALESCE(p.full_name, t.name)) AS full_name, t.office_id, t.term_start, t.term_end
+  FROM member_terms t LEFT JOIN people p ON p.person_id = t.person_id`;
+
 /**
  * Who held a council district on a date. A seat nobody held on that date is
  * "vacant" with member null, even if someone held it the day before (#28).
+ * If the City's file has someone serving that day with no district, the seat
+ * is "unknown", not vacant: it may be theirs.
  */
 export function districtMember(db: Database.Database, district: number, asOf?: string): DistrictMember {
   const date = asOf ?? nyDateString();
-  const rows = hasTable(db, "member_terms")
-    ? (db
-        .prepare(
-          `SELECT t.person_id, TRIM(COALESCE(p.full_name, t.name)) AS full_name, t.office_id, t.term_start, t.term_end
-           FROM member_terms t LEFT JOIN people p ON p.person_id = t.person_id
-           WHERE t.district = ? ORDER BY t.term_start DESC, t.office_id DESC`
-        )
-        .all(district) as DistrictHolder[])
-    : [];
-  const member = rows.find((r) => onDate(r, date)) ?? null;
-  const previous = member ? null : rows.find((r) => r.term_end != null && r.term_end < date) ?? null;
+  if (!hasTable(db, "member_terms") || !db.prepare("SELECT 1 FROM member_terms LIMIT 1").get()) {
+    throw new Error(TERMS_NOT_INDEXED_MESSAGE);
+  }
+  const rows = db
+    .prepare(`${HOLDER_SQL} WHERE t.district = ? ORDER BY t.term_start DESC, t.office_id DESC`)
+    .all(district) as DistrictHolder[];
+  const holders = rows.filter((r) => onDate(r, date));
+  const member = holders[0] ?? null;
+  const notes: string[] = [];
   const fetched = stateValue(db, "member_terms_fetched_at");
   const out: DistrictMember = {
     district,
     as_of: date,
     status: member ? "filled" : "vacant",
     member,
-    previous,
+    previous: member ? null : rows.find((r) => r.term_end != null && r.term_end < date) ?? null,
     source: TERMS_SOURCE,
     snapshot_fetched_at: fetched,
   };
+  if (holders.length > 1) {
+    out.overlapping_terms = holders.slice(1);
+    notes.push("The City's file has more than one term for this seat on this date (an overlap). All are shown.");
+  }
+  if (!member) {
+    const noDistrict = db
+      .prepare(
+        `${HOLDER_SQL} WHERE t.district IS NULL
+           AND (t.term_start IS NULL OR t.term_start <= ?) AND (t.term_end IS NULL OR t.term_end >= ?)
+         ORDER BY t.person_id`
+      )
+      .all(date, date) as DistrictHolder[];
+    if (noDistrict.length) {
+      out.status = "unknown";
+      out.terms_without_district = noDistrict;
+      notes.push(
+        "The City's file lists these people serving on this date with no district, so this seat may be one of theirs. " +
+          "Check council.nyc.gov before saying the seat is empty."
+      );
+    }
+  }
   if (!member && hasTable(db, "office_records")) {
     // Legistar's own membership records can be newer than the City's file
     // (2026-11-12: Carl Wilson from 2026-05-13, file last updated 2026-04-10).
@@ -1021,16 +1085,17 @@ export function districtMember(db: Database.Database, district: number, asOf?: s
       .all(date, date, date, date) as NonNullable<DistrictMember["unlisted_council_members"]>;
     if (unlisted.length) {
       out.unlisted_council_members = unlisted;
-      out.note =
+      notes.push(
         "Legistar lists these people as Council Members on this date, but they are not in the City's terms file " +
-        "for that date. One of them may hold this seat. Check council.nyc.gov before saying the seat is empty.";
+          "for that date. One of them may hold this seat. Check council.nyc.gov before saying the seat is empty."
+      );
     }
   }
-  if (rows.length === 0) {
-    out.warning = "No council terms in this index. Re-run the indexer to load the shipped snapshot.";
-  } else if (fetched && date > fetched.slice(0, 10)) {
+  if (notes.length) out.note = notes.join(" ");
+  const fetchedDay = fetched ? nyDateString(new Date(fetched)) : null;
+  if (fetchedDay && date > fetchedDay) {
     out.warning =
-      `This date is after the snapshot was fetched (${fetched.slice(0, 10)}). ` +
+      `This date is after the snapshot was fetched (${fetchedDay}). ` +
       "A seat filled since then will show as vacant, and a term that ended early may still show.";
   }
   return out;
@@ -1045,6 +1110,7 @@ export interface CommitteeRoster {
 
 /** Who sits on a committee (chair first), on a date or across its history. */
 export function committeeRoster(db: Database.Database, committee: string, opts: RoleOpts = {}): CommitteeRoster[] {
+  assertRolesIndexed(db);
   const want = normalizeName(committee);
   const bodies = (db
     .prepare("SELECT DISTINCT body_name FROM office_records WHERE body_kind = 'committee' ORDER BY body_name")

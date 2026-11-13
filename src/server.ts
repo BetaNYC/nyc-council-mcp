@@ -137,7 +137,18 @@ See README for full setup instructions.
       if (name === "upcoming_events" && mode.hasLive && mode.token && !res.isError) {
         const token = mode.token;
         const days = typeof safeArgs.days === "number" ? safeArgs.days : 14;
-        res = await checkUpcomingLive(res, days, (from, to) => getEventStatuses(token, from, to));
+        const local = db;
+        res = await checkUpcomingLive(
+          res,
+          days,
+          (from, to) => getEventStatuses(token, from, to),
+          (ids) =>
+            new Set(
+              (local
+                .prepare("SELECT event_id FROM events WHERE event_id IN (SELECT value FROM json_each(?))")
+                .all(JSON.stringify(ids)) as { event_id: number }[]).map((r) => r.event_id)
+            )
+        );
       }
       // #25: say when the index was built (and, with no token, that it is unchecked).
       return withSourceNote(res, db, { hasLive: Boolean(mode.hasLive && mode.token) });

@@ -12,7 +12,7 @@ Four files. Each one is a single kind of fact from a single kind of source, so w
 ## Rules for the curated files
 
 - **The join key is Legistar `person_id`.** It is the same number as the City's `council_member_id`. Names are never compared.
-- **Every row names its source, method and check date.** `reviewed_by` stays empty until a person has looked at the row. An agent's "verified" is not a human review.
+- **Every row names its source, method, check date and status.** `verified` means an official source names it; `likely` means only a weaker source does. Each row was then checked a second time, independently, and `second_check` records how and with what result. No person has reviewed the rows one by one (Noel, 2026-11-12), so the server labels all of it as BetaNYC's curation, not an official record.
 - **A blank stays blank.** A member with no row, or a row with status `none`, gets `null`. No value is guessed from a name, a caucus or a party conference.
 - **Party is every ballot line.** NYC has fusion voting, so a member can win on several lines, for example Democratic and Working Families, and represents all of them. Lines and votes are copied from the Board of Elections certified results for the election that gave the member their seat. A Council special election is nonpartisan: its lines are names the candidates chose, and the row says so.
 - **Office accounts only.** Never campaign or personal accounts (BetaNYC's nonpartisanship rule). Facebook and X are out of scope.
