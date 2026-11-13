@@ -106,7 +106,10 @@ const LIVE_TOOL_DEFS = [
     name: "get_council_member",
     description:
       "Look up an NYC Council member by name. Returns current contact info and active status. " +
-      "PersonWWW2 may carry a PersonWWW2_warning (and the original value in PersonWWW2_upstream) when the upstream link is known or suspected wrong.",
+      "PersonWWW2 may carry a PersonWWW2_warning (and the original value in PersonWWW2_upstream) when the upstream link is known or suspected wrong. " +
+      "Each member also gets a 'curated' block: BetaNYC's hand-checked Wikidata/Wikipedia link, party (every ballot line won on, " +
+      "from Board of Elections certified results) and office social accounts, each with its source. These are not official records. " +
+      "With a local index, district and council terms are added too.",
     inputSchema: {
       type: "object",
       additionalProperties: false,

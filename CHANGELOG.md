@@ -18,8 +18,20 @@ Dates are npm publish dates (`npm view @betanyc/nyc-council-mcp time`).
   new local tools: **`get_member_roles`** ("which committees does she chair?") and
   **`committee_roster`** ("who sits on Technology?"), each for today, a past date, or the
   whole history. Answers name their source. A conference or caucus is reported as a
-  membership only: party is never inferred from it. Party and Wikidata/Wikipedia links
-  (#28's last two layers) are not in this release.
+  membership only: party is never inferred from it.
+- **Party, Wikidata/Wikipedia and office social accounts, curated
+  ([#28](https://github.com/BetaNYC/nyc-council-mcp/issues/28) layers 3 and 4,
+  [#37](https://github.com/BetaNYC/nyc-council-mcp/issues/37)).** Three hand-checked files in
+  `data/` cover the 51 sitting members, joined on person ID. `get_council_member` and
+  `get_member_roles` return them in a `curated` block labeled "not an official record".
+  - **Party** is every ballot line the member won on, copied from Board of Elections
+    certified results. NYC has fusion voting: 30 of 51 won on two lines. Party is never
+    taken from a caucus or from Wikidata.
+  - **Wikidata and Wikipedia:** every row was re-checked, and District 3 now has Carl Wilson.
+  - **Social accounts** are office accounts only, on Bluesky (14), Instagram (34), Threads (19)
+    and LinkedIn (none found). An account linked from council.nyc.gov or listed in the Council's
+    Bluesky starter pack is "verified". One identified only by its own bio is "likely".
+  - Each fact keeps its source and check date. A blank stays null. Rules: `data/README.md`.
 - **Council districts and terms
   ([#28](https://github.com/BetaNYC/nyc-council-mcp/issues/28), second layer).** The
   package now ships a dated copy of NYC Open Data
