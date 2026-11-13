@@ -1,0 +1,1201 @@
+{
+ "about": "Party of each sitting NYC Council Member: every ballot line they won on (#28, layer 4). Curated by BetaNYC from NYC Board of Elections certified results; not an official record of party membership.",
+ "curated_by": "BetaNYC",
+ "official": false,
+ "checked_at": "2026-11-12",
+ "scope": "The 51 people holding a Council seat on 2026-11-12. Joined on Legistar person_id.",
+ "method": "Lines and votes copied from the 'Total for' rows of the Board of Elections 'Statement and Return Report for Certification' for the election that gave the member their seat (2025-11-04 general, certified 2025-12-02; District 3: 2026-04-28 special). NYC has fusion voting: every line is listed. Write-ins are not lines. total_votes is the sum of the member's lines. Lines are printed exactly as the Board prints them. All 50 general-election rows were re-checked by script against the Board's CSVs on 2026-11-12: 0 differences.",
+ "rows": [
+  {
+   "district": 1,
+   "person_id": 7801,
+   "name": "Christopher Marte",
+   "election": "2025-11-04 general",
+   "ballot_lines": [
+    {
+     "line": "Democratic",
+     "votes": 29027
+    },
+    {
+     "line": "Working Families",
+     "votes": 4839
+    }
+   ],
+   "total_votes": 33866,
+   "uncontested": false,
+   "source_url": "https://www.vote.nyc/sites/default/files/pdf/election_results/2025/20251104General%20Election/00101100001New%20York%20Member%20of%20the%20City%20Council%201st%20Council%20District%20Recap.csv",
+   "source_title": "Statement and Return Report for Certification General Election 2025 - 11/04/2025 New York County - All Parties and Independent Bodies Member of the City Council 1st Council District Vote for 1",
+   "certified": true,
+   "checked_at": "2026-11-12",
+   "status": "verified",
+   "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
+   "reviewed_by": null
+  },
+  {
+   "district": 2,
+   "person_id": 7893,
+   "name": "Harvey D. Epstein",
+   "election": "2025-11-04 general",
+   "ballot_lines": [
+    {
+     "line": "Democratic",
+     "votes": 36003
+    },
+    {
+     "line": "Working Families",
+     "votes": 6373
+    }
+   ],
+   "total_votes": 42376,
+   "uncontested": false,
+   "source_url": "https://www.vote.nyc/sites/default/files/pdf/election_results/2025/20251104General%20Election/00101100002New%20York%20Member%20of%20the%20City%20Council%202nd%20Council%20District%20Recap.csv",
+   "source_title": "Statement and Return Report for Certification General Election 2025 - 11/04/2025 New York County - All Parties and Independent Bodies Member of the City Council 2nd Council District Vote for 1",
+   "certified": true,
+   "checked_at": "2026-11-12",
+   "status": "verified",
+   "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
+   "reviewed_by": null
+  },
+  {
+   "district": 3,
+   "person_id": 7874,
+   "name": "Carl Wilson",
+   "election": "2026-04-28 special",
+   "ballot_lines": [
+    {
+     "line": "For All of Us",
+     "votes": 6279
+    }
+   ],
+   "total_votes": 6279,
+   "uncontested": false,
+   "source_url": "https://www.vote.nyc/sites/default/files/pdf/election_results/2026/20260428Special%20Election/202611V1_Council_Member_3rd_Council_District.pdf",
+   "source_title": "Board of Elections in the City of New York, 2026 Special Election, Official Ranked Choice Rounds, Council Member 3rd Council District (certified May 12, 2026)",
+   "certified": true,
+   "checked_at": "2026-11-12",
+   "status": "likely",
+   "notes": "Special-election independent line, not a party. Votes are certified (BOE RCV report): 6,279 first-round votes; 7,885 in the final round (4 rounds) vs. Lindsey Boylan 5,391. The certified RCV report does not print ballot lines; the line name 'For All of Us' is from BOE's own pre-election contest list (https://vote.nyc/sites/default/files/pdf/candidates/2026/Contest%20List_April%2028%202026_Special%20Election.pdf, 'The Contest List, Special Election 3rd Council District - 04/28/2026', printed 3/13/2026, marked 'Tentative, subject to change'), consistent with Ballotpedia. Status 'likely' because the line is not on the certified document. total_votes is first-round (one line). Caution: Wilson also won the June 23, 2026 Democratic primary for this seat, so the 2026-11-03 general election may change his lines; that result was not checked here. Wilson also won the 2026-06-23 Democratic primary for this seat, so the 2026-11-03 general election may have given him new lines; on 2026-11-12 the Board had posted no 2026 general results. Re-check when they are certified.",
+   "reviewed_by": null
+  },
+  {
+   "district": 4,
+   "person_id": 7894,
+   "name": "Virginia Maloney",
+   "election": "2025-11-04 general",
+   "ballot_lines": [
+    {
+     "line": "Democratic",
+     "votes": 43247
+    }
+   ],
+   "total_votes": 43247,
+   "uncontested": false,
+   "source_url": "https://www.vote.nyc/sites/default/files/pdf/election_results/2025/20251104General%20Election/00101100004New%20York%20Member%20of%20the%20City%20Council%204th%20Council%20District%20Recap.csv",
+   "source_title": "Statement and Return Report for Certification General Election 2025 - 11/04/2025 New York County - All Parties and Independent Bodies Member of the City Council 4th Council District Vote for 1",
+   "certified": true,
+   "checked_at": "2026-11-12",
+   "status": "verified",
+   "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
+   "reviewed_by": null
+  },
+  {
+   "district": 5,
+   "person_id": 7803,
+   "name": "Julie Menin",
+   "election": "2025-11-04 general",
+   "ballot_lines": [
+    {
+     "line": "Democratic",
+     "votes": 49426
+    }
+   ],
+   "total_votes": 49426,
+   "uncontested": false,
+   "source_url": "https://www.vote.nyc/sites/default/files/pdf/election_results/2025/20251104General%20Election/00101100005New%20York%20Member%20of%20the%20City%20Council%205th%20Council%20District%20Recap.csv",
+   "source_title": "Statement and Return Report for Certification General Election 2025 - 11/04/2025 New York County - All Parties and Independent Bodies Member of the City Council 5th Council District Vote for 1",
+   "certified": true,
+   "checked_at": "2026-11-12",
+   "status": "verified",
+   "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
+   "reviewed_by": null
+  },
+  {
+   "district": 6,
+   "person_id": 5259,
+   "name": "Gale A. Brewer",
+   "election": "2025-11-04 general",
+   "ballot_lines": [
+    {
+     "line": "Democratic",
+     "votes": 53543
+    },
+    {
+     "line": "Working Families",
+     "votes": 7264
+    }
+   ],
+   "total_votes": 60807,
+   "uncontested": true,
+   "source_url": "https://www.vote.nyc/sites/default/files/pdf/election_results/2025/20251104General%20Election/00101100006New%20York%20Member%20of%20the%20City%20Council%206th%20Council%20District%20Recap.csv",
+   "source_title": "Statement and Return Report for Certification General Election 2025 - 11/04/2025 New York County - All Parties and Independent Bodies Member of the City Council 6th Council District Vote for 1",
+   "certified": true,
+   "checked_at": "2026-11-12",
+   "status": "verified",
+   "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
+   "reviewed_by": null
+  },
+  {
+   "district": 7,
+   "person_id": 7804,
+   "name": "Shaun Abreu",
+   "election": "2025-11-04 general",
+   "ballot_lines": [
+    {
+     "line": "Democratic",
+     "votes": 37859
+    },
+    {
+     "line": "Working Families",
+     "votes": 7584
+    }
+   ],
+   "total_votes": 45443,
+   "uncontested": false,
+   "source_url": "https://www.vote.nyc/sites/default/files/pdf/election_results/2025/20251104General%20Election/00101100007New%20York%20Member%20of%20the%20City%20Council%207th%20Council%20District%20Recap.csv",
+   "source_title": "Statement and Return Report for Certification General Election 2025 - 11/04/2025 New York County - All Parties and Independent Bodies Member of the City Council 7th Council District Vote for 1",
+   "certified": true,
+   "checked_at": "2026-11-12",
+   "status": "verified",
+   "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
+   "reviewed_by": null
+  },
+  {
+   "district": 8,
+   "person_id": 7895,
+   "name": "Elsie Encarnación",
+   "election": "2025-11-04 general",
+   "ballot_lines": [
+    {
+     "line": "Democratic",
+     "votes": 20972
+    },
+    {
+     "line": "Working Families",
+     "votes": 3681
+    }
+   ],
+   "total_votes": 24653,
+   "uncontested": false,
+   "source_url": "https://www.vote.nyc/sites/default/files/pdf/election_results/2025/20251104General%20Election/00001100008Crossover%20Member%20of%20the%20City%20Council%208th%20Council%20District%20Recap.csv",
+   "source_title": "Statement and Return Report for Certification General Election 2025 - 11/04/2025 Crossover - All Parties and Independent Bodies Member of the City Council 8th Council District Vote for 1",
+   "certified": true,
+   "checked_at": "2026-11-12",
+   "status": "verified",
+   "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line). Crossover district: figures from the BOE 'Crossover' recap combining both boroughs.",
+   "reviewed_by": null
+  },
+  {
+   "district": 9,
+   "person_id": 7866,
+   "name": "Yusef Salaam",
+   "election": "2025-11-04 general",
+   "ballot_lines": [
+    {
+     "line": "Democratic",
+     "votes": 39348
+    }
+   ],
+   "total_votes": 39348,
+   "uncontested": true,
+   "source_url": "https://www.vote.nyc/sites/default/files/pdf/election_results/2025/20251104General%20Election/00101100009New%20York%20Member%20of%20the%20City%20Council%209th%20Council%20District%20Recap.csv",
+   "source_title": "Statement and Return Report for Certification General Election 2025 - 11/04/2025 New York County - All Parties and Independent Bodies Member of the City Council 9th Council District Vote for 1",
+   "certified": true,
+   "checked_at": "2026-11-12",
+   "status": "verified",
+   "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
+   "reviewed_by": null
+  },
+  {
+   "district": 10,
+   "person_id": 7806,
+   "name": "Carmen N. De La Rosa",
+   "election": "2025-11-04 general",
+   "ballot_lines": [
+    {
+     "line": "Democratic",
+     "votes": 28031
+    },
+    {
+     "line": "Working Families",
+     "votes": 7301
+    }
+   ],
+   "total_votes": 35332,
+   "uncontested": false,
+   "source_url": "https://www.vote.nyc/sites/default/files/pdf/election_results/2025/20251104General%20Election/00101100010New%20York%20Member%20of%20the%20City%20Council%2010th%20Council%20District%20Recap.csv",
+   "source_title": "Statement and Return Report for Certification General Election 2025 - 11/04/2025 New York County - All Parties and Independent Bodies Member of the City Council 10th Council District Vote for 1",
+   "certified": true,
+   "checked_at": "2026-11-12",
+   "status": "verified",
+   "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
+   "reviewed_by": null
+  },
+  {
+   "district": 11,
+   "person_id": 7799,
+   "name": "Eric Dinowitz",
+   "election": "2025-11-04 general",
+   "ballot_lines": [
+    {
+     "line": "Democratic",
+     "votes": 30195
+    }
+   ],
+   "total_votes": 30195,
+   "uncontested": false,
+   "source_url": "https://www.vote.nyc/sites/default/files/pdf/election_results/2025/20251104General%20Election/00201100011Bronx%20Member%20of%20the%20City%20Council%2011th%20Council%20District%20Recap.csv",
+   "source_title": "Statement and Return Report for Certification General Election 2025 - 11/04/2025 Bronx County - All Parties and Independent Bodies Member of the City Council 11th Council District Vote for 1",
+   "certified": true,
+   "checked_at": "2026-11-12",
+   "status": "verified",
+   "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
+   "reviewed_by": null
+  },
+  {
+   "district": 12,
+   "person_id": 7794,
+   "name": "Kevin C. Riley",
+   "election": "2025-11-04 general",
+   "ballot_lines": [
+    {
+     "line": "Democratic",
+     "votes": 28065
+    }
+   ],
+   "total_votes": 28065,
+   "uncontested": false,
+   "source_url": "https://www.vote.nyc/sites/default/files/pdf/election_results/2025/20251104General%20Election/00201100012Bronx%20Member%20of%20the%20City%20Council%2012th%20Council%20District%20Recap.csv",
+   "source_title": "Statement and Return Report for Certification General Election 2025 - 11/04/2025 Bronx County - All Parties and Independent Bodies Member of the City Council 12th Council District Vote for 1",
+   "certified": true,
+   "checked_at": "2026-11-12",
+   "status": "verified",
+   "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
+   "reviewed_by": null
+  },
+  {
+   "district": 13,
+   "person_id": 7896,
+   "name": "Shirley Aldebol",
+   "election": "2025-11-04 general",
+   "ballot_lines": [
+    {
+     "line": "Democratic",
+     "votes": 16037
+    },
+    {
+     "line": "Working Families",
+     "votes": 2011
+    }
+   ],
+   "total_votes": 18048,
+   "uncontested": false,
+   "source_url": "https://www.vote.nyc/sites/default/files/pdf/election_results/2025/20251104General%20Election/00201100013Bronx%20Member%20of%20the%20City%20Council%2013th%20Council%20District%20Recap.csv",
+   "source_title": "Statement and Return Report for Certification General Election 2025 - 11/04/2025 Bronx County - All Parties and Independent Bodies Member of the City Council 13th Council District Vote for 1",
+   "certified": true,
+   "checked_at": "2026-11-12",
+   "status": "verified",
+   "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
+   "reviewed_by": null
+  },
+  {
+   "district": 14,
+   "person_id": 7808,
+   "name": "Pierina Ana Sanchez",
+   "election": "2025-11-04 general",
+   "ballot_lines": [
+    {
+     "line": "Democratic",
+     "votes": 14765
+    },
+    {
+     "line": "Working Families",
+     "votes": 2350
+    }
+   ],
+   "total_votes": 17115,
+   "uncontested": true,
+   "source_url": "https://www.vote.nyc/sites/default/files/pdf/election_results/2025/20251104General%20Election/00201100014Bronx%20Member%20of%20the%20City%20Council%2014th%20Council%20District%20Recap.csv",
+   "source_title": "Statement and Return Report for Certification General Election 2025 - 11/04/2025 Bronx County - All Parties and Independent Bodies Member of the City Council 14th Council District Vote for 1",
+   "certified": true,
+   "checked_at": "2026-11-12",
+   "status": "verified",
+   "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line). Name on ballot: 'Pierina A. Sanchez'.",
+   "reviewed_by": null
+  },
+  {
+   "district": 15,
+   "person_id": 7798,
+   "name": "Oswald J. Feliz",
+   "election": "2025-11-04 general",
+   "ballot_lines": [
+    {
+     "line": "Democratic",
+     "votes": 14537
+    }
+   ],
+   "total_votes": 14537,
+   "uncontested": false,
+   "source_url": "https://www.vote.nyc/sites/default/files/pdf/election_results/2025/20251104General%20Election/00201100015Bronx%20Member%20of%20the%20City%20Council%2015th%20Council%20District%20Recap.csv",
+   "source_title": "Statement and Return Report for Certification General Election 2025 - 11/04/2025 Bronx County - All Parties and Independent Bodies Member of the City Council 15th Council District Vote for 1",
+   "certified": true,
+   "checked_at": "2026-11-12",
+   "status": "verified",
+   "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
+   "reviewed_by": null
+  },
+  {
+   "district": 16,
+   "person_id": 7809,
+   "name": "Althea V.  Stevens",
+   "election": "2025-11-04 general",
+   "ballot_lines": [
+    {
+     "line": "Democratic",
+     "votes": 16562
+    },
+    {
+     "line": "Working Families",
+     "votes": 1740
+    }
+   ],
+   "total_votes": 18302,
+   "uncontested": false,
+   "source_url": "https://www.vote.nyc/sites/default/files/pdf/election_results/2025/20251104General%20Election/00201100016Bronx%20Member%20of%20the%20City%20Council%2016th%20Council%20District%20Recap.csv",
+   "source_title": "Statement and Return Report for Certification General Election 2025 - 11/04/2025 Bronx County - All Parties and Independent Bodies Member of the City Council 16th Council District Vote for 1",
+   "certified": true,
+   "checked_at": "2026-11-12",
+   "status": "verified",
+   "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
+   "reviewed_by": null
+  },
+  {
+   "district": 17,
+   "person_id": 7897,
+   "name": "Justin E. Sanchez",
+   "election": "2025-11-04 general",
+   "ballot_lines": [
+    {
+     "line": "Democratic",
+     "votes": 14577
+    },
+    {
+     "line": "Working Families",
+     "votes": 1611
+    }
+   ],
+   "total_votes": 16188,
+   "uncontested": false,
+   "source_url": "https://www.vote.nyc/sites/default/files/pdf/election_results/2025/20251104General%20Election/00201100017Bronx%20Member%20of%20the%20City%20Council%2017th%20Council%20District%20Recap.csv",
+   "source_title": "Statement and Return Report for Certification General Election 2025 - 11/04/2025 Bronx County - All Parties and Independent Bodies Member of the City Council 17th Council District Vote for 1",
+   "certified": true,
+   "checked_at": "2026-11-12",
+   "status": "verified",
+   "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
+   "reviewed_by": null
+  },
+  {
+   "district": 18,
+   "person_id": 7810,
+   "name": "Amanda C. Farías",
+   "election": "2025-11-04 general",
+   "ballot_lines": [
+    {
+     "line": "Democratic",
+     "votes": 21975
+    },
+    {
+     "line": "Working Families",
+     "votes": 2476
+    }
+   ],
+   "total_votes": 24451,
+   "uncontested": false,
+   "source_url": "https://www.vote.nyc/sites/default/files/pdf/election_results/2025/20251104General%20Election/00201100018Bronx%20Member%20of%20the%20City%20Council%2018th%20Council%20District%20Recap.csv",
+   "source_title": "Statement and Return Report for Certification General Election 2025 - 11/04/2025 Bronx County - All Parties and Independent Bodies Member of the City Council 18th Council District Vote for 1",
+   "certified": true,
+   "checked_at": "2026-11-12",
+   "status": "verified",
+   "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
+   "reviewed_by": null
+  },
+  {
+   "district": 19,
+   "person_id": 7811,
+   "name": "Vickie Paladino",
+   "election": "2025-11-04 general",
+   "ballot_lines": [
+    {
+     "line": "Republican",
+     "votes": 22417
+    },
+    {
+     "line": "Conservative",
+     "votes": 2453
+    }
+   ],
+   "total_votes": 24870,
+   "uncontested": false,
+   "source_url": "https://www.vote.nyc/sites/default/files/pdf/election_results/2025/20251104General%20Election/00401100019Queens%20Member%20of%20the%20City%20Council%2019th%20Council%20District%20Recap.csv",
+   "source_title": "Statement and Return Report for Certification General Election 2025 - 11/04/2025 Queens County - All Parties and Independent Bodies Member of the City Council 19th Council District Vote for 1",
+   "certified": true,
+   "checked_at": "2026-11-12",
+   "status": "verified",
+   "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
+   "reviewed_by": null
+  },
+  {
+   "district": 20,
+   "person_id": 7812,
+   "name": "Sandra Ung",
+   "election": "2025-11-04 general",
+   "ballot_lines": [
+    {
+     "line": "Democratic",
+     "votes": 15243
+    }
+   ],
+   "total_votes": 15243,
+   "uncontested": false,
+   "source_url": "https://www.vote.nyc/sites/default/files/pdf/election_results/2025/20251104General%20Election/00401100020Queens%20Member%20of%20the%20City%20Council%2020th%20Council%20District%20Recap.csv",
+   "source_title": "Statement and Return Report for Certification General Election 2025 - 11/04/2025 Queens County - All Parties and Independent Bodies Member of the City Council 20th Council District Vote for 1",
+   "certified": true,
+   "checked_at": "2026-11-12",
+   "status": "verified",
+   "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
+   "reviewed_by": null
+  },
+  {
+   "district": 21,
+   "person_id": 7898,
+   "name": "Shanel Thomas-Henry",
+   "election": "2025-11-04 general",
+   "ballot_lines": [
+    {
+     "line": "Democratic",
+     "votes": 11014
+    },
+    {
+     "line": "Working Families",
+     "votes": 1339
+    }
+   ],
+   "total_votes": 12353,
+   "uncontested": false,
+   "source_url": "https://www.vote.nyc/sites/default/files/pdf/election_results/2025/20251104General%20Election/00401100021Queens%20Member%20of%20the%20City%20Council%2021st%20Council%20District%20Recap.csv",
+   "source_title": "Statement and Return Report for Certification General Election 2025 - 11/04/2025 Queens County - All Parties and Independent Bodies Member of the City Council 21st Council District Vote for 1",
+   "certified": true,
+   "checked_at": "2026-11-12",
+   "status": "verified",
+   "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
+   "reviewed_by": null
+  },
+  {
+   "district": 22,
+   "person_id": 7813,
+   "name": "Tiffany L. Cabán",
+   "election": "2025-11-04 general",
+   "ballot_lines": [
+    {
+     "line": "Democratic",
+     "votes": 30066
+    },
+    {
+     "line": "Working Families",
+     "votes": 9946
+    }
+   ],
+   "total_votes": 40012,
+   "uncontested": true,
+   "source_url": "https://www.vote.nyc/sites/default/files/pdf/election_results/2025/20251104General%20Election/00001100022Crossover%20Member%20of%20the%20City%20Council%2022nd%20Council%20District%20Recap.csv",
+   "source_title": "Statement and Return Report for Certification General Election 2025 - 11/04/2025 Crossover - All Parties and Independent Bodies Member of the City Council 22nd Council District Vote for 1",
+   "certified": true,
+   "checked_at": "2026-11-12",
+   "status": "verified",
+   "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line). Crossover district: figures from the BOE 'Crossover' recap combining both boroughs.",
+   "reviewed_by": null
+  },
+  {
+   "district": 23,
+   "person_id": 7814,
+   "name": "Linda Lee",
+   "election": "2025-11-04 general",
+   "ballot_lines": [
+    {
+     "line": "Democratic",
+     "votes": 32040
+    }
+   ],
+   "total_votes": 32040,
+   "uncontested": false,
+   "source_url": "https://www.vote.nyc/sites/default/files/pdf/election_results/2025/20251104General%20Election/00401100023Queens%20Member%20of%20the%20City%20Council%2023rd%20Council%20District%20Recap.csv",
+   "source_title": "Statement and Return Report for Certification General Election 2025 - 11/04/2025 Queens County - All Parties and Independent Bodies Member of the City Council 23rd Council District Vote for 1",
+   "certified": true,
+   "checked_at": "2026-11-12",
+   "status": "verified",
+   "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
+   "reviewed_by": null
+  },
+  {
+   "district": 24,
+   "person_id": 5273,
+   "name": "James F. Gennaro",
+   "election": "2025-11-04 general",
+   "ballot_lines": [
+    {
+     "line": "Democratic",
+     "votes": 30221
+    }
+   ],
+   "total_votes": 30221,
+   "uncontested": true,
+   "source_url": "https://www.vote.nyc/sites/default/files/pdf/election_results/2025/20251104General%20Election/00401100024Queens%20Member%20of%20the%20City%20Council%2024th%20Council%20District%20Recap.csv",
+   "source_title": "Statement and Return Report for Certification General Election 2025 - 11/04/2025 Queens County - All Parties and Independent Bodies Member of the City Council 24th Council District Vote for 1",
+   "certified": true,
+   "checked_at": "2026-11-12",
+   "status": "verified",
+   "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
+   "reviewed_by": null
+  },
+  {
+   "district": 25,
+   "person_id": 7815,
+   "name": "Shekar Krishnan",
+   "election": "2025-11-04 general",
+   "ballot_lines": [
+    {
+     "line": "Democratic",
+     "votes": 18896
+    },
+    {
+     "line": "Working Families",
+     "votes": 3371
+    }
+   ],
+   "total_votes": 22267,
+   "uncontested": false,
+   "source_url": "https://www.vote.nyc/sites/default/files/pdf/election_results/2025/20251104General%20Election/00401100025Queens%20Member%20of%20the%20City%20Council%2025th%20Council%20District%20Recap.csv",
+   "source_title": "Statement and Return Report for Certification General Election 2025 - 11/04/2025 Queens County - All Parties and Independent Bodies Member of the City Council 25th Council District Vote for 1",
+   "certified": true,
+   "checked_at": "2026-11-12",
+   "status": "verified",
+   "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
+   "reviewed_by": null
+  },
+  {
+   "district": 26,
+   "person_id": 7816,
+   "name": "Julie Won",
+   "election": "2025-11-04 general",
+   "ballot_lines": [
+    {
+     "line": "Democratic",
+     "votes": 33425
+    }
+   ],
+   "total_votes": 33425,
+   "uncontested": false,
+   "source_url": "https://www.vote.nyc/sites/default/files/pdf/election_results/2025/20251104General%20Election/00401100026Queens%20Member%20of%20the%20City%20Council%2026th%20Council%20District%20Recap.csv",
+   "source_title": "Statement and Return Report for Certification General Election 2025 - 11/04/2025 Queens County - All Parties and Independent Bodies Member of the City Council 26th Council District Vote for 1",
+   "certified": true,
+   "checked_at": "2026-11-12",
+   "status": "verified",
+   "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
+   "reviewed_by": null
+  },
+  {
+   "district": 27,
+   "person_id": 7817,
+   "name": "Nantasha M. Williams",
+   "election": "2025-11-04 general",
+   "ballot_lines": [
+    {
+     "line": "Democratic",
+     "votes": 30885
+    }
+   ],
+   "total_votes": 30885,
+   "uncontested": true,
+   "source_url": "https://www.vote.nyc/sites/default/files/pdf/election_results/2025/20251104General%20Election/00401100027Queens%20Member%20of%20the%20City%20Council%2027th%20Council%20District%20Recap.csv",
+   "source_title": "Statement and Return Report for Certification General Election 2025 - 11/04/2025 Queens County - All Parties and Independent Bodies Member of the City Council 27th Council District Vote for 1",
+   "certified": true,
+   "checked_at": "2026-11-12",
+   "status": "verified",
+   "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
+   "reviewed_by": null
+  },
+  {
+   "district": 28,
+   "person_id": 7899,
+   "name": "Ty Hankerson",
+   "election": "2025-11-04 general",
+   "ballot_lines": [
+    {
+     "line": "Democratic",
+     "votes": 22258
+    },
+    {
+     "line": "Working Families",
+     "votes": 2165
+    }
+   ],
+   "total_votes": 24423,
+   "uncontested": true,
+   "source_url": "https://www.vote.nyc/sites/default/files/pdf/election_results/2025/20251104General%20Election/00401100028Queens%20Member%20of%20the%20City%20Council%2028th%20Council%20District%20Recap.csv",
+   "source_title": "Statement and Return Report for Certification General Election 2025 - 11/04/2025 Queens County - All Parties and Independent Bodies Member of the City Council 28th Council District Vote for 1",
+   "certified": true,
+   "checked_at": "2026-11-12",
+   "status": "verified",
+   "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
+   "reviewed_by": null
+  },
+  {
+   "district": 29,
+   "person_id": 7818,
+   "name": "Lynn C. Schulman",
+   "election": "2025-11-04 general",
+   "ballot_lines": [
+    {
+     "line": "Democratic",
+     "votes": 28866
+    }
+   ],
+   "total_votes": 28866,
+   "uncontested": false,
+   "source_url": "https://www.vote.nyc/sites/default/files/pdf/election_results/2025/20251104General%20Election/00401100029Queens%20Member%20of%20the%20City%20Council%2029th%20Council%20District%20Recap.csv",
+   "source_title": "Statement and Return Report for Certification General Election 2025 - 11/04/2025 Queens County - All Parties and Independent Bodies Member of the City Council 29th Council District Vote for 1",
+   "certified": true,
+   "checked_at": "2026-11-12",
+   "status": "verified",
+   "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
+   "reviewed_by": null
+  },
+  {
+   "district": 30,
+   "person_id": 7900,
+   "name": "Phil Wong",
+   "election": "2025-11-04 general",
+   "ballot_lines": [
+    {
+     "line": "Democratic",
+     "votes": 20501
+    }
+   ],
+   "total_votes": 20501,
+   "uncontested": false,
+   "source_url": "https://www.vote.nyc/sites/default/files/pdf/election_results/2025/20251104General%20Election/00401100030Queens%20Member%20of%20the%20City%20Council%2030th%20Council%20District%20Recap.csv",
+   "source_title": "Statement and Return Report for Certification General Election 2025 - 11/04/2025 Queens County - All Parties and Independent Bodies Member of the City Council 30th Council District Vote for 1",
+   "certified": true,
+   "checked_at": "2026-11-12",
+   "status": "verified",
+   "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
+   "reviewed_by": null
+  },
+  {
+   "district": 31,
+   "person_id": 7796,
+   "name": "Selvena N. Brooks-Powers",
+   "election": "2025-11-04 general",
+   "ballot_lines": [
+    {
+     "line": "Democratic",
+     "votes": 26211
+    }
+   ],
+   "total_votes": 26211,
+   "uncontested": true,
+   "source_url": "https://www.vote.nyc/sites/default/files/pdf/election_results/2025/20251104General%20Election/00401100031Queens%20Member%20of%20the%20City%20Council%2031st%20Council%20District%20Recap.csv",
+   "source_title": "Statement and Return Report for Certification General Election 2025 - 11/04/2025 Queens County - All Parties and Independent Bodies Member of the City Council 31st Council District Vote for 1",
+   "certified": true,
+   "checked_at": "2026-11-12",
+   "status": "verified",
+   "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
+   "reviewed_by": null
+  },
+  {
+   "district": 32,
+   "person_id": 7819,
+   "name": "Joann Ariola",
+   "election": "2025-11-04 general",
+   "ballot_lines": [
+    {
+     "line": "Republican",
+     "votes": 24909
+    },
+    {
+     "line": "Conservative",
+     "votes": 4758
+    }
+   ],
+   "total_votes": 29667,
+   "uncontested": true,
+   "source_url": "https://www.vote.nyc/sites/default/files/pdf/election_results/2025/20251104General%20Election/00401100032Queens%20Member%20of%20the%20City%20Council%2032nd%20Council%20District%20Recap.csv",
+   "source_title": "Statement and Return Report for Certification General Election 2025 - 11/04/2025 Queens County - All Parties and Independent Bodies Member of the City Council 32nd Council District Vote for 1",
+   "certified": true,
+   "checked_at": "2026-11-12",
+   "status": "verified",
+   "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
+   "reviewed_by": null
+  },
+  {
+   "district": 33,
+   "person_id": 7820,
+   "name": "Lincoln Restler",
+   "election": "2025-11-04 general",
+   "ballot_lines": [
+    {
+     "line": "Democratic",
+     "votes": 38576
+    },
+    {
+     "line": "Working Families",
+     "votes": 11389
+    }
+   ],
+   "total_votes": 49965,
+   "uncontested": true,
+   "source_url": "https://www.vote.nyc/sites/default/files/pdf/election_results/2025/20251104General%20Election/00301100033Kings%20Member%20of%20the%20City%20Council%2033rd%20Council%20District%20Recap.csv",
+   "source_title": "Statement and Return Report for Certification General Election 2025 - 11/04/2025 Kings County - All Parties and Independent Bodies Member of the City Council 33rd Council District Vote for 1",
+   "certified": true,
+   "checked_at": "2026-11-12",
+   "status": "verified",
+   "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
+   "reviewed_by": null
+  },
+  {
+   "district": 34,
+   "person_id": 7821,
+   "name": "Jennifer Gutiérrez",
+   "election": "2025-11-04 general",
+   "ballot_lines": [
+    {
+     "line": "Democratic",
+     "votes": 32206
+    },
+    {
+     "line": "Working Families",
+     "votes": 12196
+    }
+   ],
+   "total_votes": 44402,
+   "uncontested": true,
+   "source_url": "https://www.vote.nyc/sites/default/files/pdf/election_results/2025/20251104General%20Election/00001100034Crossover%20Member%20of%20the%20City%20Council%2034th%20Council%20District%20Recap.csv",
+   "source_title": "Statement and Return Report for Certification General Election 2025 - 11/04/2025 Crossover - All Parties and Independent Bodies Member of the City Council 34th Council District Vote for 1",
+   "certified": true,
+   "checked_at": "2026-11-12",
+   "status": "verified",
+   "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line). Crossover district: figures from the BOE 'Crossover' recap combining both boroughs.",
+   "reviewed_by": null
+  },
+  {
+   "district": 35,
+   "person_id": 7822,
+   "name": "Crystal Hudson",
+   "election": "2025-11-04 general",
+   "ballot_lines": [
+    {
+     "line": "Democratic",
+     "votes": 42212
+    },
+    {
+     "line": "Working Families",
+     "votes": 15842
+    }
+   ],
+   "total_votes": 58054,
+   "uncontested": false,
+   "source_url": "https://www.vote.nyc/sites/default/files/pdf/election_results/2025/20251104General%20Election/00301100035Kings%20Member%20of%20the%20City%20Council%2035th%20Council%20District%20Recap.csv",
+   "source_title": "Statement and Return Report for Certification General Election 2025 - 11/04/2025 Kings County - All Parties and Independent Bodies Member of the City Council 35th Council District Vote for 1",
+   "certified": true,
+   "checked_at": "2026-11-12",
+   "status": "verified",
+   "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
+   "reviewed_by": null
+  },
+  {
+   "district": 36,
+   "person_id": 7823,
+   "name": "Chi A. Ossé",
+   "election": "2025-11-04 general",
+   "ballot_lines": [
+    {
+     "line": "Democratic",
+     "votes": 44256
+    }
+   ],
+   "total_votes": 44256,
+   "uncontested": true,
+   "source_url": "https://www.vote.nyc/sites/default/files/pdf/election_results/2025/20251104General%20Election/00301100036Kings%20Member%20of%20the%20City%20Council%2036th%20Council%20District%20Recap.csv",
+   "source_title": "Statement and Return Report for Certification General Election 2025 - 11/04/2025 Kings County - All Parties and Independent Bodies Member of the City Council 36th Council District Vote for 1",
+   "certified": true,
+   "checked_at": "2026-11-12",
+   "status": "verified",
+   "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line). Name on ballot: 'Chi Ajani Osse'.",
+   "reviewed_by": null
+  },
+  {
+   "district": 37,
+   "person_id": 7824,
+   "name": "Sandy Nurse",
+   "election": "2025-11-04 general",
+   "ballot_lines": [
+    {
+     "line": "Democratic",
+     "votes": 21175
+    },
+    {
+     "line": "Working Families",
+     "votes": 7068
+    }
+   ],
+   "total_votes": 28243,
+   "uncontested": true,
+   "source_url": "https://www.vote.nyc/sites/default/files/pdf/election_results/2025/20251104General%20Election/00301100037Kings%20Member%20of%20the%20City%20Council%2037th%20Council%20District%20Recap.csv",
+   "source_title": "Statement and Return Report for Certification General Election 2025 - 11/04/2025 Kings County - All Parties and Independent Bodies Member of the City Council 37th Council District Vote for 1",
+   "certified": true,
+   "checked_at": "2026-11-12",
+   "status": "verified",
+   "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
+   "reviewed_by": null
+  },
+  {
+   "district": 38,
+   "person_id": 7825,
+   "name": "Alexa Avilés",
+   "election": "2025-11-04 general",
+   "ballot_lines": [
+    {
+     "line": "Democratic",
+     "votes": 15588
+    },
+    {
+     "line": "Working Families",
+     "votes": 5260
+    }
+   ],
+   "total_votes": 20848,
+   "uncontested": false,
+   "source_url": "https://www.vote.nyc/sites/default/files/pdf/election_results/2025/20251104General%20Election/00301100038Kings%20Member%20of%20the%20City%20Council%2038th%20Council%20District%20Recap.csv",
+   "source_title": "Statement and Return Report for Certification General Election 2025 - 11/04/2025 Kings County - All Parties and Independent Bodies Member of the City Council 38th Council District Vote for 1",
+   "certified": true,
+   "checked_at": "2026-11-12",
+   "status": "verified",
+   "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
+   "reviewed_by": null
+  },
+  {
+   "district": 39,
+   "person_id": 7826,
+   "name": "Shahana K. Hanif",
+   "election": "2025-11-04 general",
+   "ballot_lines": [
+    {
+     "line": "Democratic",
+     "votes": 39911
+    },
+    {
+     "line": "Working Families",
+     "votes": 16715
+    }
+   ],
+   "total_votes": 56626,
+   "uncontested": false,
+   "source_url": "https://www.vote.nyc/sites/default/files/pdf/election_results/2025/20251104General%20Election/00301100039Kings%20Member%20of%20the%20City%20Council%2039th%20Council%20District%20Recap.csv",
+   "source_title": "Statement and Return Report for Certification General Election 2025 - 11/04/2025 Kings County - All Parties and Independent Bodies Member of the City Council 39th Council District Vote for 1",
+   "certified": true,
+   "checked_at": "2026-11-12",
+   "status": "verified",
+   "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
+   "reviewed_by": null
+  },
+  {
+   "district": 40,
+   "person_id": 7827,
+   "name": "Rita C. Joseph",
+   "election": "2025-11-04 general",
+   "ballot_lines": [
+    {
+     "line": "Democratic",
+     "votes": 31828
+    },
+    {
+     "line": "Working Families",
+     "votes": 10668
+    }
+   ],
+   "total_votes": 42496,
+   "uncontested": true,
+   "source_url": "https://www.vote.nyc/sites/default/files/pdf/election_results/2025/20251104General%20Election/00301100040Kings%20Member%20of%20the%20City%20Council%2040th%20Council%20District%20Recap.csv",
+   "source_title": "Statement and Return Report for Certification General Election 2025 - 11/04/2025 Kings County - All Parties and Independent Bodies Member of the City Council 40th Council District Vote for 1",
+   "certified": true,
+   "checked_at": "2026-11-12",
+   "status": "verified",
+   "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
+   "reviewed_by": null
+  },
+  {
+   "district": 41,
+   "person_id": 6272,
+   "name": "Darlene Mealy",
+   "election": "2025-11-04 general",
+   "ballot_lines": [
+    {
+     "line": "Democratic",
+     "votes": 25898
+    }
+   ],
+   "total_votes": 25898,
+   "uncontested": false,
+   "source_url": "https://www.vote.nyc/sites/default/files/pdf/election_results/2025/20251104General%20Election/00301100041Kings%20Member%20of%20the%20City%20Council%2041st%20Council%20District%20Recap.csv",
+   "source_title": "Statement and Return Report for Certification General Election 2025 - 11/04/2025 Kings County - All Parties and Independent Bodies Member of the City Council 41st Council District Vote for 1",
+   "certified": true,
+   "checked_at": "2026-11-12",
+   "status": "verified",
+   "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
+   "reviewed_by": null
+  },
+  {
+   "district": 42,
+   "person_id": 7864,
+   "name": "Chris Banks",
+   "election": "2025-11-04 general",
+   "ballot_lines": [
+    {
+     "line": "Democratic",
+     "votes": 23336
+    }
+   ],
+   "total_votes": 23336,
+   "uncontested": false,
+   "source_url": "https://www.vote.nyc/sites/default/files/pdf/election_results/2025/20251104General%20Election/00301100042Kings%20Member%20of%20the%20City%20Council%2042nd%20Council%20District%20Recap.csv",
+   "source_title": "Statement and Return Report for Certification General Election 2025 - 11/04/2025 Kings County - All Parties and Independent Bodies Member of the City Council 42nd Council District Vote for 1",
+   "certified": true,
+   "checked_at": "2026-11-12",
+   "status": "verified",
+   "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
+   "reviewed_by": null
+  },
+  {
+   "district": 43,
+   "person_id": 7867,
+   "name": "Susan Zhuang",
+   "election": "2025-11-04 general",
+   "ballot_lines": [
+    {
+     "line": "Democratic",
+     "votes": 13194
+    },
+    {
+     "line": "Conservative",
+     "votes": 3868
+    }
+   ],
+   "total_votes": 17062,
+   "uncontested": true,
+   "source_url": "https://www.vote.nyc/sites/default/files/pdf/election_results/2025/20251104General%20Election/00301100043Kings%20Member%20of%20the%20City%20Council%2043rd%20Council%20District%20Recap.csv",
+   "source_title": "Statement and Return Report for Certification General Election 2025 - 11/04/2025 Kings County - All Parties and Independent Bodies Member of the City Council 43rd Council District Vote for 1",
+   "certified": true,
+   "checked_at": "2026-11-12",
+   "status": "verified",
+   "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
+   "reviewed_by": null
+  },
+  {
+   "district": 44,
+   "person_id": 5289,
+   "name": "Simcha Felder",
+   "election": "2025-11-04 general",
+   "ballot_lines": [
+    {
+     "line": "Democratic/Law & Order",
+     "votes": 24529
+    },
+    {
+     "line": "Conservative",
+     "votes": 11865
+    }
+   ],
+   "total_votes": 36394,
+   "uncontested": false,
+   "source_url": "https://www.vote.nyc/sites/default/files/pdf/election_results/2025/20251104General%20Election/00301100044Kings%20Member%20of%20the%20City%20Council%2044th%20Council%20District%20Recap.csv",
+   "source_title": "Statement and Return Report for Certification General Election 2025 - 11/04/2025 Kings County - All Parties and Independent Bodies Member of the City Council 44th Council District Vote for 1",
+   "certified": true,
+   "checked_at": "2026-11-12",
+   "status": "verified",
+   "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line). BOE prints the line as one combined label 'Democratic/Law & Order' with a single vote figure, in both Recap and ED-level files; the Democratic and Law & Order votes are not split. Ballotpedia lists Felder as Democratic, Conservative, and Law & Order, i.e. likely two lines combined in BOE reporting.",
+   "reviewed_by": null
+  },
+  {
+   "district": 45,
+   "person_id": 7785,
+   "name": "Farah N. Louis",
+   "election": "2025-11-04 general",
+   "ballot_lines": [
+    {
+     "line": "Democratic",
+     "votes": 33182
+    }
+   ],
+   "total_votes": 33182,
+   "uncontested": false,
+   "source_url": "https://www.vote.nyc/sites/default/files/pdf/election_results/2025/20251104General%20Election/00301100045Kings%20Member%20of%20the%20City%20Council%2045th%20Council%20District%20Recap.csv",
+   "source_title": "Statement and Return Report for Certification General Election 2025 - 11/04/2025 Kings County - All Parties and Independent Bodies Member of the City Council 45th Council District Vote for 1",
+   "certified": true,
+   "checked_at": "2026-11-12",
+   "status": "verified",
+   "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
+   "reviewed_by": null
+  },
+  {
+   "district": 46,
+   "person_id": 7829,
+   "name": "Mercedes Narcisse",
+   "election": "2025-11-04 general",
+   "ballot_lines": [
+    {
+     "line": "Democratic",
+     "votes": 26687
+    }
+   ],
+   "total_votes": 26687,
+   "uncontested": false,
+   "source_url": "https://www.vote.nyc/sites/default/files/pdf/election_results/2025/20251104General%20Election/00301100046Kings%20Member%20of%20the%20City%20Council%2046th%20Council%20District%20Recap.csv",
+   "source_title": "Statement and Return Report for Certification General Election 2025 - 11/04/2025 Kings County - All Parties and Independent Bodies Member of the City Council 46th Council District Vote for 1",
+   "certified": true,
+   "checked_at": "2026-11-12",
+   "status": "verified",
+   "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
+   "reviewed_by": null
+  },
+  {
+   "district": 47,
+   "person_id": 7901,
+   "name": "Kayla Santosuosso",
+   "election": "2025-11-04 general",
+   "ballot_lines": [
+    {
+     "line": "Democratic",
+     "votes": 19610
+    },
+    {
+     "line": "Working Families",
+     "votes": 3525
+    }
+   ],
+   "total_votes": 23135,
+   "uncontested": false,
+   "source_url": "https://www.vote.nyc/sites/default/files/pdf/election_results/2025/20251104General%20Election/00301100047Kings%20Member%20of%20the%20City%20Council%2047th%20Council%20District%20Recap.csv",
+   "source_title": "Statement and Return Report for Certification General Election 2025 - 11/04/2025 Kings County - All Parties and Independent Bodies Member of the City Council 47th Council District Vote for 1",
+   "certified": true,
+   "checked_at": "2026-11-12",
+   "status": "verified",
+   "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
+   "reviewed_by": null
+  },
+  {
+   "district": 48,
+   "person_id": 7831,
+   "name": "Inna Vernikov",
+   "election": "2025-11-04 general",
+   "ballot_lines": [
+    {
+     "line": "Republican",
+     "votes": 26161
+    },
+    {
+     "line": "Conservative",
+     "votes": 4137
+    }
+   ],
+   "total_votes": 30298,
+   "uncontested": true,
+   "source_url": "https://www.vote.nyc/sites/default/files/pdf/election_results/2025/20251104General%20Election/00301100048Kings%20Member%20of%20the%20City%20Council%2048th%20Council%20District%20Recap.csv",
+   "source_title": "Statement and Return Report for Certification General Election 2025 - 11/04/2025 Kings County - All Parties and Independent Bodies Member of the City Council 48th Council District Vote for 1",
+   "certified": true,
+   "checked_at": "2026-11-12",
+   "status": "verified",
+   "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
+   "reviewed_by": null
+  },
+  {
+   "district": 49,
+   "person_id": 7832,
+   "name": "Kamillah Hanks",
+   "election": "2025-11-04 general",
+   "ballot_lines": [
+    {
+     "line": "Democratic",
+     "votes": 20263
+    }
+   ],
+   "total_votes": 20263,
+   "uncontested": false,
+   "source_url": "https://www.vote.nyc/sites/default/files/pdf/election_results/2025/20251104General%20Election/00501100049Richmond%20Member%20of%20the%20City%20Council%2049th%20Council%20District%20Recap.csv",
+   "source_title": "Statement and Return Report for Certification General Election 2025 - 11/04/2025 Richmond County - All Parties and Independent Bodies Member of the City Council 49th Council District Vote for 1",
+   "certified": true,
+   "checked_at": "2026-11-12",
+   "status": "verified",
+   "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line). Name on ballot: 'Kamillah M. Hanks'.",
+   "reviewed_by": null
+  },
+  {
+   "district": 50,
+   "person_id": 7833,
+   "name": "David M. Carr",
+   "election": "2025-11-04 general",
+   "ballot_lines": [
+    {
+     "line": "Republican",
+     "votes": 34662
+    },
+    {
+     "line": "Conservative",
+     "votes": 2818
+    }
+   ],
+   "total_votes": 37480,
+   "uncontested": false,
+   "source_url": "https://www.vote.nyc/sites/default/files/pdf/election_results/2025/20251104General%20Election/00001100050Crossover%20Member%20of%20the%20City%20Council%2050th%20Council%20District%20Recap.csv",
+   "source_title": "Statement and Return Report for Certification General Election 2025 - 11/04/2025 Crossover - All Parties and Independent Bodies Member of the City Council 50th Council District Vote for 1",
+   "certified": true,
+   "checked_at": "2026-11-12",
+   "status": "verified",
+   "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line). Crossover district: figures from the BOE 'Crossover' recap combining both boroughs.",
+   "reviewed_by": null
+  },
+  {
+   "district": 51,
+   "person_id": 7887,
+   "name": "Frank Morano",
+   "election": "2025-11-04 general",
+   "ballot_lines": [
+    {
+     "line": "Republican",
+     "votes": 42624
+    },
+    {
+     "line": "Conservative",
+     "votes": 2840
+    }
+   ],
+   "total_votes": 45464,
+   "uncontested": false,
+   "source_url": "https://www.vote.nyc/sites/default/files/pdf/election_results/2025/20251104General%20Election/00501100051Richmond%20Member%20of%20the%20City%20Council%2051st%20Council%20District%20Recap.csv",
+   "source_title": "Statement and Return Report for Certification General Election 2025 - 11/04/2025 Richmond County - All Parties and Independent Bodies Member of the City Council 51st Council District Vote for 1",
+   "certified": true,
+   "checked_at": "2026-11-12",
+   "status": "verified",
+   "notes": "Lines and votes from the 'Total for' rows of the BOE certified recap (certified by the canvassing board Dec 2, 2025). total_votes is the sum of the candidate's lines; the recap reports votes per line, not a combined candidate figure. Write-in votes excluded (not a ballot line).",
+   "reviewed_by": null
+  }
+ ]
+}

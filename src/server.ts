@@ -14,6 +14,7 @@ import Sqlite from "better-sqlite3";
 
 import { withSourceNote, checkUpcomingLive } from "./tools/local-source.js";
 import { withMemberTerms } from "./tools/member-terms.js";
+import { withCurated } from "./curated.js";
 import { getEventStatuses } from "./legistar.js";
 import { LIVE_TOOL_DEFS, LIVE_SEARCH_TOOL_DEF, handleLiveTool, handleLiveSearch } from "./tools/live.js";
 import { LOCAL_TOOL_DEFS, handleLocalTool } from "./tools/local.js";
@@ -144,7 +145,11 @@ See README for full setup instructions.
     if (mode.hasLive && mode.token && liveNames.has(name)) {
       const res = await handleLiveTool(name, safeArgs, mode.token);
       // #28: Legistar's person records have no district; the index does.
-      if (name === "get_council_member" && db) return withMemberTerms(res, db);
+      if (name === "get_council_member") {
+        // #28/#37: BetaNYC's curated facts (labeled as such), then districts if indexed.
+        const curated = withCurated(res);
+        return db ? withMemberTerms(curated, db) : curated;
+      }
       return res;
     }
 

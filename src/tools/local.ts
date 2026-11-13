@@ -27,6 +27,7 @@ import {
 import { unknownParamMessage } from "./unknown-param.js";
 
 import { json } from "./json.js";
+import { withCurated } from "../curated.js";
 
 // #21: one search tool, two names. search_legislation is the main name because
 // it returns every matter type (Introductions, Resolutions, Land Use, Mayor's
@@ -92,7 +93,9 @@ export const LOCAL_TOOL_DEFS = [
       "pass as_of (YYYY-MM-DD) for a past date, or include_past for the whole history with start/end dates. " +
       "Conference and caucus memberships are memberships only: no party is inferred from them. " +
       "Also returns the member's council district on that date and every council term (from the City's " +
-      "uvw5-9znb dataset, shipped as a snapshot). No token needed.",
+      "uvw5-9znb dataset, shipped as a snapshot). A 'curated' block adds BetaNYC's hand-checked Wikidata/Wikipedia " +
+      "link, party (every ballot line won on, from Board of Elections certified results) and office social accounts, " +
+      "each with its source; these are not official records. No token needed.",
     inputSchema: {
       type: "object",
       additionalProperties: false,
@@ -390,7 +393,7 @@ export function handleLocalTool(
             .object({ member_name: z.string(), as_of: date.optional(), include_past: z.boolean().optional() })
             .strict()
             .parse(args);
-          return json(memberRoles(db, member_name, { as_of, include_past }));
+          return withCurated(json(memberRoles(db, member_name, { as_of, include_past })));
         }
         const { committee, as_of, include_past } = z
           .object({ committee: z.string(), as_of: date.optional(), include_past: z.boolean().optional() })

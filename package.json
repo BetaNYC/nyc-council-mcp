@@ -38,7 +38,11 @@
   },
   "files": [
     "dist",
-    "data/council-member-terms.json"
+    "data/council-member-terms.json",
+    "data/council-wikidata.json",
+    "data/council-party.json",
+    "data/council-social.json",
+    "data/README.md"
   ],
   "scripts": {
     "build": "tsc",
