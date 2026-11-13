@@ -209,8 +209,9 @@ These require `LEGISTAR_DB_PATH` and a built index (see [Setup](#installation)).
 |---|---|
 | `search_legislation` | Full-text search across all legislation: Introductions, Resolutions, Land Use and every other matter type. Searches titles, sponsors, summaries and the full text; a title hit ranks above a body hit. Rows carry `version` and `local_law` |
 | `get_matter` | One matter by file number (`Int 1122-2024`) or Local Law number (`2025/153`): summary, version, Local Law number, attachments with download links, `legistar_url`, and the full text on request (`include_text`) |
-| `get_member_roles` | A member's committees (chairs listed separately), caucuses, party conferences, borough delegations and task forces, from Legistar's own membership records. Today by default; `as_of` for a past date; `include_past` for the full history with dates. No party is inferred from caucus or conference |
+| `get_member_roles` | A member's committees (chairs listed separately), caucuses, party conferences, borough delegations and task forces, from Legistar's own membership records, plus the member's council `district` and every term. Today by default; `as_of` for a past date; `include_past` for the full history with dates. No party is inferred from caucus or conference |
 | `committee_roster` | Who sits on a committee, chair first, on a date or across its history |
+| `district_member` | Who held a Council district (1–51) on a date, from the City's terms list (NYC Open Data `uvw5-9znb`, shipped as a dated snapshot). A seat nobody held that day is `vacant`; the last member is `previous`, never current |
 | `search_bills` | Alias for `search_legislation` (same tool, same results; kept so existing callers work) |
 | `search_events` | Full-text search across committee hearings |
 | `list_committees` | All committees with bill and event counts |
@@ -456,6 +457,7 @@ Why this shape, so nobody re-attempts the obvious-looking fix:
 - **The archive can miss a meeting status change.** Legistar sometimes changes a meeting's status (e.g. to Deferred) without updating its last-modified time, so the archive keeps the old one. With `LEGISTAR_TOKEN` set, `upcoming_events` checks status live; without it, use `get_upcoming_hearings` before relying on a date.
 - **`get_event_bills` is paged.** A stated meeting can have 170+ agenda items; read `total` and raise `offset` to get them all.
 - **A caucus or conference is not a party.** `get_member_roles` reports Legistar's caucus and party-conference memberships as memberships. The server has no party field.
+- **Districts come from a snapshot.** `district_member` and the `district` field read the City's `uvw5-9znb` file as shipped, with its fetch date in every answer. The City updates that file late: on 2026-11-12 it had no term for Carl Wilson, a Council Member since 2026-05-13, so District 3 showed vacant. A vacant answer names such people under `unlisted_council_members`; check council.nyc.gov before saying a seat is empty. District lines are redrawn, so a past member's district number may not match today's map.
 - **`search_bills` is an alias of `search_legislation`.** Both return every matter type, not only bills.
 - **Local answers end with a source line** saying when the index was built and from which archive commit. An empty local answer means "not in this index", not "does not exist".
 
@@ -469,6 +471,8 @@ LEGISTAR_LIVE_URL_TEST=1 npm test         # with LEGISTAR_TOKEN set: adds the li
 ```
 
 Tests use Node's built-in runner (`node --test test/*.test.mjs`) and never need the network unless `LEGISTAR_LIVE_URL_TEST` is set. [CI](.github/workflows/ci.yml) runs them on every pull request to `main`, on Ubuntu (Node 20 and 22) and Windows (Node 22), and a version guard fails any PR that changes shipped code without a version bump.
+
+The council terms snapshot (`data/council-member-terms.json`) is refreshed by `node scripts/refresh-member-terms.mjs`. A [monthly workflow](.github/workflows/refresh-member-terms.yml) runs it and opens a PR when the City's rows change. The snapshot ships in the package, so a refresh needs a version bump like code does.
 
 ### Contributing
 
@@ -500,6 +504,7 @@ Prerequisite: the `NPM_TOKEN` org secret (an npm automation token with publish r
 
 - **Live tools:** [NYC Council Legistar API](https://council.nyc.gov/legislation/api/), provided by [Granicus](https://granicus.com/)
 - **Local index:** [jehiah/nyc_legislation](https://github.com/jehiah/nyc_legislation) archive — has been mirroring Legistar since 2018, updated most weekdays
+- **Council districts and terms:** NYC Open Data [City Council Members (1999 to Present)](https://data.cityofnewyork.us/d/uvw5-9znb) (`uvw5-9znb`), shipped as a dated snapshot and used as published
 
 ### Acknowledgments
 

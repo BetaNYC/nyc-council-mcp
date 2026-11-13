@@ -2,7 +2,7 @@
   "name": "@betanyc/nyc-council-mcp",
   "version": "2.8.0",
   "mcpName": "io.github.BetaNYC/nyc-council-mcp",
-  "description": "MCP server for NYC Council legislative data — hybrid local SQLite index + live Legistar API",
+  "description": "MCP server for NYC Council legislative data \u2014 hybrid local SQLite index + live Legistar API",
   "keywords": [
     "mcp",
     "model-context-protocol",
@@ -37,7 +37,8 @@
     "nyc-council-mcp": "dist/index.js"
   },
   "files": [
-    "dist"
+    "dist",
+    "data/council-member-terms.json"
   ],
   "scripts": {
     "build": "tsc",

@@ -836,6 +836,12 @@ export interface MemberRoles {
   task_forces: RoleRow[];
   other: RoleRow[];
   source: string;
+  /** Council district on as_of (latest term with include_past); null if none. */
+  district: number | null;
+  /** Every council term, newest first (#28, tier 2). */
+  terms: TermRow[];
+  terms_source: string;
+  terms_fetched_at: string | null;
 }
 
 type RoleOpts = { as_of?: string; include_past?: boolean };
@@ -890,8 +896,144 @@ export function memberRoles(db: Database.Database, memberName: string, opts: Rol
       task_forces: pick("task_force"),
       other: pick("other"),
       source: ROLES_SOURCE,
+      ...termsFor(db, p.person_id, active.asOf),
     };
   });
+}
+
+// ---------------------------------------------------------------------------
+// Council terms and districts (#28, tier 2: NYC Open Data uvw5-9znb, vendored)
+// ---------------------------------------------------------------------------
+
+export const TERMS_SOURCE =
+  "NYC Open Data uvw5-9znb, City Council Members (1999 to Present): a snapshot shipped with this server";
+
+export interface TermRow {
+  office_id: number;
+  district: number | null;
+  term_start: string | null;
+  term_end: string | null;
+}
+
+function hasTable(db: Database.Database, name: string): boolean {
+  return Boolean(db.prepare("SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = ?").get(name));
+}
+
+function stateValue(db: Database.Database, key: string): string | null {
+  const row = db.prepare("SELECT value FROM index_state WHERE key = ?").get(key) as { value: string } | undefined;
+  return row?.value ?? null;
+}
+
+/** A term is current on a date when term_start <= date <= term_end. */
+const onDate = (t: { term_start: string | null; term_end: string | null }, date: string) =>
+  (t.term_start == null || t.term_start <= date) && (t.term_end == null || t.term_end >= date);
+
+/** A person's council terms and their district on a date (or latest, if date is null). */
+export function termsFor(
+  db: Database.Database,
+  personId: number,
+  date: string | null
+): Pick<MemberRoles, "district" | "terms" | "terms_source" | "terms_fetched_at"> {
+  const terms = hasTable(db, "member_terms")
+    ? (db
+        .prepare(
+          `SELECT office_id, district, term_start, term_end FROM member_terms
+           WHERE person_id = ? ORDER BY term_start DESC, office_id DESC`
+        )
+        .all(personId) as TermRow[])
+    : [];
+  const term = date == null ? terms[0] : terms.find((t) => onDate(t, date));
+  return {
+    district: term?.district ?? null,
+    terms,
+    terms_source: TERMS_SOURCE,
+    terms_fetched_at: stateValue(db, "member_terms_fetched_at"),
+  };
+}
+
+export interface DistrictHolder {
+  person_id: number;
+  full_name: string;
+  office_id: number;
+  term_start: string | null;
+  term_end: string | null;
+}
+
+export interface DistrictMember {
+  district: number;
+  as_of: string;
+  status: "filled" | "vacant";
+  member: DistrictHolder | null;
+  /** On a vacant seat, the last member before as_of. Never reported as current. */
+  previous: DistrictHolder | null;
+  source: string;
+  snapshot_fetched_at: string | null;
+  /**
+   * On a vacant seat: people Legistar lists as Council Members on as_of who
+   * have no term in the City's file on that date. One may hold this seat; the
+   * district is not guessed.
+   */
+  unlisted_council_members?: { person_id: number; full_name: string; start: string | null; end: string | null }[];
+  note?: string;
+  warning?: string;
+}
+
+/**
+ * Who held a council district on a date. A seat nobody held on that date is
+ * "vacant" with member null, even if someone held it the day before (#28).
+ */
+export function districtMember(db: Database.Database, district: number, asOf?: string): DistrictMember {
+  const date = asOf ?? nyDateString();
+  const rows = hasTable(db, "member_terms")
+    ? (db
+        .prepare(
+          `SELECT t.person_id, TRIM(COALESCE(p.full_name, t.name)) AS full_name, t.office_id, t.term_start, t.term_end
+           FROM member_terms t LEFT JOIN people p ON p.person_id = t.person_id
+           WHERE t.district = ? ORDER BY t.term_start DESC, t.office_id DESC`
+        )
+        .all(district) as DistrictHolder[])
+    : [];
+  const member = rows.find((r) => onDate(r, date)) ?? null;
+  const previous = member ? null : rows.find((r) => r.term_end != null && r.term_end < date) ?? null;
+  const fetched = stateValue(db, "member_terms_fetched_at");
+  const out: DistrictMember = {
+    district,
+    as_of: date,
+    status: member ? "filled" : "vacant",
+    member,
+    previous,
+    source: TERMS_SOURCE,
+    snapshot_fetched_at: fetched,
+  };
+  if (!member && hasTable(db, "office_records")) {
+    // Legistar's own membership records can be newer than the City's file
+    // (2026-11-12: Carl Wilson from 2026-05-13, file last updated 2026-04-10).
+    const unlisted = db
+      .prepare(
+        `SELECT DISTINCT o.person_id, TRIM(p.full_name) AS full_name, o.start, o.end
+         FROM office_records o JOIN people p ON p.person_id = o.person_id
+         WHERE o.body_kind = 'council' AND o.member_type = 'PRIMARY COUNCIL MEMBERS'
+           AND (o.start IS NULL OR o.start <= ?) AND (o.end IS NULL OR o.end >= ?)
+           AND NOT EXISTS (SELECT 1 FROM member_terms t WHERE t.person_id = o.person_id
+                           AND (t.term_start IS NULL OR t.term_start <= ?) AND (t.term_end IS NULL OR t.term_end >= ?))
+         ORDER BY o.start, o.person_id`
+      )
+      .all(date, date, date, date) as NonNullable<DistrictMember["unlisted_council_members"]>;
+    if (unlisted.length) {
+      out.unlisted_council_members = unlisted;
+      out.note =
+        "Legistar lists these people as Council Members on this date, but they are not in the City's terms file " +
+        "for that date. One of them may hold this seat. Check council.nyc.gov before saying the seat is empty.";
+    }
+  }
+  if (rows.length === 0) {
+    out.warning = "No council terms in this index. Re-run the indexer to load the shipped snapshot.";
+  } else if (fetched && date > fetched.slice(0, 10)) {
+    out.warning =
+      `This date is after the snapshot was fetched (${fetched.slice(0, 10)}). ` +
+      "A seat filled since then will show as vacant, and a term that ended early may still show.";
+  }
+  return out;
 }
 
 export interface CommitteeRoster {

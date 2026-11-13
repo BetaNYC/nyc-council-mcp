@@ -91,6 +91,23 @@ CREATE TABLE IF NOT EXISTS office_records (
 CREATE INDEX IF NOT EXISTS office_records_person ON office_records (person_id);
 CREATE INDEX IF NOT EXISTS office_records_body   ON office_records (body_name);
 
+-- Council terms with district (#28, tier 2), from the vendored NYC Open Data
+-- snapshot data/council-member-terms.json (uvw5-9znb). One row per term
+-- (office_id). person_id is Legistar's PersonId: the City's council_member_id
+-- is the same number, so this joins with no name matching. district is NULL
+-- where the City publishes none. Reloaded in full on every build.
+CREATE TABLE IF NOT EXISTS member_terms (
+  office_id    INTEGER PRIMARY KEY,
+  person_id    INTEGER NOT NULL,
+  name         TEXT,
+  district     INTEGER,
+  term_start   TEXT,
+  term_end     TEXT
+);
+
+CREATE INDEX IF NOT EXISTS member_terms_person   ON member_terms (person_id);
+CREATE INDEX IF NOT EXISTS member_terms_district ON member_terms (district);
+
 -- A matter's attachments (#31): committee reports, fiscal impact statements,
 -- transcripts. One-to-many; re-indexing deletes a matter's rows first.
 CREATE TABLE IF NOT EXISTS matter_attachments (
@@ -218,6 +235,7 @@ CREATE INDEX IF NOT EXISTS matter_history_matter ON matter_history (matter_id);
 // triggers with it.
 export const DROP_DATA_TABLES = `
 DROP TABLE IF EXISTS office_records;
+DROP TABLE IF EXISTS member_terms;
 DROP TABLE IF EXISTS matter_attachments;
 DROP TABLE IF EXISTS votes;
 DROP TABLE IF EXISTS matter_history;

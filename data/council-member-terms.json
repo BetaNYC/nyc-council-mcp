@@ -1,0 +1,4421 @@
+{
+ "dataset": "uvw5-9znb",
+ "name": "City Council Members (1999 to Present)",
+ "url": "https://data.cityofnewyork.us/d/uvw5-9znb",
+ "fetched_at": "2026-11-13T02:13:52Z",
+ "rows_updated_at": "2026-04-10T18:00:29Z",
+ "rows": [
+  {
+   "name": "Herbert E. Berman",
+   "council_member_id": "5026",
+   "term_start": "1975-03-01T00:00:00.000",
+   "term_end": "1997-12-31T00:00:00.000",
+   "office_id": "1125"
+  },
+  {
+   "name": "Tracy L. Boyland",
+   "council_member_id": "424",
+   "term_start": "1998-01-01T00:00:00.000",
+   "term_end": "2001-12-31T00:00:00.000",
+   "district": "41",
+   "office_id": "1126"
+  },
+  {
+   "name": "Adolfo Carrion",
+   "council_member_id": "425",
+   "term_start": "1998-01-01T00:00:00.000",
+   "term_end": "2001-12-31T00:00:00.000",
+   "office_id": "1127"
+  },
+  {
+   "name": "Una Clarke",
+   "council_member_id": "5029",
+   "term_start": "1992-01-01T00:00:00.000",
+   "term_end": "1997-12-31T00:00:00.000",
+   "district": "40",
+   "office_id": "1128"
+  },
+  {
+   "name": "Lucy Cruz",
+   "council_member_id": "399",
+   "term_start": "1992-01-01T00:00:00.000",
+   "term_end": "1997-12-31T00:00:00.000",
+   "office_id": "1129"
+  },
+  {
+   "name": "Noach Dear",
+   "council_member_id": "39",
+   "term_start": "1992-11-01T00:00:00.000",
+   "term_end": "1997-12-31T00:00:00.000",
+   "office_id": "1130"
+  },
+  {
+   "name": "Stephen DiBrienza",
+   "council_member_id": "37",
+   "term_start": "1998-01-01T00:00:00.000",
+   "term_end": "2001-12-31T00:00:00.000",
+   "office_id": "1131"
+  },
+  {
+   "name": "June M. Eisland",
+   "council_member_id": "16",
+   "term_start": "1998-01-01T00:00:00.000",
+   "term_end": "2001-12-31T00:00:00.000",
+   "office_id": "1132"
+  },
+  {
+   "name": "Ronnie M. Eldridge",
+   "council_member_id": "57",
+   "term_start": "1998-01-01T00:00:00.000",
+   "term_end": "2001-12-31T00:00:00.000",
+   "office_id": "1133"
+  },
+  {
+   "name": "Pedro G. Espada",
+   "council_member_id": "426",
+   "term_start": "1998-01-01T00:00:00.000",
+   "term_end": "2001-12-31T00:00:00.000",
+   "office_id": "1135"
+  },
+  {
+   "name": "Kenneth K. Fisher",
+   "council_member_id": "385",
+   "term_start": "1998-01-01T00:00:00.000",
+   "term_end": "2001-12-31T00:00:00.000",
+   "office_id": "1137"
+  },
+  {
+   "name": "Wendell Foster",
+   "council_member_id": "15",
+   "term_start": "1998-01-01T00:00:00.000",
+   "term_end": "2001-12-31T00:00:00.000",
+   "office_id": "1138"
+  },
+  {
+   "name": "Kathryn E. Freed",
+   "council_member_id": "391",
+   "term_start": "1998-01-01T00:00:00.000",
+   "term_end": "2001-12-31T00:00:00.000",
+   "office_id": "1139"
+  },
+  {
+   "name": "Martin J. Golden",
+   "council_member_id": "428",
+   "term_start": "1998-01-01T00:00:00.000",
+   "term_end": "2001-12-31T00:00:00.000",
+   "office_id": "1140"
+  },
+  {
+   "name": "Julia Harrison",
+   "council_member_id": "25",
+   "term_start": "1998-01-01T00:00:00.000",
+   "term_end": "2001-12-31T00:00:00.000",
+   "office_id": "1141"
+  },
+  {
+   "name": "Lloyd Henry",
+   "council_member_id": "417",
+   "term_start": "1998-01-01T00:00:00.000",
+   "term_end": "2001-12-31T00:00:00.000",
+   "office_id": "1142"
+  },
+  {
+   "name": "Karen Koslowitz",
+   "council_member_id": "386",
+   "term_start": "1998-01-01T00:00:00.000",
+   "term_end": "2001-12-31T00:00:00.000",
+   "district": "29",
+   "office_id": "1143"
+  },
+  {
+   "name": "Howard L.  Lasher",
+   "council_member_id": "418",
+   "term_start": "1998-01-01T00:00:00.000",
+   "term_end": "2001-12-31T00:00:00.000",
+   "office_id": "1144"
+  },
+  {
+   "name": "Sheldon S. Leffler",
+   "council_member_id": "22",
+   "term_start": "1998-01-01T00:00:00.000",
+   "term_end": "2001-12-31T00:00:00.000",
+   "office_id": "1145"
+  },
+  {
+   "name": "Guillermo Linares",
+   "council_member_id": "395",
+   "term_start": "1998-01-01T00:00:00.000",
+   "term_end": "2001-12-31T00:00:00.000",
+   "office_id": "1146"
+  },
+  {
+   "name": "Margarita Lopez",
+   "council_member_id": "429",
+   "term_start": "1998-01-01T00:00:00.000",
+   "term_end": "2001-12-31T00:00:00.000",
+   "district": "2",
+   "office_id": "1147"
+  },
+  {
+   "name": "Helen M. Marshall",
+   "council_member_id": "401",
+   "term_start": "1998-01-01T00:00:00.000",
+   "term_end": "2001-12-31T00:00:00.000",
+   "office_id": "1148"
+  },
+  {
+   "name": "Martin Malave-Dilan",
+   "council_member_id": "415",
+   "term_start": "1998-01-01T00:00:00.000",
+   "term_end": "2001-12-31T00:00:00.000",
+   "office_id": "1149"
+  },
+  {
+   "name": "Walter L. McCaffrey",
+   "council_member_id": "27",
+   "term_start": "1998-01-01T00:00:00.000",
+   "term_end": "2001-12-31T00:00:00.000",
+   "office_id": "1150"
+  },
+  {
+   "name": "Stanley E. Michels",
+   "council_member_id": "12",
+   "term_start": "1998-01-01T00:00:00.000",
+   "term_end": "2001-12-31T00:00:00.000",
+   "office_id": "1151"
+  },
+  {
+   "name": "Gifford Miller",
+   "council_member_id": "422",
+   "term_start": "2002-01-01T00:00:00.000",
+   "term_end": "2003-12-31T00:00:00.000",
+   "district": "5",
+   "office_id": "1152"
+  },
+  {
+   "name": "Jerome X. O'Donovan",
+   "council_member_id": "7",
+   "term_start": "1998-01-01T00:00:00.000",
+   "term_end": "2001-12-31T00:00:00.000",
+   "office_id": "1153"
+  },
+  {
+   "name": "Bill Perkins",
+   "council_member_id": "430",
+   "term_start": "1998-01-01T00:00:00.000",
+   "term_end": "2001-12-31T00:00:00.000",
+   "district": "9",
+   "office_id": "1154"
+  },
+  {
+   "name": "Mary Pinkett",
+   "council_member_id": "35",
+   "term_start": "1998-01-01T00:00:00.000",
+   "term_end": "2001-12-31T00:00:00.000",
+   "office_id": "1155"
+  },
+  {
+   "name": "Morton Povman",
+   "council_member_id": "24",
+   "term_start": "1998-01-01T00:00:00.000",
+   "term_end": "2001-12-31T00:00:00.000",
+   "office_id": "1156"
+  },
+  {
+   "name": "Madeline T. Provenzano",
+   "council_member_id": "431",
+   "term_start": "1998-01-01T00:00:00.000",
+   "term_end": "2001-12-31T00:00:00.000",
+   "district": "13",
+   "office_id": "1157"
+  },
+  {
+   "name": "Philip Reed",
+   "council_member_id": "432",
+   "term_start": "1998-01-01T00:00:00.000",
+   "term_end": "2001-12-31T00:00:00.000",
+   "district": "8",
+   "office_id": "1158"
+  },
+  {
+   "name": "Annette M. Robinson",
+   "council_member_id": "407",
+   "term_start": "1998-01-01T00:00:00.000",
+   "term_end": "2001-12-31T00:00:00.000",
+   "office_id": "1160"
+  },
+  {
+   "name": "Victor L. Robles",
+   "council_member_id": "34",
+   "term_start": "1998-01-01T00:00:00.000",
+   "term_end": "2001-10-13T00:00:00.000",
+   "office_id": "1161"
+  },
+  {
+   "name": "Angel Rodriguez",
+   "council_member_id": "433",
+   "term_start": "1998-01-01T00:00:00.000",
+   "term_end": "2001-12-31T00:00:00.000",
+   "office_id": "1162"
+  },
+  {
+   "name": "John D. Sabini",
+   "council_member_id": "402",
+   "term_start": "1998-01-01T00:00:00.000",
+   "term_end": "2001-12-31T00:00:00.000",
+   "office_id": "1163"
+  },
+  {
+   "name": "Archie W. Spigner",
+   "council_member_id": "23",
+   "term_start": "1998-01-01T00:00:00.000",
+   "term_end": "2001-12-31T00:00:00.000",
+   "office_id": "1164"
+  },
+  {
+   "name": "Alphonse Stabile",
+   "council_member_id": "420",
+   "term_start": "1998-01-01T00:00:00.000",
+   "term_end": "2001-12-31T00:00:00.000",
+   "office_id": "1165"
+  },
+  {
+   "name": "Lawrence A. Warden",
+   "council_member_id": "397",
+   "term_start": "1998-01-01T00:00:00.000",
+   "term_end": "2001-12-31T00:00:00.000",
+   "office_id": "1166"
+  },
+  {
+   "name": "Juanita E. Watkins",
+   "council_member_id": "406",
+   "term_start": "1998-01-01T00:00:00.000",
+   "term_end": "2001-12-31T00:00:00.000",
+   "office_id": "1167"
+  },
+  {
+   "name": "Thomas White",
+   "council_member_id": "404",
+   "term_start": "1998-01-01T00:00:00.000",
+   "term_end": "2001-12-31T00:00:00.000",
+   "district": "28",
+   "office_id": "1168"
+  },
+  {
+   "name": "Priscilla A. Wooten",
+   "council_member_id": "31",
+   "term_start": "1998-01-01T00:00:00.000",
+   "term_end": "2001-12-31T00:00:00.000",
+   "office_id": "1169"
+  },
+  {
+   "name": "Thomas V. Ognibene",
+   "council_member_id": "405",
+   "term_start": "1998-01-01T00:00:00.000",
+   "term_end": "2001-12-31T00:00:00.000",
+   "office_id": "1170"
+  },
+  {
+   "name": "Peter F. Vallone",
+   "council_member_id": "26",
+   "term_start": "1998-01-01T00:00:00.000",
+   "term_end": "2001-12-31T00:00:00.000",
+   "district": "22",
+   "office_id": "1171"
+  },
+  {
+   "name": "Michael J. Abel",
+   "council_member_id": "5227",
+   "term_start": "1998-01-01T00:00:00.000",
+   "term_end": "2001-12-31T00:00:00.000",
+   "office_id": "1174"
+  },
+  {
+   "name": "James S. Oddo",
+   "council_member_id": "436",
+   "term_start": "1999-02-22T00:00:00.000",
+   "term_end": "2001-12-31T00:00:00.000",
+   "district": "50",
+   "office_id": "1175"
+  },
+  {
+   "name": "Christine C. Quinn",
+   "council_member_id": "434",
+   "term_start": "1999-02-22T00:00:00.000",
+   "term_end": "2001-12-31T00:00:00.000",
+   "district": "3",
+   "office_id": "1187"
+  },
+  {
+   "name": "Michael C. Nelson",
+   "council_member_id": "435",
+   "term_start": "1999-02-22T00:00:00.000",
+   "term_end": "2001-12-31T00:00:00.000",
+   "district": "48",
+   "office_id": "1208"
+  },
+  {
+   "name": "Eva S. Moskowitz",
+   "council_member_id": "5229",
+   "term_start": "1999-11-04T00:00:00.000",
+   "term_end": "2001-12-31T00:00:00.000",
+   "district": "4",
+   "office_id": "1274"
+  },
+  {
+   "name": "Joel Rivera",
+   "council_member_id": "5244",
+   "term_start": "2001-02-22T00:00:00.000",
+   "term_end": "2001-12-31T00:00:00.000",
+   "district": "15",
+   "office_id": "1336"
+  },
+  {
+   "name": "Andrew J. Lanza",
+   "council_member_id": "5255",
+   "term_start": "2001-11-13T00:00:00.000",
+   "term_end": "2001-12-31T00:00:00.000",
+   "district": "51",
+   "office_id": "1342"
+  },
+  {
+   "name": "Diana Reyna",
+   "council_member_id": "5256",
+   "term_start": "2001-11-07T00:00:00.000",
+   "term_end": "2001-12-31T00:00:00.000",
+   "district": "34",
+   "office_id": "1343"
+  },
+  {
+   "name": "Alan J. Gerson",
+   "council_member_id": "5258",
+   "term_start": "2002-01-01T00:00:00.000",
+   "term_end": "2003-12-31T00:00:00.000",
+   "district": "1",
+   "office_id": "1344"
+  },
+  {
+   "name": "Gale A. Brewer",
+   "council_member_id": "5259",
+   "term_start": "2002-01-01T00:00:00.000",
+   "term_end": "2003-12-31T00:00:00.000",
+   "district": "6",
+   "office_id": "1346"
+  },
+  {
+   "name": "Robert Jackson",
+   "council_member_id": "5260",
+   "term_start": "2002-01-01T00:00:00.000",
+   "term_end": "2003-12-31T00:00:00.000",
+   "district": "7",
+   "office_id": "1347"
+  },
+  {
+   "name": "Miguel Martinez",
+   "council_member_id": "5261",
+   "term_start": "2002-01-01T00:00:00.000",
+   "term_end": "2003-12-31T00:00:00.000",
+   "district": "10",
+   "office_id": "1348"
+  },
+  {
+   "name": "G. Oliver Koppell",
+   "council_member_id": "5262",
+   "term_start": "2002-01-01T00:00:00.000",
+   "term_end": "2003-12-31T00:00:00.000",
+   "district": "11",
+   "office_id": "1349"
+  },
+  {
+   "name": "Larry B. Seabrook",
+   "council_member_id": "5263",
+   "term_start": "2002-01-01T00:00:00.000",
+   "term_end": "2003-12-31T00:00:00.000",
+   "district": "12",
+   "office_id": "1350"
+  },
+  {
+   "name": "Maria Baez",
+   "council_member_id": "5264",
+   "term_start": "2002-01-01T00:00:00.000",
+   "term_end": "2003-12-31T00:00:00.000",
+   "district": "14",
+   "office_id": "1351"
+  },
+  {
+   "name": "Helen D. Foster",
+   "council_member_id": "5265",
+   "term_start": "2002-01-01T00:00:00.000",
+   "term_end": "2003-12-31T00:00:00.000",
+   "district": "16",
+   "office_id": "1352"
+  },
+  {
+   "name": "Jose M. Serrano",
+   "council_member_id": "5266",
+   "term_start": "2002-01-01T00:00:00.000",
+   "term_end": "2003-12-31T00:00:00.000",
+   "district": "17",
+   "office_id": "1353"
+  },
+  {
+   "name": "Ruben Diaz",
+   "council_member_id": "5267",
+   "term_start": "2002-01-01T00:00:00.000",
+   "term_end": "2002-12-31T00:00:00.000",
+   "office_id": "1354"
+  },
+  {
+   "name": "Tony Avella",
+   "council_member_id": "5268",
+   "term_start": "2002-01-01T00:00:00.000",
+   "term_end": "2003-12-31T00:00:00.000",
+   "district": "19",
+   "office_id": "1355"
+  },
+  {
+   "name": "John C. Liu",
+   "council_member_id": "5269",
+   "term_start": "2002-01-01T00:00:00.000",
+   "term_end": "2003-12-31T00:00:00.000",
+   "district": "20",
+   "office_id": "1356"
+  },
+  {
+   "name": "Hiram Monserrate",
+   "council_member_id": "5270",
+   "term_start": "2002-01-01T00:00:00.000",
+   "term_end": "2003-12-31T00:00:00.000",
+   "district": "21",
+   "office_id": "1357"
+  },
+  {
+   "name": "Peter F. Vallone, Jr.",
+   "council_member_id": "5271",
+   "term_start": "2002-01-01T00:00:00.000",
+   "term_end": "2003-12-31T00:00:00.000",
+   "district": "22",
+   "office_id": "1358"
+  },
+  {
+   "name": "David I. Weprin",
+   "council_member_id": "5272",
+   "term_start": "2002-01-01T00:00:00.000",
+   "term_end": "2003-12-31T00:00:00.000",
+   "district": "23",
+   "office_id": "1359"
+  },
+  {
+   "name": "James F. Gennaro",
+   "council_member_id": "5273",
+   "term_start": "2002-01-01T00:00:00.000",
+   "term_end": "2003-12-31T00:00:00.000",
+   "district": "24",
+   "office_id": "1360"
+  },
+  {
+   "name": "Helen Sears",
+   "council_member_id": "5274",
+   "term_start": "2002-01-01T00:00:00.000",
+   "term_end": "2003-12-31T00:00:00.000",
+   "district": "25",
+   "office_id": "1361"
+  },
+  {
+   "name": "Eric N. Gioia",
+   "council_member_id": "5275",
+   "term_start": "2002-01-01T00:00:00.000",
+   "term_end": "2003-12-31T00:00:00.000",
+   "district": "26",
+   "office_id": "1362"
+  },
+  {
+   "name": "Leroy G. Comrie, Jr.",
+   "council_member_id": "5276",
+   "term_start": "2002-01-01T00:00:00.000",
+   "term_end": "2003-12-31T00:00:00.000",
+   "district": "27",
+   "office_id": "1363"
+  },
+  {
+   "name": "Allan W. Jennings, Jr.",
+   "council_member_id": "5277",
+   "term_start": "2002-01-01T00:00:00.000",
+   "term_end": "2003-12-31T00:00:00.000",
+   "district": "28",
+   "office_id": "1364"
+  },
+  {
+   "name": "Melinda R. Katz",
+   "council_member_id": "5278",
+   "term_start": "2002-01-01T00:00:00.000",
+   "term_end": "2003-12-31T00:00:00.000",
+   "district": "29",
+   "office_id": "1365"
+  },
+  {
+   "name": "Dennis P. Gallagher",
+   "council_member_id": "5279",
+   "term_start": "2002-01-01T00:00:00.000",
+   "term_end": "2003-12-31T00:00:00.000",
+   "district": "30",
+   "office_id": "1366"
+  },
+  {
+   "name": "James Sanders, Jr.",
+   "council_member_id": "5280",
+   "term_start": "2002-01-01T00:00:00.000",
+   "term_end": "2003-12-31T00:00:00.000",
+   "district": "31",
+   "office_id": "1367"
+  },
+  {
+   "name": "Joseph P. Addabbo, Jr.",
+   "council_member_id": "5281",
+   "term_start": "2002-01-01T00:00:00.000",
+   "term_end": "2003-12-31T00:00:00.000",
+   "district": "32",
+   "office_id": "1368"
+  },
+  {
+   "name": "David Yassky",
+   "council_member_id": "5282",
+   "term_start": "2002-01-01T00:00:00.000",
+   "term_end": "2003-12-31T00:00:00.000",
+   "district": "33",
+   "office_id": "1369"
+  },
+  {
+   "name": "James E. Davis",
+   "council_member_id": "5283",
+   "term_start": "2002-01-01T00:00:00.000",
+   "term_end": "2003-07-23T00:00:00.000",
+   "office_id": "1370"
+  },
+  {
+   "name": "Albert Vann",
+   "council_member_id": "5284",
+   "term_start": "2002-01-01T00:00:00.000",
+   "term_end": "2003-12-31T00:00:00.000",
+   "district": "36",
+   "office_id": "1371"
+  },
+  {
+   "name": "Erik Martin Dilan",
+   "council_member_id": "5285",
+   "term_start": "2002-01-01T00:00:00.000",
+   "term_end": "2003-12-31T00:00:00.000",
+   "district": "37",
+   "office_id": "1372"
+  },
+  {
+   "name": "Bill De Blasio",
+   "council_member_id": "5286",
+   "term_start": "2002-01-01T00:00:00.000",
+   "term_end": "2003-12-31T00:00:00.000",
+   "district": "39",
+   "office_id": "1373"
+  },
+  {
+   "name": "Yvette D. Clarke",
+   "council_member_id": "5287",
+   "term_start": "2002-01-01T00:00:00.000",
+   "term_end": "2003-12-31T00:00:00.000",
+   "district": "40",
+   "office_id": "1374"
+  },
+  {
+   "name": "Charles Barron",
+   "council_member_id": "5288",
+   "term_start": "2002-01-01T00:00:00.000",
+   "term_end": "2003-12-31T00:00:00.000",
+   "district": "42",
+   "office_id": "1375"
+  },
+  {
+   "name": "Simcha Felder",
+   "council_member_id": "5289",
+   "term_start": "2002-01-01T00:00:00.000",
+   "term_end": "2003-12-31T00:00:00.000",
+   "district": "44",
+   "office_id": "1376"
+  },
+  {
+   "name": "Kendall Stewart",
+   "council_member_id": "5290",
+   "term_start": "2002-01-01T00:00:00.000",
+   "term_end": "2003-12-31T00:00:00.000",
+   "district": "45",
+   "office_id": "1377"
+  },
+  {
+   "name": "Lewis A. Fidler",
+   "council_member_id": "5291",
+   "term_start": "2002-01-01T00:00:00.000",
+   "term_end": "2003-12-31T00:00:00.000",
+   "district": "46",
+   "office_id": "1378"
+  },
+  {
+   "name": "Domenic M. Recchia, Jr.",
+   "council_member_id": "5292",
+   "term_start": "2002-01-01T00:00:00.000",
+   "term_end": "2003-12-31T00:00:00.000",
+   "district": "47",
+   "office_id": "1379"
+  },
+  {
+   "name": "Michael E. McMahon",
+   "council_member_id": "5293",
+   "term_start": "2002-01-01T00:00:00.000",
+   "term_end": "2003-12-31T00:00:00.000",
+   "district": "49",
+   "office_id": "1380"
+  },
+  {
+   "name": "Gifford Miller",
+   "council_member_id": "422",
+   "term_start": "1998-01-01T00:00:00.000",
+   "term_end": "2001-12-31T00:00:00.000",
+   "district": "5",
+   "office_id": "1641"
+  },
+  {
+   "name": "Sara M. Gonzalez",
+   "council_member_id": "5376",
+   "term_start": "2002-11-07T00:00:00.000",
+   "term_end": "2003-12-31T00:00:00.000",
+   "district": "38",
+   "office_id": "1676"
+  },
+  {
+   "name": "Pedro Espada, Jr.",
+   "council_member_id": "5389",
+   "term_start": "2003-03-11T00:00:00.000",
+   "term_end": "2003-12-31T00:00:00.000",
+   "office_id": "1700"
+  },
+  {
+   "name": "Vincent J. Gentile",
+   "council_member_id": "5390",
+   "term_start": "2003-03-18T00:00:00.000",
+   "term_end": "2003-12-31T00:00:00.000",
+   "district": "43",
+   "office_id": "1701"
+  },
+  {
+   "name": "Gifford Miller",
+   "council_member_id": "422",
+   "term_start": "2004-01-01T00:00:00.000",
+   "term_end": "2005-12-31T00:00:00.000",
+   "district": "5",
+   "office_id": "1720"
+  },
+  {
+   "name": "Joseph P. Addabbo, Jr.",
+   "council_member_id": "5281",
+   "term_start": "2004-01-01T00:00:00.000",
+   "term_end": "2005-12-31T00:00:00.000",
+   "district": "32",
+   "office_id": "1721"
+  },
+  {
+   "name": "Tony Avella",
+   "council_member_id": "5268",
+   "term_start": "2004-01-01T00:00:00.000",
+   "term_end": "2005-12-31T00:00:00.000",
+   "district": "19",
+   "office_id": "1722"
+  },
+  {
+   "name": "Maria Baez",
+   "council_member_id": "5264",
+   "term_start": "2004-01-01T00:00:00.000",
+   "term_end": "2005-12-31T00:00:00.000",
+   "district": "14",
+   "office_id": "1723"
+  },
+  {
+   "name": "Charles Barron",
+   "council_member_id": "5288",
+   "term_start": "2004-01-01T00:00:00.000",
+   "term_end": "2005-12-31T00:00:00.000",
+   "district": "42",
+   "office_id": "1724"
+  },
+  {
+   "name": "Tracy L. Boyland",
+   "council_member_id": "424",
+   "term_start": "2004-01-01T00:00:00.000",
+   "term_end": "2005-12-31T00:00:00.000",
+   "district": "41",
+   "office_id": "1725"
+  },
+  {
+   "name": "Gale A. Brewer",
+   "council_member_id": "5259",
+   "term_start": "2004-01-01T00:00:00.000",
+   "term_end": "2005-12-31T00:00:00.000",
+   "district": "6",
+   "office_id": "1726"
+  },
+  {
+   "name": "Yvette D. Clarke",
+   "council_member_id": "5287",
+   "term_start": "2004-01-01T00:00:00.000",
+   "term_end": "2005-12-31T00:00:00.000",
+   "district": "40",
+   "office_id": "1727"
+  },
+  {
+   "name": "Leroy G. Comrie, Jr.",
+   "council_member_id": "5276",
+   "term_start": "2004-01-01T00:00:00.000",
+   "term_end": "2005-12-31T00:00:00.000",
+   "district": "27",
+   "office_id": "1728"
+  },
+  {
+   "name": "Bill De Blasio",
+   "council_member_id": "5286",
+   "term_start": "2004-01-01T00:00:00.000",
+   "term_end": "2005-12-31T00:00:00.000",
+   "district": "39",
+   "office_id": "1729"
+  },
+  {
+   "name": "Erik Martin Dilan",
+   "council_member_id": "5285",
+   "term_start": "2004-01-01T00:00:00.000",
+   "term_end": "2005-12-31T00:00:00.000",
+   "district": "37",
+   "office_id": "1730"
+  },
+  {
+   "name": "Simcha Felder",
+   "council_member_id": "5289",
+   "term_start": "2004-01-01T00:00:00.000",
+   "term_end": "2005-12-31T00:00:00.000",
+   "district": "44",
+   "office_id": "1731"
+  },
+  {
+   "name": "Lewis A. Fidler",
+   "council_member_id": "5291",
+   "term_start": "2004-01-01T00:00:00.000",
+   "term_end": "2005-12-31T00:00:00.000",
+   "district": "46",
+   "office_id": "1732"
+  },
+  {
+   "name": "Helen D. Foster",
+   "council_member_id": "5265",
+   "term_start": "2004-01-01T00:00:00.000",
+   "term_end": "2005-12-31T00:00:00.000",
+   "district": "16",
+   "office_id": "1733"
+  },
+  {
+   "name": "Dennis P. Gallagher",
+   "council_member_id": "5279",
+   "term_start": "2004-01-01T00:00:00.000",
+   "term_end": "2005-12-31T00:00:00.000",
+   "district": "30",
+   "office_id": "1734"
+  },
+  {
+   "name": "James F. Gennaro",
+   "council_member_id": "5273",
+   "term_start": "2004-01-01T00:00:00.000",
+   "term_end": "2005-12-31T00:00:00.000",
+   "district": "24",
+   "office_id": "1735"
+  },
+  {
+   "name": "Vincent J. Gentile",
+   "council_member_id": "5390",
+   "term_start": "2004-01-01T00:00:00.000",
+   "term_end": "2005-12-31T00:00:00.000",
+   "district": "43",
+   "office_id": "1736"
+  },
+  {
+   "name": "Alan J. Gerson",
+   "council_member_id": "5258",
+   "term_start": "2004-01-01T00:00:00.000",
+   "term_end": "2005-12-31T00:00:00.000",
+   "district": "1",
+   "office_id": "1737"
+  },
+  {
+   "name": "Eric N. Gioia",
+   "council_member_id": "5275",
+   "term_start": "2004-01-01T00:00:00.000",
+   "term_end": "2005-12-31T00:00:00.000",
+   "district": "26",
+   "office_id": "1738"
+  },
+  {
+   "name": "Sara M. Gonzalez",
+   "council_member_id": "5376",
+   "term_start": "2004-01-01T00:00:00.000",
+   "term_end": "2005-12-31T00:00:00.000",
+   "district": "38",
+   "office_id": "1739"
+  },
+  {
+   "name": "Robert Jackson",
+   "council_member_id": "5260",
+   "term_start": "2004-01-01T00:00:00.000",
+   "term_end": "2005-12-31T00:00:00.000",
+   "district": "7",
+   "office_id": "1740"
+  },
+  {
+   "name": "Letitia James",
+   "council_member_id": "5417",
+   "term_start": "2004-01-01T00:00:00.000",
+   "term_end": "2005-12-31T00:00:00.000",
+   "district": "35",
+   "office_id": "1741"
+  },
+  {
+   "name": "Allan W. Jennings, Jr.",
+   "council_member_id": "5277",
+   "term_start": "2004-01-01T00:00:00.000",
+   "term_end": "2005-12-31T00:00:00.000",
+   "district": "28",
+   "office_id": "1742"
+  },
+  {
+   "name": "Melinda R. Katz",
+   "council_member_id": "5278",
+   "term_start": "2004-01-01T00:00:00.000",
+   "term_end": "2005-12-31T00:00:00.000",
+   "district": "29",
+   "office_id": "1743"
+  },
+  {
+   "name": "G. Oliver Koppell",
+   "council_member_id": "5262",
+   "term_start": "2004-01-01T00:00:00.000",
+   "term_end": "2005-12-31T00:00:00.000",
+   "district": "11",
+   "office_id": "1744"
+  },
+  {
+   "name": "Andrew J. Lanza",
+   "council_member_id": "5255",
+   "term_start": "2004-01-01T00:00:00.000",
+   "term_end": "2005-12-31T00:00:00.000",
+   "district": "51",
+   "office_id": "1745"
+  },
+  {
+   "name": "John C. Liu",
+   "council_member_id": "5269",
+   "term_start": "2004-01-01T00:00:00.000",
+   "term_end": "2005-12-31T00:00:00.000",
+   "district": "20",
+   "office_id": "1746"
+  },
+  {
+   "name": "Miguel Martinez",
+   "council_member_id": "5261",
+   "term_start": "2004-01-01T00:00:00.000",
+   "term_end": "2005-12-31T00:00:00.000",
+   "district": "10",
+   "office_id": "1747"
+  },
+  {
+   "name": "Margarita Lopez",
+   "council_member_id": "429",
+   "term_start": "2004-01-01T00:00:00.000",
+   "term_end": "2005-12-31T00:00:00.000",
+   "district": "2",
+   "office_id": "1748"
+  },
+  {
+   "name": "Michael E. McMahon",
+   "council_member_id": "5293",
+   "term_start": "2004-01-01T00:00:00.000",
+   "term_end": "2005-12-31T00:00:00.000",
+   "district": "49",
+   "office_id": "1749"
+  },
+  {
+   "name": "Hiram Monserrate",
+   "council_member_id": "5270",
+   "term_start": "2004-01-01T00:00:00.000",
+   "term_end": "2005-12-31T00:00:00.000",
+   "district": "21",
+   "office_id": "1750"
+  },
+  {
+   "name": "Eva S. Moskowitz",
+   "council_member_id": "5229",
+   "term_start": "2004-01-01T00:00:00.000",
+   "term_end": "2005-12-31T00:00:00.000",
+   "district": "4",
+   "office_id": "1751"
+  },
+  {
+   "name": "Michael C. Nelson",
+   "council_member_id": "435",
+   "term_start": "2004-01-01T00:00:00.000",
+   "term_end": "2005-12-31T00:00:00.000",
+   "district": "48",
+   "office_id": "1752"
+  },
+  {
+   "name": "James S. Oddo",
+   "council_member_id": "436",
+   "term_start": "2004-01-01T00:00:00.000",
+   "term_end": "2005-12-31T00:00:00.000",
+   "district": "50",
+   "office_id": "1753"
+  },
+  {
+   "name": "Annabel Palma",
+   "council_member_id": "5416",
+   "term_start": "2004-01-01T00:00:00.000",
+   "term_end": "2005-12-31T00:00:00.000",
+   "district": "18",
+   "office_id": "1754"
+  },
+  {
+   "name": "Bill Perkins",
+   "council_member_id": "430",
+   "term_start": "2004-01-01T00:00:00.000",
+   "term_end": "2005-12-31T00:00:00.000",
+   "district": "9",
+   "office_id": "1755"
+  },
+  {
+   "name": "Madeline T. Provenzano",
+   "council_member_id": "431",
+   "term_start": "2004-01-01T00:00:00.000",
+   "term_end": "2005-12-31T00:00:00.000",
+   "district": "13",
+   "office_id": "1756"
+  },
+  {
+   "name": "Christine C. Quinn",
+   "council_member_id": "434",
+   "term_start": "2004-01-01T00:00:00.000",
+   "term_end": "2005-12-31T00:00:00.000",
+   "district": "3",
+   "office_id": "1757"
+  },
+  {
+   "name": "Domenic M. Recchia, Jr.",
+   "council_member_id": "5292",
+   "term_start": "2004-01-01T00:00:00.000",
+   "term_end": "2005-12-31T00:00:00.000",
+   "district": "47",
+   "office_id": "1758"
+  },
+  {
+   "name": "Philip Reed",
+   "council_member_id": "432",
+   "term_start": "2004-01-01T00:00:00.000",
+   "term_end": "2005-12-31T00:00:00.000",
+   "district": "8",
+   "office_id": "1759"
+  },
+  {
+   "name": "Diana Reyna",
+   "council_member_id": "5256",
+   "term_start": "2004-01-01T00:00:00.000",
+   "term_end": "2005-12-31T00:00:00.000",
+   "district": "34",
+   "office_id": "1760"
+  },
+  {
+   "name": "Joel Rivera",
+   "council_member_id": "5244",
+   "term_start": "2004-01-01T00:00:00.000",
+   "term_end": "2005-12-31T00:00:00.000",
+   "district": "15",
+   "office_id": "1761"
+  },
+  {
+   "name": "James Sanders, Jr.",
+   "council_member_id": "5280",
+   "term_start": "2004-01-01T00:00:00.000",
+   "term_end": "2005-12-31T00:00:00.000",
+   "district": "31",
+   "office_id": "1762"
+  },
+  {
+   "name": "Larry B. Seabrook",
+   "council_member_id": "5263",
+   "term_start": "2004-01-01T00:00:00.000",
+   "term_end": "2005-12-31T00:00:00.000",
+   "district": "12",
+   "office_id": "1763"
+  },
+  {
+   "name": "Helen Sears",
+   "council_member_id": "5274",
+   "term_start": "2004-01-01T00:00:00.000",
+   "term_end": "2005-12-31T00:00:00.000",
+   "district": "25",
+   "office_id": "1764"
+  },
+  {
+   "name": "Jose M. Serrano",
+   "council_member_id": "5266",
+   "term_start": "2004-01-01T00:00:00.000",
+   "term_end": "2004-12-31T00:00:00.000",
+   "district": "17",
+   "office_id": "1765"
+  },
+  {
+   "name": "Kendall Stewart",
+   "council_member_id": "5290",
+   "term_start": "2004-01-01T00:00:00.000",
+   "term_end": "2005-12-31T00:00:00.000",
+   "district": "45",
+   "office_id": "1766"
+  },
+  {
+   "name": "Peter F. Vallone, Jr.",
+   "council_member_id": "5271",
+   "term_start": "2004-01-01T00:00:00.000",
+   "term_end": "2005-12-31T00:00:00.000",
+   "district": "22",
+   "office_id": "1767"
+  },
+  {
+   "name": "Albert Vann",
+   "council_member_id": "5284",
+   "term_start": "2004-01-01T00:00:00.000",
+   "term_end": "2005-12-31T00:00:00.000",
+   "district": "36",
+   "office_id": "1768"
+  },
+  {
+   "name": "David I. Weprin",
+   "council_member_id": "5272",
+   "term_start": "2004-01-01T00:00:00.000",
+   "term_end": "2005-12-31T00:00:00.000",
+   "district": "23",
+   "office_id": "1769"
+  },
+  {
+   "name": "David Yassky",
+   "council_member_id": "5282",
+   "term_start": "2004-01-01T00:00:00.000",
+   "term_end": "2005-12-31T00:00:00.000",
+   "district": "33",
+   "office_id": "1770"
+  },
+  {
+   "name": "Letitia James",
+   "council_member_id": "5417",
+   "term_start": "2003-11-10T00:00:00.000",
+   "term_end": "2003-12-31T00:00:00.000",
+   "district": "35",
+   "office_id": "1771"
+  },
+  {
+   "name": "Maria Del Carmen Arroyo",
+   "council_member_id": "5911",
+   "term_start": "2005-02-16T00:00:00.000",
+   "term_end": "2005-12-31T00:00:00.000",
+   "district": "17",
+   "office_id": "2104"
+  },
+  {
+   "name": "Rosie Mendez",
+   "council_member_id": "6274",
+   "term_start": "2006-01-01T00:00:00.000",
+   "term_end": "2009-12-31T00:00:00.000",
+   "district": "2",
+   "office_id": "2144"
+  },
+  {
+   "name": "Daniel R. Garodnick",
+   "council_member_id": "6267",
+   "term_start": "2006-01-01T00:00:00.000",
+   "term_end": "2009-12-31T00:00:00.000",
+   "district": "4",
+   "office_id": "2145"
+  },
+  {
+   "name": "Jessica S. Lappin",
+   "council_member_id": "6268",
+   "term_start": "2006-01-01T00:00:00.000",
+   "term_end": "2009-12-31T00:00:00.000",
+   "district": "5",
+   "office_id": "2146"
+  },
+  {
+   "name": "Melissa Mark-Viverito",
+   "council_member_id": "6269",
+   "term_start": "2006-01-01T00:00:00.000",
+   "term_end": "2009-12-31T00:00:00.000",
+   "district": "8",
+   "office_id": "2147"
+  },
+  {
+   "name": "Inez E. Dickens",
+   "council_member_id": "6270",
+   "term_start": "2006-01-01T00:00:00.000",
+   "term_end": "2009-12-31T00:00:00.000",
+   "district": "9",
+   "office_id": "2148"
+  },
+  {
+   "name": "James Vacca",
+   "council_member_id": "6271",
+   "term_start": "2006-01-01T00:00:00.000",
+   "term_end": "2009-12-31T00:00:00.000",
+   "district": "13",
+   "office_id": "2149"
+  },
+  {
+   "name": "Darlene Mealy",
+   "council_member_id": "6272",
+   "term_start": "2006-01-01T00:00:00.000",
+   "term_end": "2009-12-31T00:00:00.000",
+   "district": "41",
+   "office_id": "2150"
+  },
+  {
+   "name": "Thomas White, Jr.",
+   "council_member_id": "6273",
+   "term_start": "2006-01-01T00:00:00.000",
+   "term_end": "2009-12-31T00:00:00.000",
+   "district": "28",
+   "office_id": "2151"
+  },
+  {
+   "name": "Christine C. Quinn",
+   "council_member_id": "434",
+   "term_start": "2006-01-01T00:00:00.000",
+   "term_end": "2009-12-31T00:00:00.000",
+   "district": "3",
+   "office_id": "2164"
+  },
+  {
+   "name": "Vincent Ignizio",
+   "council_member_id": "7112",
+   "term_start": "2007-03-08T00:00:00.000",
+   "term_end": "2009-12-31T00:00:00.000",
+   "district": "51",
+   "office_id": "2422"
+  },
+  {
+   "name": "Mathieu Eugene",
+   "council_member_id": "7113",
+   "term_start": "2007-05-09T00:00:00.000",
+   "term_end": "2009-12-31T00:00:00.000",
+   "district": "40",
+   "office_id": "2432"
+  },
+  {
+   "name": "Anthony Como",
+   "council_member_id": "7490",
+   "term_start": "2008-06-16T00:00:00.000",
+   "term_end": "2008-12-31T00:00:00.000",
+   "district": "30",
+   "office_id": "2489"
+  },
+  {
+   "name": "Elizabeth S. Crowley",
+   "council_member_id": "7502",
+   "term_start": "2009-01-01T00:00:00.000",
+   "term_end": "2009-12-31T00:00:00.000",
+   "district": "30",
+   "office_id": "2495"
+  },
+  {
+   "name": "Julissa Ferreras-Copeland",
+   "council_member_id": "7509",
+   "term_start": "2009-03-17T00:00:00.000",
+   "term_end": "2009-12-31T00:00:00.000",
+   "district": "21",
+   "office_id": "2501"
+  },
+  {
+   "name": "Eric A. Ulrich",
+   "council_member_id": "7510",
+   "term_start": "2009-03-17T00:00:00.000",
+   "term_end": "2009-12-31T00:00:00.000",
+   "district": "32",
+   "office_id": "2502"
+  },
+  {
+   "name": "Kenneth C. Mitchell",
+   "council_member_id": "7516",
+   "term_start": "2009-03-17T00:00:00.000",
+   "term_end": "2009-12-31T00:00:00.000",
+   "district": "49",
+   "office_id": "2514"
+  },
+  {
+   "name": "Alan J. Gerson",
+   "council_member_id": "5258",
+   "term_start": "2006-01-01T00:00:00.000",
+   "term_end": "2009-12-31T00:00:00.000",
+   "district": "1",
+   "office_id": "2690"
+  },
+  {
+   "name": "Albert Vann",
+   "council_member_id": "5284",
+   "term_start": "2006-01-01T00:00:00.000",
+   "term_end": "2009-12-31T00:00:00.000",
+   "district": "36",
+   "office_id": "2691"
+  },
+  {
+   "name": "Andrew J. Lanza",
+   "council_member_id": "5255",
+   "term_start": "2006-01-01T00:00:00.000",
+   "term_end": "2006-12-31T00:00:00.000",
+   "district": "51",
+   "office_id": "2692"
+  },
+  {
+   "name": "Annabel Palma",
+   "council_member_id": "5416",
+   "term_start": "2006-01-01T00:00:00.000",
+   "term_end": "2009-12-31T00:00:00.000",
+   "district": "18",
+   "office_id": "2693"
+  },
+  {
+   "name": "Bill De Blasio",
+   "council_member_id": "5286",
+   "term_start": "2006-01-01T00:00:00.000",
+   "term_end": "2009-12-31T00:00:00.000",
+   "district": "39",
+   "office_id": "2695"
+  },
+  {
+   "name": "Bill Perkins",
+   "council_member_id": "430",
+   "term_start": "2002-01-01T00:00:00.000",
+   "term_end": "2003-12-31T00:00:00.000",
+   "district": "9",
+   "office_id": "2696"
+  },
+  {
+   "name": "Charles Barron",
+   "council_member_id": "5288",
+   "term_start": "2006-01-01T00:00:00.000",
+   "term_end": "2009-12-31T00:00:00.000",
+   "district": "42",
+   "office_id": "2697"
+  },
+  {
+   "name": "David I. Weprin",
+   "council_member_id": "5272",
+   "term_start": "2006-01-01T00:00:00.000",
+   "term_end": "2009-12-31T00:00:00.000",
+   "district": "23",
+   "office_id": "2698"
+  },
+  {
+   "name": "Angel Rodriguez",
+   "council_member_id": "433",
+   "term_start": "2002-01-01T00:00:00.000",
+   "term_end": "2002-08-28T00:00:00.000",
+   "office_id": "2699"
+  },
+  {
+   "name": "David Yassky",
+   "council_member_id": "5282",
+   "term_start": "2006-01-01T00:00:00.000",
+   "term_end": "2009-12-31T00:00:00.000",
+   "district": "33",
+   "office_id": "2700"
+  },
+  {
+   "name": "Dennis P. Gallagher",
+   "council_member_id": "5279",
+   "term_start": "2006-01-01T00:00:00.000",
+   "term_end": "2008-04-18T00:00:00.000",
+   "district": "30",
+   "office_id": "2701"
+  },
+  {
+   "name": "Diana Reyna",
+   "council_member_id": "5256",
+   "term_start": "2006-01-01T00:00:00.000",
+   "term_end": "2009-12-31T00:00:00.000",
+   "district": "34",
+   "office_id": "2702"
+  },
+  {
+   "name": "Domenic M. Recchia, Jr.",
+   "council_member_id": "5292",
+   "term_start": "2006-01-01T00:00:00.000",
+   "term_end": "2009-12-31T00:00:00.000",
+   "district": "47",
+   "office_id": "2703"
+  },
+  {
+   "name": "Eric N. Gioia",
+   "council_member_id": "5275",
+   "term_start": "2006-01-01T00:00:00.000",
+   "term_end": "2009-12-31T00:00:00.000",
+   "district": "26",
+   "office_id": "2704"
+  },
+  {
+   "name": "Erik Martin Dilan",
+   "council_member_id": "5285",
+   "term_start": "2006-01-01T00:00:00.000",
+   "term_end": "2009-12-31T00:00:00.000",
+   "district": "37",
+   "office_id": "2705"
+  },
+  {
+   "name": "Eva S. Moskowitz",
+   "council_member_id": "5229",
+   "term_start": "2002-01-01T00:00:00.000",
+   "term_end": "2003-12-31T00:00:00.000",
+   "district": "4",
+   "office_id": "2706"
+  },
+  {
+   "name": "G. Oliver Koppell",
+   "council_member_id": "5262",
+   "term_start": "2006-01-01T00:00:00.000",
+   "term_end": "2009-12-31T00:00:00.000",
+   "district": "11",
+   "office_id": "2707"
+  },
+  {
+   "name": "Gale A. Brewer",
+   "council_member_id": "5259",
+   "term_start": "2006-01-01T00:00:00.000",
+   "term_end": "2009-12-31T00:00:00.000",
+   "district": "6",
+   "office_id": "2708"
+  },
+  {
+   "name": "Helen D. Foster",
+   "council_member_id": "5265",
+   "term_start": "2006-01-01T00:00:00.000",
+   "term_end": "2009-12-31T00:00:00.000",
+   "district": "16",
+   "office_id": "2709"
+  },
+  {
+   "name": "Helen Sears",
+   "council_member_id": "5274",
+   "term_start": "2006-01-01T00:00:00.000",
+   "term_end": "2009-12-31T00:00:00.000",
+   "district": "25",
+   "office_id": "2710"
+  },
+  {
+   "name": "Herbert E. Berman",
+   "council_member_id": "5026",
+   "term_start": "1998-01-01T00:00:00.000",
+   "term_end": "2001-12-31T00:00:00.000",
+   "office_id": "2711"
+  },
+  {
+   "name": "Hiram Monserrate",
+   "council_member_id": "5270",
+   "term_start": "2006-01-01T00:00:00.000",
+   "term_end": "2008-12-31T00:00:00.000",
+   "district": "21",
+   "office_id": "2712"
+  },
+  {
+   "name": "James F. Gennaro",
+   "council_member_id": "5273",
+   "term_start": "2006-01-01T00:00:00.000",
+   "term_end": "2009-12-31T00:00:00.000",
+   "district": "24",
+   "office_id": "2713"
+  },
+  {
+   "name": "James S. Oddo",
+   "council_member_id": "436",
+   "term_start": "2002-01-01T00:00:00.000",
+   "term_end": "2003-12-31T00:00:00.000",
+   "district": "50",
+   "office_id": "2714"
+  },
+  {
+   "name": "James S. Oddo",
+   "council_member_id": "436",
+   "term_start": "2006-01-01T00:00:00.000",
+   "term_end": "2009-12-31T00:00:00.000",
+   "district": "50",
+   "office_id": "2715"
+  },
+  {
+   "name": "James Sanders, Jr.",
+   "council_member_id": "5280",
+   "term_start": "2006-01-01T00:00:00.000",
+   "term_end": "2009-12-31T00:00:00.000",
+   "district": "31",
+   "office_id": "2716"
+  },
+  {
+   "name": "Joel Rivera",
+   "council_member_id": "5244",
+   "term_start": "2002-01-01T00:00:00.000",
+   "term_end": "2003-12-31T00:00:00.000",
+   "district": "15",
+   "office_id": "2717"
+  },
+  {
+   "name": "Joel Rivera",
+   "council_member_id": "5244",
+   "term_start": "2006-01-01T00:00:00.000",
+   "term_end": "2009-12-31T00:00:00.000",
+   "district": "15",
+   "office_id": "2718"
+  },
+  {
+   "name": "John C. Liu",
+   "council_member_id": "5269",
+   "term_start": "2006-01-01T00:00:00.000",
+   "term_end": "2009-12-31T00:00:00.000",
+   "district": "20",
+   "office_id": "2719"
+  },
+  {
+   "name": "Joseph P. Addabbo, Jr.",
+   "council_member_id": "5281",
+   "term_start": "2006-01-01T00:00:00.000",
+   "term_end": "2008-12-31T00:00:00.000",
+   "district": "32",
+   "office_id": "2720"
+  },
+  {
+   "name": "Kendall Stewart",
+   "council_member_id": "5290",
+   "term_start": "2006-01-01T00:00:00.000",
+   "term_end": "2009-12-31T00:00:00.000",
+   "district": "45",
+   "office_id": "2721"
+  },
+  {
+   "name": "Larry B. Seabrook",
+   "council_member_id": "5263",
+   "term_start": "2006-01-01T00:00:00.000",
+   "term_end": "2009-12-31T00:00:00.000",
+   "district": "12",
+   "office_id": "2722"
+  },
+  {
+   "name": "Leroy G. Comrie, Jr.",
+   "council_member_id": "5276",
+   "term_start": "2006-01-01T00:00:00.000",
+   "term_end": "2009-12-31T00:00:00.000",
+   "district": "27",
+   "office_id": "2723"
+  },
+  {
+   "name": "Letitia James",
+   "council_member_id": "5417",
+   "term_start": "2006-01-01T00:00:00.000",
+   "term_end": "2009-12-31T00:00:00.000",
+   "district": "35",
+   "office_id": "2724"
+  },
+  {
+   "name": "Lewis A. Fidler",
+   "council_member_id": "5291",
+   "term_start": "2006-01-01T00:00:00.000",
+   "term_end": "2009-12-31T00:00:00.000",
+   "district": "46",
+   "office_id": "2725"
+  },
+  {
+   "name": "Lucy Cruz",
+   "council_member_id": "399",
+   "term_start": "1998-01-01T00:00:00.000",
+   "term_end": "2001-12-31T00:00:00.000",
+   "office_id": "2726"
+  },
+  {
+   "name": "Madeline T. Provenzano",
+   "council_member_id": "431",
+   "term_start": "2002-01-01T00:00:00.000",
+   "term_end": "2003-12-31T00:00:00.000",
+   "district": "13",
+   "office_id": "2727"
+  },
+  {
+   "name": "Margarita Lopez",
+   "council_member_id": "429",
+   "term_start": "2002-01-01T00:00:00.000",
+   "term_end": "2003-12-31T00:00:00.000",
+   "district": "2",
+   "office_id": "2728"
+  },
+  {
+   "name": "Maria Baez",
+   "council_member_id": "5264",
+   "term_start": "2006-01-01T00:00:00.000",
+   "term_end": "2009-12-31T00:00:00.000",
+   "district": "14",
+   "office_id": "2729"
+  },
+  {
+   "name": "Maria Del Carmen Arroyo",
+   "council_member_id": "5911",
+   "term_start": "2006-01-01T00:00:00.000",
+   "term_end": "2009-12-31T00:00:00.000",
+   "district": "17",
+   "office_id": "2730"
+  },
+  {
+   "name": "Martin J. Golden",
+   "council_member_id": "428",
+   "term_start": "2002-01-01T00:00:00.000",
+   "term_end": "2002-12-31T00:00:00.000",
+   "office_id": "2731"
+  },
+  {
+   "name": "Melinda R. Katz",
+   "council_member_id": "5278",
+   "term_start": "2006-01-01T00:00:00.000",
+   "term_end": "2009-12-31T00:00:00.000",
+   "district": "29",
+   "office_id": "2732"
+  },
+  {
+   "name": "Michael C. Nelson",
+   "council_member_id": "435",
+   "term_start": "2002-01-01T00:00:00.000",
+   "term_end": "2003-12-31T00:00:00.000",
+   "district": "48",
+   "office_id": "2733"
+  },
+  {
+   "name": "Michael C. Nelson",
+   "council_member_id": "435",
+   "term_start": "2006-01-01T00:00:00.000",
+   "term_end": "2009-12-31T00:00:00.000",
+   "district": "48",
+   "office_id": "2734"
+  },
+  {
+   "name": "Michael E. McMahon",
+   "council_member_id": "5293",
+   "term_start": "2006-01-01T00:00:00.000",
+   "term_end": "2009-01-02T00:00:00.000",
+   "district": "49",
+   "office_id": "2735"
+  },
+  {
+   "name": "Miguel Martinez",
+   "council_member_id": "5261",
+   "term_start": "2006-01-01T00:00:00.000",
+   "term_end": "2009-07-14T00:00:00.000",
+   "district": "10",
+   "office_id": "2736"
+  },
+  {
+   "name": "Noach Dear",
+   "council_member_id": "39",
+   "term_start": "1998-01-01T00:00:00.000",
+   "term_end": "2001-12-31T00:00:00.000",
+   "office_id": "2737"
+  },
+  {
+   "name": "Peter F. Vallone, Jr.",
+   "council_member_id": "5271",
+   "term_start": "2006-01-01T00:00:00.000",
+   "term_end": "2009-12-31T00:00:00.000",
+   "district": "22",
+   "office_id": "2738"
+  },
+  {
+   "name": "Philip Reed",
+   "council_member_id": "432",
+   "term_start": "2002-01-01T00:00:00.000",
+   "term_end": "2003-12-31T00:00:00.000",
+   "district": "8",
+   "office_id": "2739"
+  },
+  {
+   "name": "Robert Jackson",
+   "council_member_id": "5260",
+   "term_start": "2006-01-01T00:00:00.000",
+   "term_end": "2009-12-31T00:00:00.000",
+   "district": "7",
+   "office_id": "2740"
+  },
+  {
+   "name": "Sara M. Gonzalez",
+   "council_member_id": "5376",
+   "term_start": "2006-01-01T00:00:00.000",
+   "term_end": "2009-12-31T00:00:00.000",
+   "district": "38",
+   "office_id": "2741"
+  },
+  {
+   "name": "Simcha Felder",
+   "council_member_id": "5289",
+   "term_start": "2006-01-01T00:00:00.000",
+   "term_end": "2009-12-31T00:00:00.000",
+   "district": "44",
+   "office_id": "2742"
+  },
+  {
+   "name": "Tony Avella",
+   "council_member_id": "5268",
+   "term_start": "2006-01-01T00:00:00.000",
+   "term_end": "2009-12-31T00:00:00.000",
+   "district": "19",
+   "office_id": "2743"
+  },
+  {
+   "name": "Tracy L. Boyland",
+   "council_member_id": "424",
+   "term_start": "2002-01-01T00:00:00.000",
+   "term_end": "2003-12-31T00:00:00.000",
+   "district": "41",
+   "office_id": "2744"
+  },
+  {
+   "name": "Una Clarke",
+   "council_member_id": "5029",
+   "term_start": "1998-01-01T00:00:00.000",
+   "term_end": "2001-12-31T00:00:00.000",
+   "district": "40",
+   "office_id": "2745"
+  },
+  {
+   "name": "Vincent J. Gentile",
+   "council_member_id": "5390",
+   "term_start": "2006-01-01T00:00:00.000",
+   "term_end": "2009-12-31T00:00:00.000",
+   "district": "43",
+   "office_id": "2746"
+  },
+  {
+   "name": "Yvette D. Clarke",
+   "council_member_id": "5287",
+   "term_start": "2006-01-01T00:00:00.000",
+   "term_end": "2007-01-02T00:00:00.000",
+   "district": "40",
+   "office_id": "2747"
+  },
+  {
+   "name": "Andrew J. Lanza",
+   "council_member_id": "5255",
+   "term_start": "2002-01-01T00:00:00.000",
+   "term_end": "2003-12-31T00:00:00.000",
+   "district": "51",
+   "office_id": "2748"
+  },
+  {
+   "name": "Diana Reyna",
+   "council_member_id": "5256",
+   "term_start": "2002-01-01T00:00:00.000",
+   "term_end": "2003-12-31T00:00:00.000",
+   "district": "34",
+   "office_id": "2749"
+  },
+  {
+   "name": "Christine C. Quinn",
+   "council_member_id": "434",
+   "term_start": "2002-01-01T00:00:00.000",
+   "term_end": "2003-12-31T00:00:00.000",
+   "district": "3",
+   "office_id": "2751"
+  },
+  {
+   "name": "Ydanis A. Rodriguez",
+   "council_member_id": "7541",
+   "term_start": "2009-11-24T00:00:00.000",
+   "term_end": "2009-12-31T00:00:00.000",
+   "district": "10",
+   "office_id": "2768"
+  },
+  {
+   "name": "Charles Barron",
+   "council_member_id": "5288",
+   "term_start": "2010-01-01T00:00:00.000",
+   "term_end": "2013-12-31T00:00:00.000",
+   "district": "42",
+   "office_id": "2774"
+  },
+  {
+   "name": "Gale A. Brewer",
+   "council_member_id": "5259",
+   "term_start": "2010-01-01T00:00:00.000",
+   "term_end": "2013-12-31T00:00:00.000",
+   "district": "6",
+   "office_id": "2775"
+  },
+  {
+   "name": "Maria Del Carmen Arroyo",
+   "council_member_id": "5911",
+   "term_start": "2010-01-01T00:00:00.000",
+   "term_end": "2013-12-31T00:00:00.000",
+   "district": "17",
+   "office_id": "2776"
+  },
+  {
+   "name": "Fernando Cabrera",
+   "council_member_id": "7561",
+   "term_start": "2010-01-01T00:00:00.000",
+   "term_end": "2013-12-31T00:00:00.000",
+   "district": "14",
+   "office_id": "2777"
+  },
+  {
+   "name": "Margaret S. Chin",
+   "council_member_id": "7562",
+   "term_start": "2010-01-01T00:00:00.000",
+   "term_end": "2013-12-31T00:00:00.000",
+   "district": "1",
+   "office_id": "2778"
+  },
+  {
+   "name": "Leroy G. Comrie, Jr.",
+   "council_member_id": "5276",
+   "term_start": "2010-01-01T00:00:00.000",
+   "term_end": "2013-12-31T00:00:00.000",
+   "district": "27",
+   "office_id": "2779"
+  },
+  {
+   "name": "Elizabeth S. Crowley",
+   "council_member_id": "7502",
+   "term_start": "2010-01-01T00:00:00.000",
+   "term_end": "2013-12-31T00:00:00.000",
+   "district": "30",
+   "office_id": "2780"
+  },
+  {
+   "name": "Inez E. Dickens",
+   "council_member_id": "6270",
+   "term_start": "2010-01-01T00:00:00.000",
+   "term_end": "2013-12-31T00:00:00.000",
+   "district": "9",
+   "office_id": "2781"
+  },
+  {
+   "name": "Erik Martin Dilan",
+   "council_member_id": "5285",
+   "term_start": "2010-01-01T00:00:00.000",
+   "term_end": "2013-12-31T00:00:00.000",
+   "district": "37",
+   "office_id": "2782"
+  },
+  {
+   "name": "Daniel Dromm",
+   "council_member_id": "7563",
+   "term_start": "2010-01-01T00:00:00.000",
+   "term_end": "2013-12-31T00:00:00.000",
+   "district": "25",
+   "office_id": "2783"
+  },
+  {
+   "name": "Mathieu Eugene",
+   "council_member_id": "7113",
+   "term_start": "2010-01-01T00:00:00.000",
+   "term_end": "2013-12-31T00:00:00.000",
+   "district": "40",
+   "office_id": "2784"
+  },
+  {
+   "name": "Simcha Felder",
+   "council_member_id": "5289",
+   "term_start": "2010-01-01T00:00:00.000",
+   "term_end": "2010-01-31T00:00:00.000",
+   "district": "44",
+   "office_id": "2785"
+  },
+  {
+   "name": "Julissa Ferreras-Copeland",
+   "council_member_id": "7509",
+   "term_start": "2010-01-01T00:00:00.000",
+   "term_end": "2013-12-31T00:00:00.000",
+   "district": "21",
+   "office_id": "2786"
+  },
+  {
+   "name": "Lewis A. Fidler",
+   "council_member_id": "5291",
+   "term_start": "2010-01-01T00:00:00.000",
+   "term_end": "2013-12-31T00:00:00.000",
+   "district": "46",
+   "office_id": "2787"
+  },
+  {
+   "name": "Helen D. Foster",
+   "council_member_id": "5265",
+   "term_start": "2010-01-01T00:00:00.000",
+   "term_end": "2013-09-25T00:00:00.000",
+   "district": "16",
+   "office_id": "2788"
+  },
+  {
+   "name": "Daniel R. Garodnick",
+   "council_member_id": "6267",
+   "term_start": "2010-01-01T00:00:00.000",
+   "term_end": "2013-12-31T00:00:00.000",
+   "district": "4",
+   "office_id": "2789"
+  },
+  {
+   "name": "James F. Gennaro",
+   "council_member_id": "5273",
+   "term_start": "2010-01-01T00:00:00.000",
+   "term_end": "2013-12-31T00:00:00.000",
+   "district": "24",
+   "office_id": "2790"
+  },
+  {
+   "name": "Vincent J. Gentile",
+   "council_member_id": "5390",
+   "term_start": "2010-01-01T00:00:00.000",
+   "term_end": "2013-12-31T00:00:00.000",
+   "district": "43",
+   "office_id": "2791"
+  },
+  {
+   "name": "Sara M. Gonzalez",
+   "council_member_id": "5376",
+   "term_start": "2010-01-01T00:00:00.000",
+   "term_end": "2013-12-31T00:00:00.000",
+   "district": "38",
+   "office_id": "2792"
+  },
+  {
+   "name": "Daniel J. Halloran III",
+   "council_member_id": "7564",
+   "term_start": "2010-01-01T00:00:00.000",
+   "term_end": "2013-12-31T00:00:00.000",
+   "district": "19",
+   "office_id": "2793"
+  },
+  {
+   "name": "Vincent Ignizio",
+   "council_member_id": "7112",
+   "term_start": "2010-01-01T00:00:00.000",
+   "term_end": "2013-12-31T00:00:00.000",
+   "district": "51",
+   "office_id": "2794"
+  },
+  {
+   "name": "Robert Jackson",
+   "council_member_id": "5260",
+   "term_start": "2010-01-01T00:00:00.000",
+   "term_end": "2013-12-31T00:00:00.000",
+   "district": "7",
+   "office_id": "2795"
+  },
+  {
+   "name": "Letitia James",
+   "council_member_id": "5417",
+   "term_start": "2010-01-01T00:00:00.000",
+   "term_end": "2013-12-31T00:00:00.000",
+   "district": "35",
+   "office_id": "2796"
+  },
+  {
+   "name": "Peter A. Koo",
+   "council_member_id": "7565",
+   "term_start": "2010-01-01T00:00:00.000",
+   "term_end": "2013-12-31T00:00:00.000",
+   "district": "20",
+   "office_id": "2798"
+  },
+  {
+   "name": "G. Oliver Koppell",
+   "council_member_id": "5262",
+   "term_start": "2010-01-01T00:00:00.000",
+   "term_end": "2013-12-31T00:00:00.000",
+   "district": "11",
+   "office_id": "2799"
+  },
+  {
+   "name": "Karen Koslowitz",
+   "council_member_id": "386",
+   "term_start": "2010-01-01T00:00:00.000",
+   "term_end": "2013-12-31T00:00:00.000",
+   "district": "29",
+   "office_id": "2800"
+  },
+  {
+   "name": "Brad S. Lander",
+   "council_member_id": "7566",
+   "term_start": "2010-01-01T00:00:00.000",
+   "term_end": "2013-12-31T00:00:00.000",
+   "district": "39",
+   "office_id": "2801"
+  },
+  {
+   "name": "Jessica S. Lappin",
+   "council_member_id": "6268",
+   "term_start": "2010-01-01T00:00:00.000",
+   "term_end": "2013-12-31T00:00:00.000",
+   "district": "5",
+   "office_id": "2802"
+  },
+  {
+   "name": "Stephen T. Levin",
+   "council_member_id": "7567",
+   "term_start": "2010-01-01T00:00:00.000",
+   "term_end": "2013-12-31T00:00:00.000",
+   "district": "33",
+   "office_id": "2803"
+  },
+  {
+   "name": "Melissa Mark-Viverito",
+   "council_member_id": "6269",
+   "term_start": "2010-01-01T00:00:00.000",
+   "term_end": "2013-12-31T00:00:00.000",
+   "district": "8",
+   "office_id": "2804"
+  },
+  {
+   "name": "Darlene Mealy",
+   "council_member_id": "6272",
+   "term_start": "2010-01-01T00:00:00.000",
+   "term_end": "2013-12-31T00:00:00.000",
+   "district": "41",
+   "office_id": "2805"
+  },
+  {
+   "name": "Rosie Mendez",
+   "council_member_id": "6274",
+   "term_start": "2010-01-01T00:00:00.000",
+   "term_end": "2013-12-31T00:00:00.000",
+   "district": "2",
+   "office_id": "2806"
+  },
+  {
+   "name": "Michael C. Nelson",
+   "council_member_id": "435",
+   "term_start": "2010-01-01T00:00:00.000",
+   "term_end": "2013-12-31T00:00:00.000",
+   "district": "48",
+   "office_id": "2807"
+  },
+  {
+   "name": "James S. Oddo",
+   "council_member_id": "436",
+   "term_start": "2010-01-01T00:00:00.000",
+   "term_end": "2013-12-31T00:00:00.000",
+   "district": "50",
+   "office_id": "2808"
+  },
+  {
+   "name": "Annabel Palma",
+   "council_member_id": "5416",
+   "term_start": "2010-01-01T00:00:00.000",
+   "term_end": "2013-12-31T00:00:00.000",
+   "district": "18",
+   "office_id": "2809"
+  },
+  {
+   "name": "Domenic M. Recchia, Jr.",
+   "council_member_id": "5292",
+   "term_start": "2010-01-01T00:00:00.000",
+   "term_end": "2013-12-31T00:00:00.000",
+   "district": "47",
+   "office_id": "2810"
+  },
+  {
+   "name": "Diana Reyna",
+   "council_member_id": "5256",
+   "term_start": "2010-01-01T00:00:00.000",
+   "term_end": "2013-12-31T00:00:00.000",
+   "district": "34",
+   "office_id": "2811"
+  },
+  {
+   "name": "Joel Rivera",
+   "council_member_id": "5244",
+   "term_start": "2010-01-01T00:00:00.000",
+   "term_end": "2013-12-31T00:00:00.000",
+   "district": "15",
+   "office_id": "2812"
+  },
+  {
+   "name": "Ydanis A. Rodriguez",
+   "council_member_id": "7541",
+   "term_start": "2010-01-01T00:00:00.000",
+   "term_end": "2013-12-31T00:00:00.000",
+   "district": "10",
+   "office_id": "2814"
+  },
+  {
+   "name": "Deborah L. Rose",
+   "council_member_id": "7568",
+   "term_start": "2010-01-01T00:00:00.000",
+   "term_end": "2013-12-31T00:00:00.000",
+   "district": "49",
+   "office_id": "2815"
+  },
+  {
+   "name": "James Sanders, Jr.",
+   "council_member_id": "5280",
+   "term_start": "2010-01-01T00:00:00.000",
+   "term_end": "2013-01-01T00:00:00.000",
+   "district": "31",
+   "office_id": "2816"
+  },
+  {
+   "name": "Larry B. Seabrook",
+   "council_member_id": "5263",
+   "term_start": "2010-01-01T00:00:00.000",
+   "term_end": "2012-07-26T00:00:00.000",
+   "district": "12",
+   "office_id": "2817"
+  },
+  {
+   "name": "Eric A. Ulrich",
+   "council_member_id": "7510",
+   "term_start": "2010-01-01T00:00:00.000",
+   "term_end": "2013-12-31T00:00:00.000",
+   "district": "32",
+   "office_id": "2818"
+  },
+  {
+   "name": "James Vacca",
+   "council_member_id": "6271",
+   "term_start": "2010-01-01T00:00:00.000",
+   "term_end": "2013-12-31T00:00:00.000",
+   "district": "13",
+   "office_id": "2819"
+  },
+  {
+   "name": "Peter F. Vallone, Jr.",
+   "council_member_id": "5271",
+   "term_start": "2010-01-01T00:00:00.000",
+   "term_end": "2013-12-31T00:00:00.000",
+   "district": "22",
+   "office_id": "2820"
+  },
+  {
+   "name": "James G. Van Bramer",
+   "council_member_id": "7569",
+   "term_start": "2010-01-01T00:00:00.000",
+   "term_end": "2013-12-31T00:00:00.000",
+   "district": "26",
+   "office_id": "2821"
+  },
+  {
+   "name": "Albert Vann",
+   "council_member_id": "5284",
+   "term_start": "2010-01-01T00:00:00.000",
+   "term_end": "2013-12-31T00:00:00.000",
+   "district": "36",
+   "office_id": "2822"
+  },
+  {
+   "name": "Mark S. Weprin",
+   "council_member_id": "7570",
+   "term_start": "2010-01-01T00:00:00.000",
+   "term_end": "2013-12-31T00:00:00.000",
+   "district": "23",
+   "office_id": "2823"
+  },
+  {
+   "name": "Thomas White, Jr.",
+   "council_member_id": "6273",
+   "term_start": "2010-01-01T00:00:00.000",
+   "term_end": "2010-08-27T00:00:00.000",
+   "district": "28",
+   "office_id": "2824"
+  },
+  {
+   "name": "Jumaane D. Williams",
+   "council_member_id": "7571",
+   "term_start": "2010-01-01T00:00:00.000",
+   "term_end": "2013-12-31T00:00:00.000",
+   "district": "45",
+   "office_id": "2825"
+  },
+  {
+   "name": "Christine C. Quinn",
+   "council_member_id": "434",
+   "term_start": "2010-01-01T00:00:00.000",
+   "term_end": "2013-12-31T00:00:00.000",
+   "district": "3",
+   "office_id": "2829"
+  },
+  {
+   "name": "David G. Greenfield",
+   "council_member_id": "7577",
+   "term_start": "2010-04-07T00:00:00.000",
+   "term_end": "2013-12-31T00:00:00.000",
+   "district": "44",
+   "office_id": "3162"
+  },
+  {
+   "name": "Ruben Wills",
+   "council_member_id": "7586",
+   "term_start": "2010-11-30T00:00:00.000",
+   "term_end": "2013-12-31T00:00:00.000",
+   "district": "28",
+   "office_id": "3179"
+  },
+  {
+   "name": "Andy L. King",
+   "council_member_id": "7613",
+   "term_start": "2012-12-18T00:00:00.000",
+   "term_end": "2013-12-31T00:00:00.000",
+   "district": "12",
+   "office_id": "3197"
+  },
+  {
+   "name": "Donovan J. Richards",
+   "council_member_id": "7617",
+   "term_start": "2013-03-05T00:00:00.000",
+   "term_end": "2013-12-31T00:00:00.000",
+   "district": "31",
+   "office_id": "3213"
+  },
+  {
+   "name": "Vanessa L. Gibson",
+   "council_member_id": "7622",
+   "term_start": "2013-12-06T00:00:00.000",
+   "term_end": "2013-12-31T00:00:00.000",
+   "district": "16",
+   "office_id": "3329"
+  },
+  {
+   "name": "Maria Del Carmen Arroyo",
+   "council_member_id": "5911",
+   "term_start": "2014-01-01T00:00:00.000",
+   "term_end": "2015-12-31T00:00:00.000",
+   "district": "17",
+   "office_id": "3330"
+  },
+  {
+   "name": "Inez D. Barron",
+   "council_member_id": "7623",
+   "term_start": "2014-01-01T00:00:00.000",
+   "term_end": "2017-12-31T00:00:00.000",
+   "district": "42",
+   "office_id": "3331"
+  },
+  {
+   "name": "Fernando Cabrera",
+   "council_member_id": "7561",
+   "term_start": "2014-01-01T00:00:00.000",
+   "term_end": "2017-12-31T00:00:00.000",
+   "district": "14",
+   "office_id": "3332"
+  },
+  {
+   "name": "Margaret S. Chin",
+   "council_member_id": "7562",
+   "term_start": "2014-01-01T00:00:00.000",
+   "term_end": "2017-12-31T00:00:00.000",
+   "district": "1",
+   "office_id": "3333"
+  },
+  {
+   "name": "Andrew Cohen",
+   "council_member_id": "7624",
+   "term_start": "2014-01-01T00:00:00.000",
+   "term_end": "2017-12-31T00:00:00.000",
+   "district": "11",
+   "office_id": "3334"
+  },
+  {
+   "name": "Costa G. Constantinides",
+   "council_member_id": "7627",
+   "term_start": "2014-01-01T00:00:00.000",
+   "term_end": "2017-12-31T00:00:00.000",
+   "district": "22",
+   "office_id": "3335"
+  },
+  {
+   "name": "Robert E. Cornegy, Jr.",
+   "council_member_id": "7604",
+   "term_start": "2014-01-01T00:00:00.000",
+   "term_end": "2017-12-31T00:00:00.000",
+   "district": "36",
+   "office_id": "3336"
+  },
+  {
+   "name": "Elizabeth S. Crowley",
+   "council_member_id": "7502",
+   "term_start": "2014-01-01T00:00:00.000",
+   "term_end": "2017-12-31T00:00:00.000",
+   "district": "30",
+   "office_id": "3337"
+  },
+  {
+   "name": "Laurie A. Cumbo",
+   "council_member_id": "7628",
+   "term_start": "2014-01-01T00:00:00.000",
+   "term_end": "2017-12-31T00:00:00.000",
+   "district": "35",
+   "office_id": "3338"
+  },
+  {
+   "name": "Chaim M. Deutsch",
+   "council_member_id": "7629",
+   "term_start": "2014-01-01T00:00:00.000",
+   "term_end": "2017-12-31T00:00:00.000",
+   "district": "48",
+   "office_id": "3339"
+  },
+  {
+   "name": "Inez E. Dickens",
+   "council_member_id": "6270",
+   "term_start": "2014-01-01T00:00:00.000",
+   "term_end": "2016-12-31T00:00:00.000",
+   "district": "9",
+   "office_id": "3340"
+  },
+  {
+   "name": "Daniel Dromm",
+   "council_member_id": "7563",
+   "term_start": "2014-01-01T00:00:00.000",
+   "term_end": "2017-12-31T00:00:00.000",
+   "district": "25",
+   "office_id": "3341"
+  },
+  {
+   "name": "Rafael L. Espinal, Jr.",
+   "council_member_id": "7630",
+   "term_start": "2014-01-01T00:00:00.000",
+   "term_end": "2017-12-31T00:00:00.000",
+   "district": "37",
+   "office_id": "3342"
+  },
+  {
+   "name": "Mathieu Eugene",
+   "council_member_id": "7113",
+   "term_start": "2014-01-01T00:00:00.000",
+   "term_end": "2017-12-31T00:00:00.000",
+   "district": "40",
+   "office_id": "3343"
+  },
+  {
+   "name": "Julissa Ferreras-Copeland",
+   "council_member_id": "7509",
+   "term_start": "2014-01-01T00:00:00.000",
+   "term_end": "2017-12-31T00:00:00.000",
+   "district": "21",
+   "office_id": "3344"
+  },
+  {
+   "name": "Daniel R. Garodnick",
+   "council_member_id": "6267",
+   "term_start": "2014-01-01T00:00:00.000",
+   "term_end": "2017-12-31T00:00:00.000",
+   "district": "4",
+   "office_id": "3345"
+  },
+  {
+   "name": "Vincent J. Gentile",
+   "council_member_id": "5390",
+   "term_start": "2014-01-01T00:00:00.000",
+   "term_end": "2017-12-31T00:00:00.000",
+   "district": "43",
+   "office_id": "3346"
+  },
+  {
+   "name": "Vanessa L. Gibson",
+   "council_member_id": "7622",
+   "term_start": "2014-01-01T00:00:00.000",
+   "term_end": "2017-12-31T00:00:00.000",
+   "district": "16",
+   "office_id": "3347"
+  },
+  {
+   "name": "David G. Greenfield",
+   "council_member_id": "7577",
+   "term_start": "2014-01-01T00:00:00.000",
+   "term_end": "2017-12-31T00:00:00.000",
+   "district": "44",
+   "office_id": "3348"
+  },
+  {
+   "name": "Vincent Ignizio",
+   "council_member_id": "7112",
+   "term_start": "2014-01-01T00:00:00.000",
+   "term_end": "2015-07-10T00:00:00.000",
+   "district": "51",
+   "office_id": "3349"
+  },
+  {
+   "name": "Corey D. Johnson",
+   "council_member_id": "7631",
+   "term_start": "2014-01-01T00:00:00.000",
+   "term_end": "2017-12-31T00:00:00.000",
+   "district": "3",
+   "office_id": "3350"
+  },
+  {
+   "name": "Ben Kallos",
+   "council_member_id": "7632",
+   "term_start": "2014-01-01T00:00:00.000",
+   "term_end": "2017-12-31T00:00:00.000",
+   "district": "5",
+   "office_id": "3351"
+  },
+  {
+   "name": "Andy L. King",
+   "council_member_id": "7613",
+   "term_start": "2014-01-01T00:00:00.000",
+   "term_end": "2017-12-31T00:00:00.000",
+   "district": "12",
+   "office_id": "3352"
+  },
+  {
+   "name": "Peter A. Koo",
+   "council_member_id": "7565",
+   "term_start": "2014-01-01T00:00:00.000",
+   "term_end": "2017-12-31T00:00:00.000",
+   "district": "20",
+   "office_id": "3353"
+  },
+  {
+   "name": "Karen Koslowitz",
+   "council_member_id": "386",
+   "term_start": "2014-01-01T00:00:00.000",
+   "term_end": "2017-12-31T00:00:00.000",
+   "district": "29",
+   "office_id": "3354"
+  },
+  {
+   "name": "Rory I. Lancman",
+   "council_member_id": "7633",
+   "term_start": "2014-01-01T00:00:00.000",
+   "term_end": "2017-12-31T00:00:00.000",
+   "district": "24",
+   "office_id": "3355"
+  },
+  {
+   "name": "Brad S. Lander",
+   "council_member_id": "7566",
+   "term_start": "2014-01-01T00:00:00.000",
+   "term_end": "2017-12-31T00:00:00.000",
+   "district": "39",
+   "office_id": "3356"
+  },
+  {
+   "name": "Stephen T. Levin",
+   "council_member_id": "7567",
+   "term_start": "2014-01-01T00:00:00.000",
+   "term_end": "2017-12-31T00:00:00.000",
+   "district": "33",
+   "office_id": "3357"
+  },
+  {
+   "name": "Mark Levine",
+   "council_member_id": "7634",
+   "term_start": "2014-01-01T00:00:00.000",
+   "term_end": "2017-12-31T00:00:00.000",
+   "district": "7",
+   "office_id": "3358"
+  },
+  {
+   "name": "Alan N. Maisel",
+   "council_member_id": "7635",
+   "term_start": "2014-01-01T00:00:00.000",
+   "term_end": "2017-12-31T00:00:00.000",
+   "district": "46",
+   "office_id": "3359"
+  },
+  {
+   "name": "Melissa Mark-Viverito",
+   "council_member_id": "6269",
+   "term_start": "2014-01-01T00:00:00.000",
+   "term_end": "2017-12-31T00:00:00.000",
+   "district": "8",
+   "office_id": "3360"
+  },
+  {
+   "name": "Steven Matteo",
+   "council_member_id": "5953",
+   "term_start": "2014-01-01T00:00:00.000",
+   "term_end": "2017-12-31T00:00:00.000",
+   "district": "50",
+   "office_id": "3361"
+  },
+  {
+   "name": "Darlene Mealy",
+   "council_member_id": "6272",
+   "term_start": "2014-01-01T00:00:00.000",
+   "term_end": "2017-12-31T00:00:00.000",
+   "district": "41",
+   "office_id": "3362"
+  },
+  {
+   "name": "Carlos Menchaca",
+   "council_member_id": "7636",
+   "term_start": "2014-01-01T00:00:00.000",
+   "term_end": "2017-12-31T00:00:00.000",
+   "district": "38",
+   "office_id": "3363"
+  },
+  {
+   "name": "Rosie Mendez",
+   "council_member_id": "6274",
+   "term_start": "2014-01-01T00:00:00.000",
+   "term_end": "2017-12-31T00:00:00.000",
+   "district": "2",
+   "office_id": "3364"
+  },
+  {
+   "name": "I. Daneek Miller",
+   "council_member_id": "7637",
+   "term_start": "2014-01-01T00:00:00.000",
+   "term_end": "2017-12-31T00:00:00.000",
+   "district": "27",
+   "office_id": "3365"
+  },
+  {
+   "name": "Annabel Palma",
+   "council_member_id": "5416",
+   "term_start": "2014-01-01T00:00:00.000",
+   "term_end": "2017-12-31T00:00:00.000",
+   "district": "18",
+   "office_id": "3366"
+  },
+  {
+   "name": "Antonio Reynoso",
+   "council_member_id": "7638",
+   "term_start": "2014-01-01T00:00:00.000",
+   "term_end": "2017-12-31T00:00:00.000",
+   "district": "34",
+   "office_id": "3367"
+  },
+  {
+   "name": "Donovan J. Richards",
+   "council_member_id": "7617",
+   "term_start": "2014-01-01T00:00:00.000",
+   "term_end": "2017-12-31T00:00:00.000",
+   "district": "31",
+   "office_id": "3368"
+  },
+  {
+   "name": "Ydanis A. Rodriguez",
+   "council_member_id": "7541",
+   "term_start": "2014-01-01T00:00:00.000",
+   "term_end": "2017-12-31T00:00:00.000",
+   "district": "10",
+   "office_id": "3369"
+  },
+  {
+   "name": "Deborah L. Rose",
+   "council_member_id": "7568",
+   "term_start": "2014-01-01T00:00:00.000",
+   "term_end": "2017-12-31T00:00:00.000",
+   "district": "49",
+   "office_id": "3370"
+  },
+  {
+   "name": "Helen K. Rosenthal",
+   "council_member_id": "7639",
+   "term_start": "2014-01-01T00:00:00.000",
+   "term_end": "2017-12-31T00:00:00.000",
+   "district": "6",
+   "office_id": "3371"
+  },
+  {
+   "name": "Ritchie J. Torres",
+   "council_member_id": "7640",
+   "term_start": "2014-01-01T00:00:00.000",
+   "term_end": "2017-12-31T00:00:00.000",
+   "district": "15",
+   "office_id": "3372"
+  },
+  {
+   "name": "Mark Treyger",
+   "council_member_id": "7641",
+   "term_start": "2014-01-01T00:00:00.000",
+   "term_end": "2017-12-31T00:00:00.000",
+   "district": "47",
+   "office_id": "3373"
+  },
+  {
+   "name": "Eric A. Ulrich",
+   "council_member_id": "7510",
+   "term_start": "2014-01-01T00:00:00.000",
+   "term_end": "2017-12-31T00:00:00.000",
+   "district": "32",
+   "office_id": "3374"
+  },
+  {
+   "name": "James Vacca",
+   "council_member_id": "6271",
+   "term_start": "2014-01-01T00:00:00.000",
+   "term_end": "2017-12-31T00:00:00.000",
+   "district": "13",
+   "office_id": "3375"
+  },
+  {
+   "name": "Paul A. Vallone",
+   "council_member_id": "7642",
+   "term_start": "2014-01-01T00:00:00.000",
+   "term_end": "2017-12-31T00:00:00.000",
+   "district": "19",
+   "office_id": "3376"
+  },
+  {
+   "name": "James G. Van Bramer",
+   "council_member_id": "7569",
+   "term_start": "2014-01-01T00:00:00.000",
+   "term_end": "2017-12-31T00:00:00.000",
+   "district": "26",
+   "office_id": "3377"
+  },
+  {
+   "name": "Mark S. Weprin",
+   "council_member_id": "7570",
+   "term_start": "2014-01-01T00:00:00.000",
+   "term_end": "2015-06-14T00:00:00.000",
+   "district": "23",
+   "office_id": "3378"
+  },
+  {
+   "name": "Jumaane D. Williams",
+   "council_member_id": "7571",
+   "term_start": "2014-01-01T00:00:00.000",
+   "term_end": "2017-12-31T00:00:00.000",
+   "district": "45",
+   "office_id": "3379"
+  },
+  {
+   "name": "Ruben Wills",
+   "council_member_id": "7586",
+   "term_start": "2014-01-01T00:00:00.000",
+   "term_end": "2017-07-20T00:00:00.000",
+   "district": "28",
+   "office_id": "3380"
+  },
+  {
+   "name": "Joseph C. Borelli",
+   "council_member_id": "7264",
+   "term_start": "2015-11-24T00:00:00.000",
+   "term_end": "2017-12-31T00:00:00.000",
+   "district": "51",
+   "office_id": "3732"
+  },
+  {
+   "name": "Barry S. Grodenchik",
+   "council_member_id": "7691",
+   "term_start": "2014-01-01T00:00:00.000",
+   "term_end": "2017-12-31T00:00:00.000",
+   "district": "23",
+   "office_id": "3733"
+  },
+  {
+   "name": "Rafael Salamanca, Jr.",
+   "council_member_id": "7714",
+   "term_start": "2016-03-09T00:00:00.000",
+   "term_end": "2017-12-31T00:00:00.000",
+   "district": "17",
+   "office_id": "3750"
+  },
+  {
+   "name": "Bill Perkins",
+   "council_member_id": "430",
+   "term_start": "2017-03-01T00:00:00.000",
+   "term_end": "2017-12-31T00:00:00.000",
+   "district": "9",
+   "office_id": "3765"
+  },
+  {
+   "name": "Adrienne E. Adams",
+   "council_member_id": "7739",
+   "term_start": "2017-11-28T00:00:00.000",
+   "term_end": "2017-12-31T00:00:00.000",
+   "district": "28",
+   "office_id": "3777"
+  },
+  {
+   "name": "Adrienne E. Adams",
+   "council_member_id": "7739",
+   "term_start": "2018-01-01T00:00:00.000",
+   "term_end": "2021-12-31T00:00:00.000",
+   "district": "28",
+   "office_id": "3784"
+  },
+  {
+   "name": "Alicka Ampry-Samuel",
+   "council_member_id": "7747",
+   "term_start": "2018-01-01T00:00:00.000",
+   "term_end": "2021-12-31T00:00:00.000",
+   "district": "41",
+   "office_id": "3785"
+  },
+  {
+   "name": "Diana I. Ayala",
+   "council_member_id": "7742",
+   "term_start": "2018-01-01T00:00:00.000",
+   "term_end": "2021-12-31T00:00:00.000",
+   "district": "8",
+   "office_id": "3786"
+  },
+  {
+   "name": "Inez D. Barron",
+   "council_member_id": "7623",
+   "term_start": "2018-01-01T00:00:00.000",
+   "term_end": "2021-12-31T00:00:00.000",
+   "district": "42",
+   "office_id": "3787"
+  },
+  {
+   "name": "Joseph C. Borelli",
+   "council_member_id": "7264",
+   "term_start": "2018-01-01T00:00:00.000",
+   "term_end": "2021-12-31T00:00:00.000",
+   "district": "51",
+   "office_id": "3788"
+  },
+  {
+   "name": "Justin L. Brannan",
+   "council_member_id": "7748",
+   "term_start": "2018-01-01T00:00:00.000",
+   "term_end": "2021-12-31T00:00:00.000",
+   "office_id": "3789"
+  },
+  {
+   "name": "Fernando Cabrera",
+   "council_member_id": "7561",
+   "term_start": "2018-01-01T00:00:00.000",
+   "term_end": "2021-12-31T00:00:00.000",
+   "district": "14",
+   "office_id": "3790"
+  },
+  {
+   "name": "Margaret S. Chin",
+   "council_member_id": "7562",
+   "term_start": "2018-01-01T00:00:00.000",
+   "term_end": "2021-12-31T00:00:00.000",
+   "district": "1",
+   "office_id": "3791"
+  },
+  {
+   "name": "Andrew Cohen",
+   "council_member_id": "7624",
+   "term_start": "2018-01-01T00:00:00.000",
+   "term_end": "2020-12-31T00:00:00.000",
+   "district": "11",
+   "office_id": "3792"
+  },
+  {
+   "name": "Costa G. Constantinides",
+   "council_member_id": "7627",
+   "term_start": "2018-01-01T00:00:00.000",
+   "term_end": "2021-04-09T00:00:00.000",
+   "district": "22",
+   "office_id": "3793"
+  },
+  {
+   "name": "Robert E. Cornegy, Jr.",
+   "council_member_id": "7604",
+   "term_start": "2018-01-01T00:00:00.000",
+   "term_end": "2021-12-31T00:00:00.000",
+   "district": "36",
+   "office_id": "3794"
+  },
+  {
+   "name": "Laurie A. Cumbo",
+   "council_member_id": "7628",
+   "term_start": "2018-01-01T00:00:00.000",
+   "term_end": "2021-12-31T00:00:00.000",
+   "district": "35",
+   "office_id": "3795"
+  },
+  {
+   "name": "Chaim M. Deutsch",
+   "council_member_id": "7629",
+   "term_start": "2018-01-01T00:00:00.000",
+   "term_end": "2021-04-27T00:00:00.000",
+   "district": "48",
+   "office_id": "3796"
+  },
+  {
+   "name": "Ruben Diaz, Sr.",
+   "council_member_id": "7744",
+   "term_start": "2018-01-01T00:00:00.000",
+   "term_end": "2021-12-31T00:00:00.000",
+   "district": "18",
+   "office_id": "3797"
+  },
+  {
+   "name": "Daniel Dromm",
+   "council_member_id": "7563",
+   "term_start": "2018-01-01T00:00:00.000",
+   "term_end": "2021-12-31T00:00:00.000",
+   "district": "25",
+   "office_id": "3798"
+  },
+  {
+   "name": "Rafael L. Espinal, Jr.",
+   "council_member_id": "7630",
+   "term_start": "2018-01-01T00:00:00.000",
+   "term_end": "2020-01-27T00:00:00.000",
+   "district": "37",
+   "office_id": "3799"
+  },
+  {
+   "name": "Mathieu Eugene",
+   "council_member_id": "7113",
+   "term_start": "2018-01-01T00:00:00.000",
+   "term_end": "2021-12-31T00:00:00.000",
+   "district": "40",
+   "office_id": "3800"
+  },
+  {
+   "name": "Vanessa L. Gibson",
+   "council_member_id": "7622",
+   "term_start": "2018-01-01T00:00:00.000",
+   "term_end": "2021-12-31T00:00:00.000",
+   "district": "16",
+   "office_id": "3801"
+  },
+  {
+   "name": "Mark Gjonaj",
+   "council_member_id": "7743",
+   "term_start": "2018-01-01T00:00:00.000",
+   "term_end": "2021-12-31T00:00:00.000",
+   "district": "13",
+   "office_id": "3802"
+  },
+  {
+   "name": "Barry S. Grodenchik",
+   "council_member_id": "7691",
+   "term_start": "2018-01-01T00:00:00.000",
+   "term_end": "2021-12-31T00:00:00.000",
+   "district": "23",
+   "office_id": "3803"
+  },
+  {
+   "name": "Robert F. Holden",
+   "council_member_id": "7746",
+   "term_start": "2018-01-01T00:00:00.000",
+   "term_end": "2021-12-31T00:00:00.000",
+   "district": "30",
+   "office_id": "3804"
+  },
+  {
+   "name": "Corey D. Johnson",
+   "council_member_id": "7631",
+   "term_start": "2018-01-01T00:00:00.000",
+   "term_end": "2021-12-31T00:00:00.000",
+   "district": "3",
+   "office_id": "3805"
+  },
+  {
+   "name": "Ben Kallos",
+   "council_member_id": "7632",
+   "term_start": "2018-01-01T00:00:00.000",
+   "term_end": "2021-12-31T00:00:00.000",
+   "district": "5",
+   "office_id": "3806"
+  },
+  {
+   "name": "Andy L. King",
+   "council_member_id": "7613",
+   "term_start": "2018-01-01T00:00:00.000",
+   "term_end": "2020-10-06T00:00:00.000",
+   "district": "12",
+   "office_id": "3807"
+  },
+  {
+   "name": "Peter A. Koo",
+   "council_member_id": "7565",
+   "term_start": "2018-01-01T00:00:00.000",
+   "term_end": "2021-12-31T00:00:00.000",
+   "district": "20",
+   "office_id": "3808"
+  },
+  {
+   "name": "Karen Koslowitz",
+   "council_member_id": "386",
+   "term_start": "2018-01-01T00:00:00.000",
+   "term_end": "2021-12-31T00:00:00.000",
+   "district": "29",
+   "office_id": "3809"
+  },
+  {
+   "name": "Rory I. Lancman",
+   "council_member_id": "7633",
+   "term_start": "2018-01-01T00:00:00.000",
+   "term_end": "2020-11-04T00:00:00.000",
+   "district": "24",
+   "office_id": "3810"
+  },
+  {
+   "name": "Brad S. Lander",
+   "council_member_id": "7566",
+   "term_start": "2018-01-01T00:00:00.000",
+   "term_end": "2021-12-31T00:00:00.000",
+   "district": "39",
+   "office_id": "3811"
+  },
+  {
+   "name": "Stephen T. Levin",
+   "council_member_id": "7567",
+   "term_start": "2018-01-01T00:00:00.000",
+   "term_end": "2021-12-31T00:00:00.000",
+   "district": "33",
+   "office_id": "3812"
+  },
+  {
+   "name": "Mark Levine",
+   "council_member_id": "7634",
+   "term_start": "2018-01-01T00:00:00.000",
+   "term_end": "2021-12-31T00:00:00.000",
+   "district": "7",
+   "office_id": "3813"
+  },
+  {
+   "name": "Alan N. Maisel",
+   "council_member_id": "7635",
+   "term_start": "2018-01-01T00:00:00.000",
+   "term_end": "2021-12-31T00:00:00.000",
+   "district": "46",
+   "office_id": "3814"
+  },
+  {
+   "name": "Steven Matteo",
+   "council_member_id": "5953",
+   "term_start": "2018-01-01T00:00:00.000",
+   "term_end": "2021-11-27T00:00:00.000",
+   "district": "50",
+   "office_id": "3815"
+  },
+  {
+   "name": "Carlos Menchaca",
+   "council_member_id": "7636",
+   "term_start": "2018-01-01T00:00:00.000",
+   "term_end": "2021-12-31T00:00:00.000",
+   "district": "38",
+   "office_id": "3816"
+  },
+  {
+   "name": "I. Daneek Miller",
+   "council_member_id": "7637",
+   "term_start": "2018-01-01T00:00:00.000",
+   "term_end": "2021-12-31T00:00:00.000",
+   "district": "27",
+   "office_id": "3817"
+  },
+  {
+   "name": "Francisco P. Moya",
+   "council_member_id": "7745",
+   "term_start": "2018-01-01T00:00:00.000",
+   "term_end": "2021-12-31T00:00:00.000",
+   "district": "21",
+   "office_id": "3818"
+  },
+  {
+   "name": "Bill Perkins",
+   "council_member_id": "430",
+   "term_start": "2018-01-01T00:00:00.000",
+   "term_end": "2021-12-31T00:00:00.000",
+   "district": "9",
+   "office_id": "3819"
+  },
+  {
+   "name": "Keith Powers",
+   "council_member_id": "7741",
+   "term_start": "2018-01-01T00:00:00.000",
+   "term_end": "2021-12-31T00:00:00.000",
+   "district": "4",
+   "office_id": "3820"
+  },
+  {
+   "name": "Antonio Reynoso",
+   "council_member_id": "7638",
+   "term_start": "2018-01-01T00:00:00.000",
+   "term_end": "2021-12-31T00:00:00.000",
+   "district": "34",
+   "office_id": "3821"
+  },
+  {
+   "name": "Donovan J. Richards",
+   "council_member_id": "7617",
+   "term_start": "2018-01-01T00:00:00.000",
+   "term_end": "2020-12-02T00:00:00.000",
+   "district": "31",
+   "office_id": "3822"
+  },
+  {
+   "name": "Carlina Rivera",
+   "council_member_id": "7740",
+   "term_start": "2018-01-01T00:00:00.000",
+   "term_end": "2021-12-31T00:00:00.000",
+   "district": "2",
+   "office_id": "3823"
+  },
+  {
+   "name": "Ydanis A. Rodriguez",
+   "council_member_id": "7541",
+   "term_start": "2018-01-01T00:00:00.000",
+   "term_end": "2021-12-31T00:00:00.000",
+   "district": "10",
+   "office_id": "3824"
+  },
+  {
+   "name": "Deborah L. Rose",
+   "council_member_id": "7568",
+   "term_start": "2018-01-01T00:00:00.000",
+   "term_end": "2021-12-31T00:00:00.000",
+   "district": "49",
+   "office_id": "3825"
+  },
+  {
+   "name": "Helen K. Rosenthal",
+   "council_member_id": "7639",
+   "term_start": "2018-01-01T00:00:00.000",
+   "term_end": "2021-12-31T00:00:00.000",
+   "district": "6",
+   "office_id": "3826"
+  },
+  {
+   "name": "Rafael Salamanca, Jr.",
+   "council_member_id": "7714",
+   "term_start": "2018-01-01T00:00:00.000",
+   "term_end": "2021-12-31T00:00:00.000",
+   "district": "17",
+   "office_id": "3827"
+  },
+  {
+   "name": "Ritchie J. Torres",
+   "council_member_id": "7640",
+   "term_start": "2018-01-01T00:00:00.000",
+   "term_end": "2020-12-31T00:00:00.000",
+   "district": "15",
+   "office_id": "3828"
+  },
+  {
+   "name": "Mark Treyger",
+   "council_member_id": "7641",
+   "term_start": "2018-01-01T00:00:00.000",
+   "term_end": "2021-12-31T00:00:00.000",
+   "district": "47",
+   "office_id": "3829"
+  },
+  {
+   "name": "Eric A. Ulrich",
+   "council_member_id": "7510",
+   "term_start": "2018-01-01T00:00:00.000",
+   "term_end": "2021-12-31T00:00:00.000",
+   "district": "32",
+   "office_id": "3830"
+  },
+  {
+   "name": "Paul A. Vallone",
+   "council_member_id": "7642",
+   "term_start": "2018-01-01T00:00:00.000",
+   "term_end": "2021-12-31T00:00:00.000",
+   "district": "19",
+   "office_id": "3831"
+  },
+  {
+   "name": "James G. Van Bramer",
+   "council_member_id": "7569",
+   "term_start": "2018-01-01T00:00:00.000",
+   "term_end": "2021-12-31T00:00:00.000",
+   "district": "26",
+   "office_id": "3832"
+  },
+  {
+   "name": "Jumaane D. Williams",
+   "council_member_id": "7571",
+   "term_start": "2018-01-01T00:00:00.000",
+   "term_end": "2019-03-19T00:00:00.000",
+   "district": "45",
+   "office_id": "3833"
+  },
+  {
+   "name": "Kalman Yeger",
+   "council_member_id": "7749",
+   "term_start": "2018-01-01T00:00:00.000",
+   "term_end": "2021-12-31T00:00:00.000",
+   "district": "44",
+   "office_id": "3834"
+  },
+  {
+   "name": "Farah N. Louis",
+   "council_member_id": "7785",
+   "term_start": "2019-06-04T00:00:00.000",
+   "term_end": "2021-12-31T00:00:00.000",
+   "district": "45",
+   "office_id": "4260"
+  },
+  {
+   "name": "Darma V. Diaz",
+   "council_member_id": "7793",
+   "term_start": "2020-12-01T00:00:00.000",
+   "term_end": "2021-12-31T00:00:00.000",
+   "district": "37",
+   "office_id": "4371"
+  },
+  {
+   "name": "Kevin C. Riley",
+   "council_member_id": "7794",
+   "term_start": "2021-01-06T00:00:00.000",
+   "term_end": "2021-12-31T00:00:00.000",
+   "district": "12",
+   "office_id": "4387"
+  },
+  {
+   "name": "James F. Gennaro",
+   "council_member_id": "5273",
+   "term_start": "2021-02-18T00:00:00.000",
+   "term_end": "2021-12-31T00:00:00.000",
+   "district": "24",
+   "office_id": "4415"
+  },
+  {
+   "name": "Selvena N. Brooks-Powers",
+   "council_member_id": "7796",
+   "term_start": "2021-03-19T00:00:00.000",
+   "term_end": "2021-12-31T00:00:00.000",
+   "district": "31",
+   "office_id": "4426"
+  },
+  {
+   "name": "Eric Dinowitz",
+   "council_member_id": "7799",
+   "term_start": "2021-04-15T00:00:00.000",
+   "term_end": "2021-12-31T00:00:00.000",
+   "district": "11",
+   "office_id": "4436"
+  },
+  {
+   "name": "Oswald J. Feliz",
+   "council_member_id": "7798",
+   "term_start": "2021-04-15T00:00:00.000",
+   "term_end": "2021-12-31T00:00:00.000",
+   "district": "15",
+   "office_id": "4437"
+  },
+  {
+   "name": "Thomas K. Duane",
+   "council_member_id": "393",
+   "term_start": "1998-01-01T00:00:00.000",
+   "term_end": "1998-12-31T00:00:00.000",
+   "office_id": "4466"
+  },
+  {
+   "name": "John Fusco",
+   "council_member_id": "412",
+   "term_start": "1998-01-01T00:00:00.000",
+   "term_end": "1998-12-21T00:00:00.000",
+   "office_id": "4467"
+  },
+  {
+   "name": "Anthony Weiner",
+   "council_member_id": "411",
+   "term_start": "1998-01-01T00:00:00.000",
+   "term_end": "1999-01-02T00:00:00.000",
+   "office_id": "4468"
+  },
+  {
+   "name": "Christopher Marte",
+   "council_member_id": "7801",
+   "term_start": "2022-01-01T00:00:00.000",
+   "term_end": "2023-12-31T00:00:00.000",
+   "district": "1",
+   "office_id": "4469"
+  },
+  {
+   "name": "Carlina Rivera",
+   "council_member_id": "7740",
+   "term_start": "2022-01-01T00:00:00.000",
+   "term_end": "2023-12-31T00:00:00.000",
+   "district": "2",
+   "office_id": "4470"
+  },
+  {
+   "name": "Erik D. Bottcher",
+   "council_member_id": "7802",
+   "term_start": "2022-01-01T00:00:00.000",
+   "term_end": "2023-12-31T00:00:00.000",
+   "district": "3",
+   "office_id": "4471"
+  },
+  {
+   "name": "Shaun Abreu",
+   "council_member_id": "7804",
+   "term_start": "2022-01-01T00:00:00.000",
+   "term_end": "2023-12-31T00:00:00.000",
+   "district": "7",
+   "office_id": "4473"
+  },
+  {
+   "name": "Adrienne E. Adams",
+   "council_member_id": "7739",
+   "term_start": "2022-01-01T00:00:00.000",
+   "term_end": "2023-12-31T00:00:00.000",
+   "district": "28",
+   "office_id": "4474"
+  },
+  {
+   "name": "Joann Ariola",
+   "council_member_id": "7819",
+   "term_start": "2022-01-01T00:00:00.000",
+   "term_end": "2023-12-31T00:00:00.000",
+   "district": "32",
+   "office_id": "4475"
+  },
+  {
+   "name": "Alexa Avilés",
+   "council_member_id": "7825",
+   "term_start": "2022-01-01T00:00:00.000",
+   "term_end": "2023-12-31T00:00:00.000",
+   "district": "38",
+   "office_id": "4476"
+  },
+  {
+   "name": "Diana I. Ayala",
+   "council_member_id": "7742",
+   "term_start": "2022-01-01T00:00:00.000",
+   "term_end": "2023-12-31T00:00:00.000",
+   "district": "8",
+   "office_id": "4477"
+  },
+  {
+   "name": "Charles Barron",
+   "council_member_id": "5288",
+   "term_start": "2022-01-01T00:00:00.000",
+   "term_end": "2023-12-31T00:00:00.000",
+   "district": "42",
+   "office_id": "4478"
+  },
+  {
+   "name": "Joseph C. Borelli",
+   "council_member_id": "7264",
+   "term_start": "2022-01-01T00:00:00.000",
+   "term_end": "2023-12-31T00:00:00.000",
+   "district": "51",
+   "office_id": "4479"
+  },
+  {
+   "name": "Justin L. Brannan",
+   "council_member_id": "7748",
+   "term_start": "2022-01-01T00:00:00.000",
+   "term_end": "2023-12-31T00:00:00.000",
+   "office_id": "4480"
+  },
+  {
+   "name": "Gale A. Brewer",
+   "council_member_id": "5259",
+   "term_start": "2022-01-01T00:00:00.000",
+   "term_end": "2023-12-31T00:00:00.000",
+   "district": "6",
+   "office_id": "4481"
+  },
+  {
+   "name": "Selvena N. Brooks-Powers",
+   "council_member_id": "7796",
+   "term_start": "2022-01-01T00:00:00.000",
+   "term_end": "2023-12-31T00:00:00.000",
+   "district": "31",
+   "office_id": "4482"
+  },
+  {
+   "name": "Tiffany L. Cabán",
+   "council_member_id": "7813",
+   "term_start": "2022-01-01T00:00:00.000",
+   "term_end": "2023-12-31T00:00:00.000",
+   "district": "22",
+   "office_id": "4483"
+  },
+  {
+   "name": "David M. Carr",
+   "council_member_id": "7833",
+   "term_start": "2022-01-01T00:00:00.000",
+   "term_end": "2023-12-31T00:00:00.000",
+   "district": "50",
+   "office_id": "4484"
+  },
+  {
+   "name": "Carmen N. De La Rosa",
+   "council_member_id": "7806",
+   "term_start": "2022-01-01T00:00:00.000",
+   "term_end": "2023-12-31T00:00:00.000",
+   "district": "10",
+   "office_id": "4485"
+  },
+  {
+   "name": "Eric Dinowitz",
+   "council_member_id": "7799",
+   "term_start": "2022-01-01T00:00:00.000",
+   "term_end": "2023-12-31T00:00:00.000",
+   "district": "11",
+   "office_id": "4486"
+  },
+  {
+   "name": "Amanda C. Farías",
+   "council_member_id": "7810",
+   "term_start": "2022-01-01T00:00:00.000",
+   "term_end": "2023-12-31T00:00:00.000",
+   "district": "18",
+   "office_id": "4487"
+  },
+  {
+   "name": "Oswald J. Feliz",
+   "council_member_id": "7798",
+   "term_start": "2022-01-01T00:00:00.000",
+   "term_end": "2023-12-31T00:00:00.000",
+   "district": "15",
+   "office_id": "4488"
+  },
+  {
+   "name": "James F. Gennaro",
+   "council_member_id": "5273",
+   "term_start": "2022-01-01T00:00:00.000",
+   "term_end": "2023-12-31T00:00:00.000",
+   "district": "24",
+   "office_id": "4490"
+  },
+  {
+   "name": "Jennifer Gutiérrez",
+   "council_member_id": "7821",
+   "term_start": "2022-01-01T00:00:00.000",
+   "term_end": "2023-12-31T00:00:00.000",
+   "district": "34",
+   "office_id": "4491"
+  },
+  {
+   "name": "Shahana K. Hanif",
+   "council_member_id": "7826",
+   "term_start": "2022-01-01T00:00:00.000",
+   "term_end": "2023-12-31T00:00:00.000",
+   "district": "39",
+   "office_id": "4492"
+  },
+  {
+   "name": "Kamillah Hanks",
+   "council_member_id": "7832",
+   "term_start": "2022-01-01T00:00:00.000",
+   "term_end": "2023-12-31T00:00:00.000",
+   "district": "49",
+   "office_id": "4493"
+  },
+  {
+   "name": "Robert F. Holden",
+   "council_member_id": "7746",
+   "term_start": "2022-01-01T00:00:00.000",
+   "term_end": "2023-12-31T00:00:00.000",
+   "district": "30",
+   "office_id": "4494"
+  },
+  {
+   "name": "Crystal Hudson",
+   "council_member_id": "7822",
+   "term_start": "2022-01-01T00:00:00.000",
+   "term_end": "2023-12-31T00:00:00.000",
+   "district": "35",
+   "office_id": "4495"
+  },
+  {
+   "name": "Kristin Richardson Jordan",
+   "council_member_id": "7805",
+   "term_start": "2022-01-01T00:00:00.000",
+   "term_end": "2023-12-31T00:00:00.000",
+   "office_id": "4496"
+  },
+  {
+   "name": "Rita C. Joseph",
+   "council_member_id": "7827",
+   "term_start": "2022-01-01T00:00:00.000",
+   "term_end": "2023-12-31T00:00:00.000",
+   "district": "40",
+   "office_id": "4497"
+  },
+  {
+   "name": "Ari Kagan",
+   "council_member_id": "7830",
+   "term_start": "2022-01-01T00:00:00.000",
+   "term_end": "2023-12-31T00:00:00.000",
+   "office_id": "4498"
+  },
+  {
+   "name": "Shekar Krishnan",
+   "council_member_id": "7815",
+   "term_start": "2022-01-01T00:00:00.000",
+   "term_end": "2023-12-31T00:00:00.000",
+   "district": "25",
+   "office_id": "4499"
+  },
+  {
+   "name": "Linda Lee",
+   "council_member_id": "7814",
+   "term_start": "2022-01-01T00:00:00.000",
+   "term_end": "2023-12-31T00:00:00.000",
+   "district": "23",
+   "office_id": "4500"
+  },
+  {
+   "name": "Farah N. Louis",
+   "council_member_id": "7785",
+   "term_start": "2022-01-01T00:00:00.000",
+   "term_end": "2023-12-31T00:00:00.000",
+   "district": "45",
+   "office_id": "4501"
+  },
+  {
+   "name": "Darlene Mealy",
+   "council_member_id": "6272",
+   "term_start": "2022-01-01T00:00:00.000",
+   "term_end": "2023-12-31T00:00:00.000",
+   "district": "41",
+   "office_id": "4502"
+  },
+  {
+   "name": "Julie Menin",
+   "council_member_id": "7803",
+   "term_start": "2022-01-01T00:00:00.000",
+   "term_end": "2023-12-31T00:00:00.000",
+   "district": "5",
+   "office_id": "4503"
+  },
+  {
+   "name": "Francisco P. Moya",
+   "council_member_id": "7745",
+   "term_start": "2022-01-01T00:00:00.000",
+   "term_end": "2023-12-31T00:00:00.000",
+   "district": "21",
+   "office_id": "4504"
+  },
+  {
+   "name": "Mercedes Narcisse",
+   "council_member_id": "7829",
+   "term_start": "2022-01-01T00:00:00.000",
+   "term_end": "2023-12-31T00:00:00.000",
+   "district": "46",
+   "office_id": "4505"
+  },
+  {
+   "name": "Sandy Nurse",
+   "council_member_id": "7824",
+   "term_start": "2022-01-01T00:00:00.000",
+   "term_end": "2023-12-31T00:00:00.000",
+   "district": "37",
+   "office_id": "4506"
+  },
+  {
+   "name": "Chi A. Ossé",
+   "council_member_id": "7823",
+   "term_start": "2022-01-01T00:00:00.000",
+   "term_end": "2023-12-31T00:00:00.000",
+   "district": "36",
+   "office_id": "4507"
+  },
+  {
+   "name": "Vickie Paladino",
+   "council_member_id": "7811",
+   "term_start": "2022-01-01T00:00:00.000",
+   "term_end": "2023-12-31T00:00:00.000",
+   "district": "19",
+   "office_id": "4508"
+  },
+  {
+   "name": "Keith Powers",
+   "council_member_id": "7741",
+   "term_start": "2022-01-01T00:00:00.000",
+   "term_end": "2023-12-31T00:00:00.000",
+   "district": "4",
+   "office_id": "4509"
+  },
+  {
+   "name": "Lincoln Restler",
+   "council_member_id": "7820",
+   "term_start": "2022-01-01T00:00:00.000",
+   "term_end": "2023-12-31T00:00:00.000",
+   "district": "33",
+   "office_id": "4510"
+  },
+  {
+   "name": "Kevin C. Riley",
+   "council_member_id": "7794",
+   "term_start": "2022-01-01T00:00:00.000",
+   "term_end": "2023-12-31T00:00:00.000",
+   "district": "12",
+   "office_id": "4511"
+  },
+  {
+   "name": "Rafael Salamanca, Jr.",
+   "council_member_id": "7714",
+   "term_start": "2022-01-01T00:00:00.000",
+   "term_end": "2023-12-31T00:00:00.000",
+   "district": "17",
+   "office_id": "4512"
+  },
+  {
+   "name": "Pierina Ana Sanchez",
+   "council_member_id": "7808",
+   "term_start": "2022-01-01T00:00:00.000",
+   "term_end": "2023-12-31T00:00:00.000",
+   "district": "14",
+   "office_id": "4513"
+  },
+  {
+   "name": "Lynn C. Schulman",
+   "council_member_id": "7818",
+   "term_start": "2022-01-01T00:00:00.000",
+   "term_end": "2023-12-31T00:00:00.000",
+   "district": "29",
+   "office_id": "4514"
+  },
+  {
+   "name": "Althea V.  Stevens",
+   "council_member_id": "7809",
+   "term_start": "2022-01-01T00:00:00.000",
+   "term_end": "2023-12-31T00:00:00.000",
+   "district": "16",
+   "office_id": "4515"
+  },
+  {
+   "name": "Sandra Ung",
+   "council_member_id": "7812",
+   "term_start": "2022-01-01T00:00:00.000",
+   "term_end": "2023-12-31T00:00:00.000",
+   "district": "20",
+   "office_id": "4516"
+  },
+  {
+   "name": "Marjorie Velázquez",
+   "council_member_id": "7807",
+   "term_start": "2022-01-01T00:00:00.000",
+   "term_end": "2023-12-31T00:00:00.000",
+   "office_id": "4517"
+  },
+  {
+   "name": "Inna Vernikov",
+   "council_member_id": "7831",
+   "term_start": "2022-01-01T00:00:00.000",
+   "term_end": "2023-12-31T00:00:00.000",
+   "district": "48",
+   "office_id": "4518"
+  },
+  {
+   "name": "Nantasha M. Williams",
+   "council_member_id": "7817",
+   "term_start": "2022-01-01T00:00:00.000",
+   "term_end": "2023-12-31T00:00:00.000",
+   "district": "27",
+   "office_id": "4519"
+  },
+  {
+   "name": "Julie Won",
+   "council_member_id": "7816",
+   "term_start": "2022-01-01T00:00:00.000",
+   "term_end": "2023-12-31T00:00:00.000",
+   "district": "26",
+   "office_id": "4520"
+  },
+  {
+   "name": "Kalman Yeger",
+   "council_member_id": "7749",
+   "term_start": "2022-01-01T00:00:00.000",
+   "term_end": "2023-12-31T00:00:00.000",
+   "district": "44",
+   "office_id": "4521"
+  },
+  {
+   "name": "David M. Carr",
+   "council_member_id": "7833",
+   "term_start": "2021-12-09T00:00:00.000",
+   "term_end": "2021-12-31T00:00:00.000",
+   "district": "50",
+   "office_id": "4523"
+  },
+  {
+   "name": "Tiffany L. Cabán",
+   "council_member_id": "7813",
+   "term_start": "2021-12-01T00:00:00.000",
+   "term_end": "2021-12-31T00:00:00.000",
+   "district": "22",
+   "office_id": "4524"
+  },
+  {
+   "name": "Inna Vernikov",
+   "council_member_id": "7831",
+   "term_start": "2021-12-01T00:00:00.000",
+   "term_end": "2021-12-31T00:00:00.000",
+   "district": "48",
+   "office_id": "4525"
+  },
+  {
+   "name": "David M. Carr",
+   "council_member_id": "7833",
+   "term_start": "2021-11-30T00:00:00.000",
+   "term_end": "2021-12-31T00:00:00.000",
+   "district": "50",
+   "office_id": "4526"
+  },
+  {
+   "name": "Adrienne E. Adams",
+   "council_member_id": "7739",
+   "term_start": "2024-01-01T00:00:00.000",
+   "term_end": "2025-12-31T00:00:00.000",
+   "district": "28",
+   "office_id": "5210"
+  },
+  {
+   "name": "Diana I. Ayala",
+   "council_member_id": "7742",
+   "term_start": "2024-01-01T00:00:00.000",
+   "term_end": "2025-12-31T00:00:00.000",
+   "district": "8",
+   "office_id": "5211"
+  },
+  {
+   "name": "Shaun Abreu",
+   "council_member_id": "7804",
+   "term_start": "2024-01-01T00:00:00.000",
+   "term_end": "2025-12-31T00:00:00.000",
+   "district": "7",
+   "office_id": "5212"
+  },
+  {
+   "name": "Joann Ariola",
+   "council_member_id": "7819",
+   "term_start": "2024-01-01T00:00:00.000",
+   "term_end": "2025-02-12T00:00:00.000",
+   "district": "32",
+   "office_id": "5213"
+  },
+  {
+   "name": "Alexa Avilés",
+   "council_member_id": "7825",
+   "term_start": "2024-01-01T00:00:00.000",
+   "term_end": "2025-12-31T00:00:00.000",
+   "district": "38",
+   "office_id": "5214"
+  },
+  {
+   "name": "Chris Banks",
+   "council_member_id": "7864",
+   "term_start": "2024-01-01T00:00:00.000",
+   "term_end": "2025-12-31T00:00:00.000",
+   "district": "42",
+   "office_id": "5215"
+  },
+  {
+   "name": "Joseph C. Borelli",
+   "council_member_id": "7264",
+   "term_start": "2024-01-01T00:00:00.000",
+   "term_end": "2025-01-31T00:00:00.000",
+   "district": "51",
+   "office_id": "5216"
+  },
+  {
+   "name": "Erik D. Bottcher",
+   "council_member_id": "7802",
+   "term_start": "2024-01-01T00:00:00.000",
+   "term_end": "2025-12-31T00:00:00.000",
+   "district": "3",
+   "office_id": "5217"
+  },
+  {
+   "name": "Justin L. Brannan",
+   "council_member_id": "7748",
+   "term_start": "2024-01-01T00:00:00.000",
+   "term_end": "2025-12-31T00:00:00.000",
+   "office_id": "5218"
+  },
+  {
+   "name": "Gale A. Brewer",
+   "council_member_id": "5259",
+   "term_start": "2024-01-01T00:00:00.000",
+   "term_end": "2025-12-31T00:00:00.000",
+   "district": "6",
+   "office_id": "5219"
+  },
+  {
+   "name": "Selvena N. Brooks-Powers",
+   "council_member_id": "7796",
+   "term_start": "2024-01-01T00:00:00.000",
+   "term_end": "2025-12-31T00:00:00.000",
+   "district": "31",
+   "office_id": "5220"
+  },
+  {
+   "name": "Tiffany L. Cabán",
+   "council_member_id": "7813",
+   "term_start": "2024-01-01T00:00:00.000",
+   "term_end": "2025-12-31T00:00:00.000",
+   "district": "22",
+   "office_id": "5221"
+  },
+  {
+   "name": "David M. Carr",
+   "council_member_id": "7833",
+   "term_start": "2024-01-01T00:00:00.000",
+   "term_end": "2025-12-31T00:00:00.000",
+   "district": "50",
+   "office_id": "5222"
+  },
+  {
+   "name": "Carmen N. De La Rosa",
+   "council_member_id": "7806",
+   "term_start": "2024-01-01T00:00:00.000",
+   "term_end": "2025-12-31T00:00:00.000",
+   "district": "10",
+   "office_id": "5223"
+  },
+  {
+   "name": "Eric Dinowitz",
+   "council_member_id": "7799",
+   "term_start": "2024-01-01T00:00:00.000",
+   "term_end": "2025-12-31T00:00:00.000",
+   "district": "11",
+   "office_id": "5224"
+  },
+  {
+   "name": "Amanda C. Farías",
+   "council_member_id": "7810",
+   "term_start": "2024-01-01T00:00:00.000",
+   "term_end": "2025-12-31T00:00:00.000",
+   "district": "18",
+   "office_id": "5225"
+  },
+  {
+   "name": "Oswald J. Feliz",
+   "council_member_id": "7798",
+   "term_start": "2024-01-01T00:00:00.000",
+   "term_end": "2025-12-31T00:00:00.000",
+   "district": "15",
+   "office_id": "5226"
+  },
+  {
+   "name": "James F. Gennaro",
+   "council_member_id": "5273",
+   "term_start": "2024-01-01T00:00:00.000",
+   "term_end": "2025-12-31T00:00:00.000",
+   "district": "24",
+   "office_id": "5227"
+  },
+  {
+   "name": "Jennifer Gutiérrez",
+   "council_member_id": "7821",
+   "term_start": "2024-01-01T00:00:00.000",
+   "term_end": "2025-12-31T00:00:00.000",
+   "district": "34",
+   "office_id": "5228"
+  },
+  {
+   "name": "Shahana K. Hanif",
+   "council_member_id": "7826",
+   "term_start": "2024-01-01T00:00:00.000",
+   "term_end": "2025-12-31T00:00:00.000",
+   "district": "39",
+   "office_id": "5229"
+  },
+  {
+   "name": "Kamillah Hanks",
+   "council_member_id": "7832",
+   "term_start": "2024-01-01T00:00:00.000",
+   "term_end": "2025-12-31T00:00:00.000",
+   "district": "49",
+   "office_id": "5230"
+  },
+  {
+   "name": "Robert F. Holden",
+   "council_member_id": "7746",
+   "term_start": "2024-01-01T00:00:00.000",
+   "term_end": "2025-12-31T00:00:00.000",
+   "district": "30",
+   "office_id": "5231"
+  },
+  {
+   "name": "Crystal Hudson",
+   "council_member_id": "7822",
+   "term_start": "2024-01-01T00:00:00.000",
+   "term_end": "2025-12-31T00:00:00.000",
+   "district": "35",
+   "office_id": "5232"
+  },
+  {
+   "name": "Rita C. Joseph",
+   "council_member_id": "7827",
+   "term_start": "2024-01-01T00:00:00.000",
+   "term_end": "2025-12-31T00:00:00.000",
+   "district": "40",
+   "office_id": "5233"
+  },
+  {
+   "name": "Shekar Krishnan",
+   "council_member_id": "7815",
+   "term_start": "2024-01-01T00:00:00.000",
+   "term_end": "2025-12-31T00:00:00.000",
+   "district": "25",
+   "office_id": "5234"
+  },
+  {
+   "name": "Linda Lee",
+   "council_member_id": "7814",
+   "term_start": "2024-01-01T00:00:00.000",
+   "term_end": "2025-12-31T00:00:00.000",
+   "district": "23",
+   "office_id": "5235"
+  },
+  {
+   "name": "Farah N. Louis",
+   "council_member_id": "7785",
+   "term_start": "2024-01-01T00:00:00.000",
+   "term_end": "2025-12-31T00:00:00.000",
+   "district": "45",
+   "office_id": "5236"
+  },
+  {
+   "name": "Kristy Marmorato",
+   "council_member_id": "7865",
+   "term_start": "2024-01-01T00:00:00.000",
+   "term_end": "2025-12-31T00:00:00.000",
+   "district": "13",
+   "office_id": "5237"
+  },
+  {
+   "name": "Christopher Marte",
+   "council_member_id": "7801",
+   "term_start": "2024-01-01T00:00:00.000",
+   "term_end": "2025-12-31T00:00:00.000",
+   "district": "1",
+   "office_id": "5238"
+  },
+  {
+   "name": "Darlene Mealy",
+   "council_member_id": "6272",
+   "term_start": "2024-01-01T00:00:00.000",
+   "term_end": "2025-12-31T00:00:00.000",
+   "district": "41",
+   "office_id": "5239"
+  },
+  {
+   "name": "Julie Menin",
+   "council_member_id": "7803",
+   "term_start": "2024-01-01T00:00:00.000",
+   "term_end": "2025-12-31T00:00:00.000",
+   "district": "5",
+   "office_id": "5240"
+  },
+  {
+   "name": "Francisco P. Moya",
+   "council_member_id": "7745",
+   "term_start": "2024-01-01T00:00:00.000",
+   "term_end": "2025-12-31T00:00:00.000",
+   "district": "21",
+   "office_id": "5241"
+  },
+  {
+   "name": "Mercedes Narcisse",
+   "council_member_id": "7829",
+   "term_start": "2024-01-01T00:00:00.000",
+   "term_end": "2025-12-31T00:00:00.000",
+   "district": "46",
+   "office_id": "5242"
+  },
+  {
+   "name": "Sandy Nurse",
+   "council_member_id": "7824",
+   "term_start": "2024-01-01T00:00:00.000",
+   "term_end": "2025-12-31T00:00:00.000",
+   "district": "37",
+   "office_id": "5243"
+  },
+  {
+   "name": "Chi A. Ossé",
+   "council_member_id": "7823",
+   "term_start": "2024-01-01T00:00:00.000",
+   "term_end": "2025-12-31T00:00:00.000",
+   "district": "36",
+   "office_id": "5244"
+  },
+  {
+   "name": "Vickie Paladino",
+   "council_member_id": "7811",
+   "term_start": "2024-01-01T00:00:00.000",
+   "term_end": "2025-02-12T00:00:00.000",
+   "district": "19",
+   "office_id": "5245"
+  },
+  {
+   "name": "Keith Powers",
+   "council_member_id": "7741",
+   "term_start": "2024-01-01T00:00:00.000",
+   "term_end": "2025-12-31T00:00:00.000",
+   "district": "4",
+   "office_id": "5246"
+  },
+  {
+   "name": "Lincoln Restler",
+   "council_member_id": "7820",
+   "term_start": "2024-01-01T00:00:00.000",
+   "term_end": "2025-12-31T00:00:00.000",
+   "district": "33",
+   "office_id": "5247"
+  },
+  {
+   "name": "Kevin C. Riley",
+   "council_member_id": "7794",
+   "term_start": "2024-01-01T00:00:00.000",
+   "term_end": "2025-12-31T00:00:00.000",
+   "district": "12",
+   "office_id": "5248"
+  },
+  {
+   "name": "Carlina Rivera",
+   "council_member_id": "7740",
+   "term_start": "2024-01-01T00:00:00.000",
+   "term_end": "2025-08-20T00:00:00.000",
+   "district": "2",
+   "office_id": "5249"
+  },
+  {
+   "name": "Yusef Salaam",
+   "council_member_id": "7866",
+   "term_start": "2024-01-01T00:00:00.000",
+   "term_end": "2025-12-31T00:00:00.000",
+   "district": "9",
+   "office_id": "5250"
+  },
+  {
+   "name": "Rafael Salamanca, Jr.",
+   "council_member_id": "7714",
+   "term_start": "2024-01-01T00:00:00.000",
+   "term_end": "2025-12-31T00:00:00.000",
+   "district": "17",
+   "office_id": "5251"
+  },
+  {
+   "name": "Pierina Ana Sanchez",
+   "council_member_id": "7808",
+   "term_start": "2024-01-01T00:00:00.000",
+   "term_end": "2025-12-31T00:00:00.000",
+   "district": "14",
+   "office_id": "5252"
+  },
+  {
+   "name": "Lynn C. Schulman",
+   "council_member_id": "7818",
+   "term_start": "2024-01-01T00:00:00.000",
+   "term_end": "2025-12-31T00:00:00.000",
+   "district": "29",
+   "office_id": "5253"
+  },
+  {
+   "name": "Althea V.  Stevens",
+   "council_member_id": "7809",
+   "term_start": "2024-01-01T00:00:00.000",
+   "term_end": "2025-12-31T00:00:00.000",
+   "district": "16",
+   "office_id": "5254"
+  },
+  {
+   "name": "Sandra Ung",
+   "council_member_id": "7812",
+   "term_start": "2024-01-01T00:00:00.000",
+   "term_end": "2025-12-31T00:00:00.000",
+   "district": "20",
+   "office_id": "5255"
+  },
+  {
+   "name": "Inna Vernikov",
+   "council_member_id": "7831",
+   "term_start": "2024-01-01T00:00:00.000",
+   "term_end": "2025-02-12T00:00:00.000",
+   "district": "48",
+   "office_id": "5256"
+  },
+  {
+   "name": "Nantasha M. Williams",
+   "council_member_id": "7817",
+   "term_start": "2024-01-01T00:00:00.000",
+   "term_end": "2025-12-31T00:00:00.000",
+   "district": "27",
+   "office_id": "5257"
+  },
+  {
+   "name": "Julie Won",
+   "council_member_id": "7816",
+   "term_start": "2024-01-01T00:00:00.000",
+   "term_end": "2025-12-31T00:00:00.000",
+   "district": "26",
+   "office_id": "5258"
+  },
+  {
+   "name": "Kalman Yeger",
+   "council_member_id": "7749",
+   "term_start": "2024-01-01T00:00:00.000",
+   "term_end": "2024-12-31T00:00:00.000",
+   "district": "44",
+   "office_id": "5259"
+  },
+  {
+   "name": "Susan Zhuang",
+   "council_member_id": "7867",
+   "term_start": "2024-01-01T00:00:00.000",
+   "term_end": "2025-12-31T00:00:00.000",
+   "district": "43",
+   "office_id": "5260"
+  },
+  {
+   "name": "Joann Ariola",
+   "council_member_id": "7819",
+   "term_start": "2025-02-13T00:00:00.000",
+   "term_end": "2025-12-31T00:00:00.000",
+   "district": "32",
+   "office_id": "5751"
+  },
+  {
+   "name": "Inna Vernikov",
+   "council_member_id": "7831",
+   "term_start": "2025-02-13T00:00:00.000",
+   "term_end": "2025-12-31T00:00:00.000",
+   "district": "48",
+   "office_id": "5752"
+  },
+  {
+   "name": "Vickie Paladino",
+   "council_member_id": "7811",
+   "term_start": "2025-02-13T00:00:00.000",
+   "term_end": "2025-12-31T00:00:00.000",
+   "district": "19",
+   "office_id": "5753"
+  },
+  {
+   "name": "Simcha Felder",
+   "council_member_id": "5289",
+   "term_start": "2025-04-16T00:00:00.000",
+   "term_end": "2025-12-31T00:00:00.000",
+   "district": "44",
+   "office_id": "5755"
+  },
+  {
+   "name": "Frank Morano",
+   "council_member_id": "7887",
+   "term_start": "2025-05-14T00:00:00.000",
+   "term_end": "2025-12-31T00:00:00.000",
+   "district": "51",
+   "office_id": "5756"
+  },
+  {
+   "name": "Shaun Abreu",
+   "council_member_id": "7804",
+   "term_start": "2026-01-01T00:00:00.000",
+   "term_end": "2029-12-31T00:00:00.000",
+   "district": "7",
+   "office_id": "5799"
+  },
+  {
+   "name": "Shirley Aldebol",
+   "council_member_id": "7896",
+   "term_start": "2026-01-01T00:00:00.000",
+   "term_end": "2029-12-31T00:00:00.000",
+   "district": "13",
+   "office_id": "5800"
+  },
+  {
+   "name": "Joann Ariola",
+   "council_member_id": "7819",
+   "term_start": "2026-01-01T00:00:00.000",
+   "term_end": "2029-12-31T00:00:00.000",
+   "district": "32",
+   "office_id": "5801"
+  },
+  {
+   "name": "Alexa Avilés",
+   "council_member_id": "7825",
+   "term_start": "2026-01-01T00:00:00.000",
+   "term_end": "2029-12-31T00:00:00.000",
+   "district": "38",
+   "office_id": "5802"
+  },
+  {
+   "name": "Chris Banks",
+   "council_member_id": "7864",
+   "term_start": "2026-01-01T00:00:00.000",
+   "term_end": "2029-12-31T00:00:00.000",
+   "district": "42",
+   "office_id": "5803"
+  },
+  {
+   "name": "Erik D. Bottcher",
+   "council_member_id": "7802",
+   "term_start": "2026-01-01T00:00:00.000",
+   "term_end": "2026-02-03T00:00:00.000",
+   "district": "3",
+   "office_id": "5804"
+  },
+  {
+   "name": "Gale A. Brewer",
+   "council_member_id": "5259",
+   "term_start": "2026-01-01T00:00:00.000",
+   "term_end": "2029-12-31T00:00:00.000",
+   "district": "6",
+   "office_id": "5805"
+  },
+  {
+   "name": "Selvena N. Brooks-Powers",
+   "council_member_id": "7796",
+   "term_start": "2026-01-01T00:00:00.000",
+   "term_end": "2029-12-31T00:00:00.000",
+   "district": "31",
+   "office_id": "5806"
+  },
+  {
+   "name": "Tiffany L. Cabán",
+   "council_member_id": "7813",
+   "term_start": "2026-01-01T00:00:00.000",
+   "term_end": "2029-12-31T00:00:00.000",
+   "district": "22",
+   "office_id": "5807"
+  },
+  {
+   "name": "David M. Carr",
+   "council_member_id": "7833",
+   "term_start": "2026-01-01T00:00:00.000",
+   "term_end": "2029-12-31T00:00:00.000",
+   "district": "50",
+   "office_id": "5808"
+  },
+  {
+   "name": "Carmen N. De La Rosa",
+   "council_member_id": "7806",
+   "term_start": "2026-01-01T00:00:00.000",
+   "term_end": "2029-12-31T00:00:00.000",
+   "district": "10",
+   "office_id": "5809"
+  },
+  {
+   "name": "Eric Dinowitz",
+   "council_member_id": "7799",
+   "term_start": "2026-01-01T00:00:00.000",
+   "term_end": "2029-12-31T00:00:00.000",
+   "district": "11",
+   "office_id": "5810"
+  },
+  {
+   "name": "Elsie Encarnación",
+   "council_member_id": "7895",
+   "term_start": "2026-01-01T00:00:00.000",
+   "term_end": "2029-12-31T00:00:00.000",
+   "district": "8",
+   "office_id": "5811"
+  },
+  {
+   "name": "Harvey D. Epstein",
+   "council_member_id": "7893",
+   "term_start": "2026-01-01T00:00:00.000",
+   "term_end": "2029-12-31T00:00:00.000",
+   "district": "2",
+   "office_id": "5812"
+  },
+  {
+   "name": "Amanda C. Farías",
+   "council_member_id": "7810",
+   "term_start": "2026-01-01T00:00:00.000",
+   "term_end": "2029-12-31T00:00:00.000",
+   "district": "18",
+   "office_id": "5813"
+  },
+  {
+   "name": "Simcha Felder",
+   "council_member_id": "5289",
+   "term_start": "2026-01-01T00:00:00.000",
+   "term_end": "2029-12-31T00:00:00.000",
+   "district": "44",
+   "office_id": "5814"
+  },
+  {
+   "name": "Oswald J. Feliz",
+   "council_member_id": "7798",
+   "term_start": "2026-01-01T00:00:00.000",
+   "term_end": "2029-12-31T00:00:00.000",
+   "district": "15",
+   "office_id": "5815"
+  },
+  {
+   "name": "James F. Gennaro",
+   "council_member_id": "5273",
+   "term_start": "2026-01-01T00:00:00.000",
+   "term_end": "2029-12-31T00:00:00.000",
+   "district": "24",
+   "office_id": "5816"
+  },
+  {
+   "name": "Jennifer Gutiérrez",
+   "council_member_id": "7821",
+   "term_start": "2026-01-01T00:00:00.000",
+   "term_end": "2029-12-31T00:00:00.000",
+   "district": "34",
+   "office_id": "5817"
+  },
+  {
+   "name": "Shahana K. Hanif",
+   "council_member_id": "7826",
+   "term_start": "2026-01-01T00:00:00.000",
+   "term_end": "2029-12-31T00:00:00.000",
+   "district": "39",
+   "office_id": "5818"
+  },
+  {
+   "name": "Ty Hankerson",
+   "council_member_id": "7899",
+   "term_start": "2026-01-01T00:00:00.000",
+   "term_end": "2029-12-31T00:00:00.000",
+   "district": "28",
+   "office_id": "5819"
+  },
+  {
+   "name": "Kamillah Hanks",
+   "council_member_id": "7832",
+   "term_start": "2026-01-01T00:00:00.000",
+   "term_end": "2029-12-31T00:00:00.000",
+   "district": "49",
+   "office_id": "5820"
+  },
+  {
+   "name": "Crystal Hudson",
+   "council_member_id": "7822",
+   "term_start": "2026-01-01T00:00:00.000",
+   "term_end": "2029-12-31T00:00:00.000",
+   "district": "35",
+   "office_id": "5821"
+  },
+  {
+   "name": "Rita C. Joseph",
+   "council_member_id": "7827",
+   "term_start": "2026-01-01T00:00:00.000",
+   "term_end": "2029-12-31T00:00:00.000",
+   "district": "40",
+   "office_id": "5822"
+  },
+  {
+   "name": "Shekar Krishnan",
+   "council_member_id": "7815",
+   "term_start": "2026-01-01T00:00:00.000",
+   "term_end": "2029-12-31T00:00:00.000",
+   "district": "25",
+   "office_id": "5823"
+  },
+  {
+   "name": "Linda Lee",
+   "council_member_id": "7814",
+   "term_start": "2026-01-01T00:00:00.000",
+   "term_end": "2029-12-31T00:00:00.000",
+   "district": "23",
+   "office_id": "5824"
+  },
+  {
+   "name": "Farah N. Louis",
+   "council_member_id": "7785",
+   "term_start": "2026-01-01T00:00:00.000",
+   "term_end": "2029-12-31T00:00:00.000",
+   "district": "45",
+   "office_id": "5825"
+  },
+  {
+   "name": "Virginia Maloney",
+   "council_member_id": "7894",
+   "term_start": "2026-01-01T00:00:00.000",
+   "term_end": "2029-12-31T00:00:00.000",
+   "district": "4",
+   "office_id": "5826"
+  },
+  {
+   "name": "Christopher Marte",
+   "council_member_id": "7801",
+   "term_start": "2026-01-01T00:00:00.000",
+   "term_end": "2029-12-31T00:00:00.000",
+   "district": "1",
+   "office_id": "5827"
+  },
+  {
+   "name": "Darlene Mealy",
+   "council_member_id": "6272",
+   "term_start": "2026-01-01T00:00:00.000",
+   "term_end": "2029-12-31T00:00:00.000",
+   "district": "41",
+   "office_id": "5828"
+  },
+  {
+   "name": "Julie Menin",
+   "council_member_id": "7803",
+   "term_start": "2026-01-01T00:00:00.000",
+   "term_end": "2029-12-31T00:00:00.000",
+   "district": "5",
+   "office_id": "5829"
+  },
+  {
+   "name": "Frank Morano",
+   "council_member_id": "7887",
+   "term_start": "2026-01-01T00:00:00.000",
+   "term_end": "2029-12-31T00:00:00.000",
+   "district": "51",
+   "office_id": "5830"
+  },
+  {
+   "name": "Mercedes Narcisse",
+   "council_member_id": "7829",
+   "term_start": "2026-01-01T00:00:00.000",
+   "term_end": "2029-12-31T00:00:00.000",
+   "district": "46",
+   "office_id": "5831"
+  },
+  {
+   "name": "Sandy Nurse",
+   "council_member_id": "7824",
+   "term_start": "2026-01-01T00:00:00.000",
+   "term_end": "2029-12-31T00:00:00.000",
+   "district": "37",
+   "office_id": "5832"
+  },
+  {
+   "name": "Chi A. Ossé",
+   "council_member_id": "7823",
+   "term_start": "2026-01-01T00:00:00.000",
+   "term_end": "2029-12-31T00:00:00.000",
+   "district": "36",
+   "office_id": "5833"
+  },
+  {
+   "name": "Vickie Paladino",
+   "council_member_id": "7811",
+   "term_start": "2026-01-01T00:00:00.000",
+   "term_end": "2029-12-31T00:00:00.000",
+   "district": "19",
+   "office_id": "5834"
+  },
+  {
+   "name": "Lincoln Restler",
+   "council_member_id": "7820",
+   "term_start": "2026-01-01T00:00:00.000",
+   "term_end": "2029-12-31T00:00:00.000",
+   "district": "33",
+   "office_id": "5835"
+  },
+  {
+   "name": "Kevin C. Riley",
+   "council_member_id": "7794",
+   "term_start": "2026-01-01T00:00:00.000",
+   "term_end": "2029-12-31T00:00:00.000",
+   "district": "12",
+   "office_id": "5836"
+  },
+  {
+   "name": "Yusef Salaam",
+   "council_member_id": "7866",
+   "term_start": "2026-01-01T00:00:00.000",
+   "term_end": "2029-12-31T00:00:00.000",
+   "district": "9",
+   "office_id": "5837"
+  },
+  {
+   "name": "Pierina Ana Sanchez",
+   "council_member_id": "7808",
+   "term_start": "2026-01-01T00:00:00.000",
+   "term_end": "2029-12-31T00:00:00.000",
+   "district": "14",
+   "office_id": "5838"
+  },
+  {
+   "name": "Justin E. Sanchez",
+   "council_member_id": "7897",
+   "term_start": "2026-01-01T00:00:00.000",
+   "term_end": "2029-12-31T00:00:00.000",
+   "district": "17",
+   "office_id": "5839"
+  },
+  {
+   "name": "Kayla Santosuosso",
+   "council_member_id": "7901",
+   "term_start": "2026-01-01T00:00:00.000",
+   "term_end": "2029-12-31T00:00:00.000",
+   "district": "47",
+   "office_id": "5840"
+  },
+  {
+   "name": "Lynn C. Schulman",
+   "council_member_id": "7818",
+   "term_start": "2026-01-01T00:00:00.000",
+   "term_end": "2029-12-31T00:00:00.000",
+   "district": "29",
+   "office_id": "5841"
+  },
+  {
+   "name": "Althea V.  Stevens",
+   "council_member_id": "7809",
+   "term_start": "2026-01-01T00:00:00.000",
+   "term_end": "2029-12-31T00:00:00.000",
+   "district": "16",
+   "office_id": "5842"
+  },
+  {
+   "name": "Shanel Thomas-Henry",
+   "council_member_id": "7898",
+   "term_start": "2026-01-01T00:00:00.000",
+   "term_end": "2029-12-31T00:00:00.000",
+   "district": "21",
+   "office_id": "5843"
+  },
+  {
+   "name": "Sandra Ung",
+   "council_member_id": "7812",
+   "term_start": "2026-01-01T00:00:00.000",
+   "term_end": "2029-12-31T00:00:00.000",
+   "district": "20",
+   "office_id": "5844"
+  },
+  {
+   "name": "Inna Vernikov",
+   "council_member_id": "7831",
+   "term_start": "2026-01-01T00:00:00.000",
+   "term_end": "2029-12-31T00:00:00.000",
+   "district": "48",
+   "office_id": "5845"
+  },
+  {
+   "name": "Nantasha M. Williams",
+   "council_member_id": "7817",
+   "term_start": "2026-01-01T00:00:00.000",
+   "term_end": "2029-12-31T00:00:00.000",
+   "district": "27",
+   "office_id": "5846"
+  },
+  {
+   "name": "Julie Won",
+   "council_member_id": "7816",
+   "term_start": "2026-01-01T00:00:00.000",
+   "term_end": "2029-12-31T00:00:00.000",
+   "district": "26",
+   "office_id": "5847"
+  },
+  {
+   "name": "Phil Wong",
+   "council_member_id": "7900",
+   "term_start": "2026-01-01T00:00:00.000",
+   "term_end": "2029-12-31T00:00:00.000",
+   "district": "30",
+   "office_id": "5848"
+  },
+  {
+   "name": "Susan Zhuang",
+   "council_member_id": "7867",
+   "term_start": "2026-01-01T00:00:00.000",
+   "term_end": "2029-12-31T00:00:00.000",
+   "district": "43",
+   "office_id": "5849"
+  },
+  {
+   "name": "Harvey D. Epstein",
+   "council_member_id": "7893",
+   "term_start": "2025-12-04T00:00:00.000",
+   "term_end": "2025-12-31T00:00:00.000",
+   "district": "2",
+   "office_id": "5850"
+  }
+ ]
+}
