@@ -185,7 +185,8 @@ function sources(db: Database.Database | null, hasLive: boolean): Source[] {
       source_url: "https://council.nyc.gov/",
       official: false,
       how:
-        "Curated by BetaNYC: office accounts only, never campaign or personal. 'verified' means the Council links it; " +
+        "Curated by BetaNYC: office accounts only, never campaign or personal. 'verified' means council.nyc.gov links it, " +
+        "or it is in the Council's Bluesky starter pack and is not a personal or campaign account; " +
         "'likely' means only the account's own bio says it is the office. Shipped in data/council-social.json.",
       as_of: fileDate("council-social.json"),
       tools: ["get_council_member", "get_member_roles"],
