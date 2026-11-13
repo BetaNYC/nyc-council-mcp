@@ -22,6 +22,7 @@ import {
   getMatter,
   memberRoles,
   committeeRoster,
+  districtMember,
 } from "../db/queries.js";
 import { unknownParamMessage } from "./unknown-param.js";
 
@@ -89,7 +90,9 @@ export const LOCAL_TOOL_DEFS = [
       "A council member's committees (with chairs listed separately), caucuses, party conferences, borough delegations " +
       "and task forces, from Legistar's own membership records in the local index. Current as of today by default; " +
       "pass as_of (YYYY-MM-DD) for a past date, or include_past for the whole history with start/end dates. " +
-      "Conference and caucus memberships are memberships only: no party is inferred from them. No token needed.",
+      "Conference and caucus memberships are memberships only: no party is inferred from them. " +
+      "Also returns the member's council district on that date and every council term (from the City's " +
+      "uvw5-9znb dataset, shipped as a snapshot). No token needed.",
     inputSchema: {
       type: "object",
       additionalProperties: false,
@@ -116,6 +119,22 @@ export const LOCAL_TOOL_DEFS = [
         include_past: { type: "boolean", description: "Everyone who ever served, with dates (ignores as_of)" },
       },
       required: ["committee"],
+    },
+  },
+  {
+    name: "district_member",
+    description:
+      "Who held a Council district (1-51) on a date, from the City's list of council terms (NYC Open Data " +
+      "uvw5-9znb, shipped as a dated snapshot). A seat nobody held on that date is 'vacant': the last member is " +
+      "given as 'previous', never as current. Default date is today. No token needed.",
+    inputSchema: {
+      type: "object",
+      additionalProperties: false,
+      properties: {
+        district: { type: "integer", minimum: 1, maximum: 51, description: "Council district, 1 to 51" },
+        as_of: { type: "string", description: "Date YYYY-MM-DD (default today)" },
+      },
+      required: ["district"],
     },
   },
   {
@@ -378,6 +397,17 @@ export function handleLocalTool(
           .strict()
           .parse(args);
         return json(committeeRoster(db, committee, { as_of, include_past }));
+      }
+
+      case "district_member": {
+        const { district, as_of } = z
+          .object({
+            district: z.number().int().min(1).max(51),
+            as_of: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "as_of must be YYYY-MM-DD").optional(),
+          })
+          .strict()
+          .parse(args);
+        return json(districtMember(db, district, as_of));
       }
 
       case "get_matter": {

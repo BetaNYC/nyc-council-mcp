@@ -13,6 +13,7 @@ import { existsSync, readFileSync } from "fs";
 import Sqlite from "better-sqlite3";
 
 import { withSourceNote, checkUpcomingLive } from "./tools/local-source.js";
+import { withMemberTerms } from "./tools/member-terms.js";
 import { getEventStatuses } from "./legistar.js";
 import { LIVE_TOOL_DEFS, LIVE_SEARCH_TOOL_DEF, handleLiveTool, handleLiveSearch } from "./tools/live.js";
 import { LOCAL_TOOL_DEFS, handleLocalTool } from "./tools/local.js";
@@ -141,7 +142,10 @@ See README for full setup instructions.
 
     // Route to live API handler
     if (mode.hasLive && mode.token && liveNames.has(name)) {
-      return handleLiveTool(name, safeArgs, mode.token);
+      const res = await handleLiveTool(name, safeArgs, mode.token);
+      // #28: Legistar's person records have no district; the index does.
+      if (name === "get_council_member" && db) return withMemberTerms(res, db);
+      return res;
     }
 
     // Tool known but its data source is not available

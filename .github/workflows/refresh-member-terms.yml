@@ -1,0 +1,53 @@
+# Refresh the vendored council terms snapshot (#28, tier 2).
+#
+# data/council-member-terms.json is a copy of NYC Open Data uvw5-9znb. The
+# indexer reads it offline; nothing fetches it at index or query time. This
+# job re-fetches it monthly and, if the City's rows changed, opens a PR. A
+# maintainer reviews the diff and bumps the version so the new snapshot ships
+# (the version guard in ci.yml requires it).
+#
+# Opening a PR needs the repository setting "Allow GitHub Actions to create and
+# approve pull requests" (Settings → Actions → General). Without it the job
+# pushes the branch and fails at the PR step, which still shows the change.
+
+name: Refresh council terms
+
+on:
+  schedule:
+    - cron: "17 9 1 * *" # 09:17 UTC on the 1st of each month
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22.x"
+      - name: Fetch uvw5-9znb
+        run: node scripts/refresh-member-terms.mjs
+      - name: Open a PR if the City's rows changed
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          # fetched_at changes every run; only a change to the rows matters.
+          if git diff --quiet -I '"fetched_at"' -- data/council-member-terms.json; then
+            echo "No change in the City's rows."
+            exit 0
+          fi
+          branch="data/member-terms-$(date -u +%Y-%m-%d)"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$branch"
+          git add data/council-member-terms.json
+          git commit -m "data: refresh council terms from NYC Open Data uvw5-9znb (#28)"
+          git push -u origin "$branch"
+          gh pr create --base main --head "$branch" \
+            --title "data: refresh council terms (uvw5-9znb)" \
+            --body "Monthly refresh of data/council-member-terms.json from NYC Open Data uvw5-9znb (#28). Review the diff, then bump the version so the new snapshot ships."

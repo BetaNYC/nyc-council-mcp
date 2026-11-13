@@ -631,6 +631,64 @@ export interface IndexOptions {
   dbPath: string;
   full?: boolean;
   verbose?: boolean;
+  /** Vendored council terms (#28). Default: the copy shipped in data/. */
+  termsPath?: string;
+}
+
+/** The council terms snapshot that ships with the package (data/, beside dist/). */
+export const DEFAULT_TERMS_PATH = new URL("../../data/council-member-terms.json", import.meta.url);
+
+interface TermsSnapshot {
+  fetched_at?: string;
+  rows_updated_at?: string | null;
+  rows?: Array<{
+    council_member_id?: string;
+    name?: string;
+    district?: string;
+    term_start?: string;
+    term_end?: string;
+    office_id?: string;
+  }>;
+}
+
+/**
+ * Load the vendored council terms into member_terms (#28, tier 2). Replaces
+ * every row each run: 558 rows, so there is nothing to gain from incremental.
+ * Reads a local file only. A missing or unreadable file leaves the table empty
+ * and the build continues: districts are an addition, not a requirement.
+ */
+function indexMemberTerms(db: Sqlite.Database, path: string | URL, verbose?: boolean): number {
+  let snap: TermsSnapshot;
+  try {
+    snap = JSON.parse(readFileSync(path, "utf8")) as TermsSnapshot;
+  } catch (e) {
+    console.error(`Warning: council terms not loaded from ${String(path)}: ${(e as Error).message}`);
+    db.exec("DELETE FROM member_terms");
+    return 0;
+  }
+  const rows = Array.isArray(snap.rows) ? snap.rows : [];
+  const day = (v?: string) => (v ? v.slice(0, 10) : null);
+  const int = (v?: string) => (v != null && /^\d+$/.test(v.trim()) ? Number(v) : null);
+  const insert = db.prepare(
+    `INSERT OR REPLACE INTO member_terms (office_id, person_id, name, district, term_start, term_end)
+     VALUES (?, ?, ?, ?, ?, ?)`
+  );
+  const put = db.prepare("INSERT OR REPLACE INTO index_state (key, value) VALUES (?, ?)");
+  let n = 0;
+  db.transaction(() => {
+    db.exec("DELETE FROM member_terms");
+    for (const r of rows) {
+      const office = int(r.office_id);
+      const person = int(r.council_member_id);
+      if (office == null || person == null) continue;
+      insert.run(office, person, r.name?.trim() ?? null, int(r.district), day(r.term_start), day(r.term_end));
+      n++;
+    }
+    if (snap.fetched_at) put.run("member_terms_fetched_at", snap.fetched_at);
+    if (snap.rows_updated_at) put.run("member_terms_rows_updated_at", snap.rows_updated_at);
+  })();
+  if (verbose) console.error(`Council terms: ${n} rows (snapshot fetched ${snap.fetched_at ?? "unknown"})`);
+  return n;
 }
 
 export async function buildIndex(opts: IndexOptions): Promise<IndexStats> {
@@ -729,6 +787,8 @@ export async function buildIndex(opts: IndexOptions): Promise<IndexStats> {
   if (opts.verbose) process.stderr.write("Indexing events… ");
   indexEvents(db, archive.events, since, stats);
   if (opts.verbose) console.error(`${stats.events} events`);
+
+  indexMemberTerms(db, opts.termsPath ?? DEFAULT_TERMS_PATH, opts.verbose);
 
   // Coverage report: per-matter-type row counts now in the DB, so an
   // under-populated build (e.g. #32's 12,887 Introductions but 119 Resolutions)

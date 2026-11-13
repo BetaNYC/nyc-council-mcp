@@ -18,8 +18,21 @@ Dates are npm publish dates (`npm view @betanyc/nyc-council-mcp time`).
   new local tools: **`get_member_roles`** ("which committees does she chair?") and
   **`committee_roster`** ("who sits on Technology?"), each for today, a past date, or the
   whole history. Answers name their source. A conference or caucus is reported as a
-  membership only: party is never inferred from it. District, party and Wikidata/Wikipedia
-  links (#28's other three layers) are not in this release.
+  membership only: party is never inferred from it. Party and Wikidata/Wikipedia links
+  (#28's last two layers) are not in this release.
+- **Council districts and terms
+  ([#28](https://github.com/BetaNYC/nyc-council-mcp/issues/28), second layer).** The
+  package now ships a dated copy of NYC Open Data
+  [`uvw5-9znb`](https://data.cityofnewyork.us/d/uvw5-9znb) (558 terms, 215 people, 1999 to
+  now) in `data/council-member-terms.json`. The indexer loads it offline, with no token. It
+  joins on Legistar's person ID, never on names. New local tool **`district_member`**: who held
+  a district on a date. A seat nobody held that day is `vacant`, with the last member as
+  `previous`, never as current. `get_member_roles` now returns `district` and every term, and
+  in hybrid mode `get_council_member` does too. When a seat looks vacant, the answer also names
+  anyone Legistar lists as a Council Member who is missing from the City's file. On 2026-11-12
+  that is Carl Wilson, from 2026-05-13, in a file last updated 2026-04-10. A monthly workflow
+  re-fetches the file and opens a PR when the City's rows change. The version guard now
+  counts the snapshot as shipped code.
 - **Search the full text and summaries of legislation; Local Law numbers, versions and
   attachments ([#31](https://github.com/BetaNYC/nyc-council-mcp/issues/31)).** Local search
   now covers each matter's summary and full text, not only its title and sponsors. A title
