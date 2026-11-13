@@ -44,9 +44,10 @@ Dates are npm publish dates (`npm view @betanyc/nyc-council-mcp time`).
     certified results. NYC has fusion voting: 30 of 51 won on two lines. Party is never
     taken from a caucus or from Wikidata.
   - **Wikidata and Wikipedia:** every row was re-checked, and District 3 now has Carl Wilson.
-  - **Social accounts** are office accounts only, on Bluesky (14), Instagram (34), Threads (19)
-    and LinkedIn (none found). An account linked from council.nyc.gov or listed in the Council's
-    Bluesky starter pack is "verified". One identified only by its own bio is "likely".
+  - **Social accounts** are office accounts only, on Bluesky (15), Instagram (35), Threads (19)
+    and LinkedIn (none found). An office account linked from council.nyc.gov, or listed in the
+    Council's Bluesky starter pack after personal and campaign accounts are screened out, is
+    "verified" (49). One identified only by its own bio is "likely" (20).
   - Each fact keeps its source and check date. A blank stays null. Rules: `data/README.md`.
 - **Council districts and terms
   ([#28](https://github.com/BetaNYC/nyc-council-mcp/issues/28), second layer).** The
