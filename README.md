@@ -64,6 +64,7 @@ These require `LEGISTAR_TOKEN`.
 |---|---|
 | `get_bill` | Current status and record for a bill. A bare `NNNN-YYYY` number is ambiguous (it can be both an `Int` and a `Res`); an ambiguous match is rejected with an error naming every candidate, so re-call with the exact type-prefixed number |
 | `get_bill_history` | *Local by default* (served from the index, no token; takes a file number). In **live-only** mode this live variant answers instead — authoritative action trail by numeric matter id |
+| `get_bill_attachments` | Files attached to a matter (committee reports, resolution text, charts, transcripts), each with a direct download link. Takes the numeric matter id |
 | `get_upcoming_hearings` | Real-time upcoming committee hearings and Stated meetings, each with its agenda items (bills/matters) in `EventItems` |
 | `get_council_member` | Current contact info and active status for a council member. `PersonWWW2` (the Legistar profile page) is checked: a known-bad upstream link is corrected from a small dated override list (`PERSON_WWW2_OVERRIDES` in `src/legistar.ts`, with the original kept in `PersonWWW2_upstream`), and a link shared by two people in one result gets a `PersonWWW2_warning` |
 | `get_committee` | Current membership count and details for a committee |
