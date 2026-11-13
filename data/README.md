@@ -7,7 +7,7 @@ Four files. Each one is a single kind of fact from a single kind of source, so w
 | `council-member-terms.json` | Every council term since 1999, with district | NYC Open Data [`uvw5-9znb`](https://data.cityofnewyork.us/d/uvw5-9znb), used as published | Yes, the City's data |
 | `council-wikidata.json` | Wikidata item and English Wikipedia article for each sitting member | Wikidata and Wikipedia, checked one row at a time | **No**, curated by BetaNYC |
 | `council-party.json` | Party: every ballot line the member won on | NYC Board of Elections certified results | **No**, curated by BetaNYC from official results |
-| `council-social.json` | Office accounts on Bluesky, Instagram, Threads, LinkedIn | council.nyc.gov first; the Council's Bluesky starter pack; profiles last | **No**, curated by BetaNYC |
+| `council-social.json` | Office accounts on Bluesky, Instagram, Threads, LinkedIn | council.nyc.gov first; the Council's Bluesky starter pack (which also lists personal and campaign accounts, so those are screened out); profiles last | **No**, curated by BetaNYC |
 
 ## Rules for the curated files
 

@@ -4,7 +4,7 @@
  "official": false,
  "checked_at": "2026-11-12",
  "scope": "The 51 people holding a Council seat on 2026-11-12. Joined on Legistar person_id.",
- "method": "Sources in order: the member's council.nyc.gov page ('Socials' links) = verified; the Council's own Bluesky starter pack (@council.nyc.gov), re-read through the public Bluesky API on 2026-11-12 = verified; otherwise the account's own bio naming the Council office or district = likely. Accounts that say candidate, campaign or personal, or link donations, are left out and explained in notes. null = none found. Several Threads profiles could not be read without logging in; see notes.",
+ "method": "Sources in order: the member's council.nyc.gov page ('Socials' links) = verified; listed in the Council's own Bluesky starter pack (@council.nyc.gov, re-read through the public Bluesky API on 2026-11-12) and not marked personal or campaign = verified (the pack also holds personal and campaign accounts, and blank profiles stay out, per BetaNYC's 2026-10-13 rule); otherwise the account's own bio naming the Council office or district = likely. Accounts that say candidate, campaign or personal, or link donations, are left out and explained in notes. null = none found. Several Threads profiles could not be read without logging in; see notes.",
  "rows": [
   {
    "district": 1,
