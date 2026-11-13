@@ -12,7 +12,7 @@ import Database from "better-sqlite3";
 
 import { CREATE_TABLES } from "../dist/db/schema.js";
 import { withMemberTerms } from "../dist/tools/member-terms.js";
-import { handleLiveTool } from "../dist/tools/live.js";
+import { handleLiveTool, handleLiveSearch } from "../dist/tools/live.js";
 
 function termsDb() {
   const db = new Database(":memory:");
@@ -83,4 +83,21 @@ test("the index summary can report what is stored, not only what was read", asyn
   const stats = await buildIndex({ archiveRoot: root, dbPath, full: true, termsPath: join(root, "none.json") });
   assert.equal(stats.bills, 2, "two files read");
   assert.equal(indexTotals(dbPath).bills, 1, "one matter stored");
+});
+
+test("search_legislation_live answers bad arguments and upstream failures with isError, never a protocol error", async () => {
+  for (const args of [{}, { query: 1 }, { query: "x", order: "zzz" }, { query: "x", bogus: 1 }]) {
+    const res = await handleLiveSearch(args, "t");
+    assert.equal(res.isError, true, JSON.stringify(args));
+    assert.match(res.content[0].text, /^Error: /);
+  }
+  const saved = global.fetch;
+  global.fetch = async () => { throw new Error("network down"); };
+  try {
+    const res = await handleLiveSearch({ query: "bicycle" }, "t");
+    assert.equal(res.isError, true);
+    assert.match(res.content[0].text, /network down/);
+  } finally {
+    global.fetch = saved;
+  }
 });

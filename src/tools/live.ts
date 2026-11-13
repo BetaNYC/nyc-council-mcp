@@ -304,21 +304,22 @@ export async function handleLiveSearch(
   args: Record<string, unknown>,
   token: string
 ): Promise<{ content: Array<{ type: string; text: string }>; isError?: boolean }> {
-  let parsed;
+  // Every failure is an isError answer, as in handleLiveTool. Re-throwing turned a bad
+  // argument or an upstream failure into an MCP protocol error (found on home-hearth, 2026-11-13).
   try {
-    parsed = z
+    const { query, limit, order } = z
       .object({
         query: z.string(),
         limit: z.number().max(50).optional(),
         order: z.enum(["date_desc", "date_asc"]).optional(),
       })
       .strict().parse(args);
+    const results = await searchLegislation(token, query, limit ?? 20, order ?? "date_desc");
+    return json(results.map(withLegistarUrl));
   } catch (err) {
-    const message = unknownParamMessage(err, LIVE_SEARCH_TOOL_DEF.name, [LIVE_SEARCH_TOOL_DEF]);
-    if (!message) throw err;
+    const message =
+      unknownParamMessage(err, LIVE_SEARCH_TOOL_DEF.name, [LIVE_SEARCH_TOOL_DEF]) ??
+      (err instanceof Error ? err.message : String(err));
     return { content: [{ type: "text", text: `Error: ${message}` }], isError: true };
   }
-  const { query, limit, order } = parsed;
-  const results = await searchLegislation(token, query, limit ?? 20, order ?? "date_desc");
-  return json(results.map(withLegistarUrl));
 }

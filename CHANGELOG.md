@@ -106,6 +106,8 @@ Dates are npm publish dates (`npm view @betanyc/nyc-council-mcp time`).
   - `get_council_member` with no match adds a note that it searches active members only.
   - A `LEGISTAR_DB_PATH` that points to a missing file is named at startup, instead of "No data
     source configured".
+  - `search_legislation_live` answers a bad argument or a Legistar failure with an error
+    message, not an MCP protocol error.
   - `index` adds an "Index now holds" line with the rows stored. The "Indexed" line counts
     records read, which can be higher when the archive holds one matter in two files.
 - **Retired the Maloney profile-link override
