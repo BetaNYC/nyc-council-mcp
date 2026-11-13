@@ -84,6 +84,8 @@ Dates are npm publish dates (`npm view @betanyc/nyc-council-mcp time`).
   docs; the README says so.
 
 ### Changed
+- **The copyright line names BetaNYC as a project of the Fund for the City of New York**
+  (LICENSE and README), BetaNYC's standard wording. The license itself is unchanged (MIT).
 - **README follows the shared BetaNYC MCP layout
   ([#35](https://github.com/BetaNYC/nyc-council-mcp/issues/35), this repo only).** What it
   does and a quick start come first; setup, configuration, tools, how it works, known
