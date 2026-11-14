@@ -9,8 +9,9 @@
 #
 # Flow: bump the version in package.json via PR → merge → push the matching
 # tag (e.g. v2.2.0) → this workflow tests, verifies tag == package.json
-# version, publishes with npm provenance, and creates a GitHub Release with
-# generated notes.
+# version, runs the two release gates (WHATS-CHANGED.md dated and valid,
+# DATA-SOURCES.json valid with a real contact; #76), publishes with npm
+# provenance, and creates a GitHub Release with generated notes.
 #
 # Prerequisite: the NPM_TOKEN org secret (an npm automation token with publish
 # rights on @betanyc) must be configured.
@@ -76,6 +77,31 @@ jobs:
             echo "Push a tag named v${PKG_VERSION}, or merge a version-bump PR first, then re-tag."
             exit 1
           fi
+
+      # Release gates (#76), from the What's changed and about-data standards. Each stops the
+      # release before anything is published:
+      # - check --release fails while WHATS-CHANGED.md has an "Unreleased:" entry, or has any
+      #   other error, so a release cannot ship undated or with a broken history;
+      # - about-data check --release fails on any error in DATA-SOURCES.json, a tool without a
+      #   source, or the placeholder contact address.
+      # scripts/whats_changed.py is a copy of BetaNYC's shared file: never edit it here.
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: "Release gate: WHATS-CHANGED.md is dated and valid"
+        run: python3 scripts/whats_changed.py check WHATS-CHANGED.md --release
+
+      - name: "Release gate: DATA-SOURCES.json is valid and names a real contact"
+        run: |
+          node --input-type=module -e '
+          const l = await import("./dist/tools/local.js"), v = await import("./dist/tools/live.js");
+          const b = await import("./dist/betanyc-tools.js");
+          const names = [...l.LOCAL_TOOL_DEFS, ...v.LIVE_TOOL_DEFS, v.LIVE_SEARCH_TOOL_DEF].map((t) => t.name);
+          console.log(JSON.stringify([...new Set([...names, ...b.BETANYC_TOOL_NAMES])]));
+          ' > "$RUNNER_TEMP/tools.json"
+          python3 scripts/whats_changed.py about-data check DATA-SOURCES.json --release --tools-file "$RUNNER_TEMP/tools.json"
 
       - name: Publish to npm
         run: npm publish --provenance --access public
