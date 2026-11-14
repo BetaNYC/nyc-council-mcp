@@ -23,7 +23,7 @@ The local index holds every matter in the [jehiah/nyc_legislation](https://githu
 ## What's new in 2.9.0
 
 - **"What changed?" and "Who built this?"** Two new tools work in every mode, with no token or index. `whats_changed` answers from [WHATS-CHANGED.md](WHATS-CHANGED.md), the plain-language history of this server back to 1.0.0, including every correction and what to re-check. `about_betanyc` says who built the server, how to report a bug or ask for a feature, and which version of BetaNYC's shared code it runs.
-- **BetaNYC's shared module 1.3.5.** `about_data` answers also say who fixes an error in the data, the publisher or BetaNYC, and list any source the server cannot show.
+- **BetaNYC's shared module 1.3.6.** `about_data` answers now give BetaNYC's contact for questions and error reports about the data (lab@beta.nyc), say who fixes an error in the data, the publisher or BetaNYC, and list any source the server cannot show.
 - With both data sources set up, the server now lists 28 tools.
 
 ## What's new in 2.8.0
@@ -277,7 +277,7 @@ These need no token or index, and make no network call. They come from BetaNYC's
 
 | Tool | Description |
 |---|---|
-| `about_data` | Ask the server where its data comes from. For each kind of data it gives the source and its publisher, whether it is an official record or BetaNYC's curation, how it was gathered and what BetaNYC changed, how current it is on this server (the index build time, the district snapshot's fetch time, the curated files' check dates), what it covers, terms of use and a credit line, where to check a figure, where to report an error, and which tools use it. `topic` narrows it to one kind of data (`live`, `bills`, `votes`, `events`, `committees`, `districts`, `party`, `wikidata`, `social`) or to the data behind one tool (for example `get_council_member`). For who built the server, the answer points to `about_betanyc`. Needs no token or index. The server's MCP instructions tell the AI app to call it whenever someone asks about sources, freshness or accuracy, and to say when figures are not an official record. Answers come from [`DATA-SOURCES.json`](DATA-SOURCES.json), read by BetaNYC's shared module. |
+| `about_data` | Ask the server where its data comes from. For each kind of data it gives the source and its publisher, whether it is an official record or BetaNYC's curation, how it was gathered and what BetaNYC changed, how current it is on this server (the index build time, the district snapshot's fetch time, the curated files' check dates), what it covers, terms of use and a credit line, where to check a figure, where to report an error, and which tools use it. `topic` narrows it to one kind of data (`live`, `bills`, `votes`, `events`, `committees`, `districts`, `party`, `wikidata`, `social`) or to the data behind one tool (for example `get_council_member`). It gives BetaNYC's contact for questions and error reports about the data, lab@beta.nyc. For who built the server, the answer points to `about_betanyc`. With no `LEGISTAR_TOKEN`, the live source says it is not available on this server. Needs no token or index. The server's MCP instructions tell the AI app to call it whenever someone asks about sources, freshness or accuracy, and to say when figures are not an official record. Answers come from [`DATA-SOURCES.json`](DATA-SOURCES.json), read by BetaNYC's shared module. |
 
 ### Tool details
 

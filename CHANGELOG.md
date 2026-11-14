@@ -20,6 +20,10 @@ see [WHATS-CHANGED.md](WHATS-CHANGED.md).
   server (BetaNYC, a project of the Fund for the City of New York), how to report a bug or ask
   for a feature, and which shared module version it runs. Both work in every mode, need no token
   or index, and make no network call. The server's MCP instructions now point AI apps at them.
+- **`about_data` gives BetaNYC's contact address
+  ([#77](https://github.com/BetaNYC/nyc-council-mcp/issues/77)).** Every answer now carries
+  `contact_email` (lab@beta.nyc, from `DATA-SOURCES.json`) and the line "Questions or error
+  reports about this data, to BetaNYC: lab@beta.nyc".
 - **`WHATS-CHANGED.md`**, the plain-language history for journalists and community board
   staff, backfilled from this changelog and the merged pull requests back to 1.0.0, with every
   correction and what to re-check. It ships in the package. CI checks it on every pull request
@@ -27,16 +31,21 @@ see [WHATS-CHANGED.md](WHATS-CHANGED.md).
   version bump).
 
 ### Changed
-- **Shared module 1.3.5.** `src/betanyc-tools.ts`, `scripts/whats_changed.py` and the
-  about-data validator kit are now BetaNYC's shared 1.3.5 files, copied in unchanged
-  (`whats_changed_drift.py compare`: CURRENT). `about_data` answers gain `left_out` and, under
+- **Shared module 1.3.6.** `src/betanyc-tools.ts` is BetaNYC's shared module 1.3.6, and
+  `scripts/whats_changed.py` and the about-data validator kit are its 1.3.5 files (unchanged in
+  1.3.6), all copied in unchanged (`whats_changed_drift.py compare`: CURRENT). `about_data`
+  answers gain `contact_email`, `left_out` and, under
   `report_errors`, `in_the_data_handled_by` and `in_these_figures`. `data.json` was rebuilt: each
   BetaNYC dataset's contact now says where to report an error in BetaNYC's figures and where to
   report one in the original records.
-- **`src/betanyc.ts` is gone.** It hid the pointers to `about_betanyc` and `whats_changed` until
-  this release registered them. The one thing it did that the shared module cannot,
-  saying the live source is not available when no `LEGISTAR_TOKEN` is set and adding
-  `this_server` to `about_data`'s answer (#67), moved to `src/shared-tools.ts`.
+- **`src/betanyc.ts` is gone, and no wrapper replaces it.** It hid the pointers to
+  `about_betanyc` and `whats_changed` until this release registered them. `src/server.ts` now
+  wires the shared module directly. With no `LEGISTAR_TOKEN`, the live source still says "not
+  available on this server: the live Legistar API is not set up (no LEGISTAR_TOKEN)" (#67),
+  now through the module's own `unavailableSources` option (1.3.6).
+- **`about_data` no longer returns `this_server`**, or the line "This server: live Legistar API
+  … local index …" after its answer. Whether the live API is set up shows in the live source's
+  `as_of`; whether there is a local index shows in each local source's `as_of`.
 - `about_data`'s "who built this" now points to `about_betanyc` instead of repeating it.
 - The 2.6.0 heading below now carries its publish date, 2026-07-27. It said "unreleased", but
   the release workflow published 2.6.0 that day.

@@ -13,10 +13,10 @@ import Database from "better-sqlite3";
 import { LOCAL_TOOL_DEFS, handleLocalTool } from "../dist/tools/local.js";
 import { LIVE_TOOL_DEFS, LIVE_SEARCH_TOOL_DEF, handleLiveTool } from "../dist/tools/live.js";
 import { CREATE_TABLES } from "../dist/db/schema.js";
-import { createSharedTools } from "../dist/shared-tools.js";
+import { betanycTools } from "../dist/server.js";
 
 // Every tool the server can list, the three BetaNYC shared tools included (#75).
-const SHARED_TOOL_DEFS = createSharedTools({ db: null, hasLive: false, version: "0.0.0" }).tools;
+const SHARED_TOOL_DEFS = betanycTools({ db: null, hasLive: false, version: "0.0.0" }).tools;
 const ALL_TOOL_DEFS = [...LOCAL_TOOL_DEFS, ...LIVE_TOOL_DEFS, LIVE_SEARCH_TOOL_DEF, ...SHARED_TOOL_DEFS];
 
 function emptyDb() {

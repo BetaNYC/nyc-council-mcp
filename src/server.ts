@@ -15,7 +15,7 @@ import Sqlite from "better-sqlite3";
 import { withSourceNote, checkUpcomingLive } from "./tools/local-source.js";
 import { withMemberTerms } from "./tools/member-terms.js";
 import { withCurated } from "./curated.js";
-import { createSharedTools } from "./shared-tools.js";
+import { BETANYC_INSTRUCTIONS, createBetanycTools } from "./betanyc-tools.js";
 import { getEventStatuses } from "./legistar.js";
 import { LIVE_TOOL_DEFS, LIVE_SEARCH_TOOL_DEF, handleLiveTool, handleLiveSearch } from "./tools/live.js";
 import { LOCAL_TOOL_DEFS, handleLocalTool } from "./tools/local.js";
@@ -28,6 +28,71 @@ const PACKAGE_VERSION = (
     readFileSync(new URL("../package.json", import.meta.url), "utf-8")
   ) as { version: string }
 ).version;
+
+// ---------------------------------------------------------------------------
+// BetaNYC's shared tools: whats_changed, about_betanyc and about_data (#75, #48, #77)
+// ---------------------------------------------------------------------------
+// All three come from src/betanyc-tools.ts, a copy of the BetaNYC workspace's
+// scripts/mcp_shared/betanyc-tools.ts: never edit it here. How current each source is comes
+// from real state, never typed into DATA-SOURCES.json: the index's build time and the district
+// snapshot's fetch time (hooks below), and the curated files' own checked_at (freshness "file").
+
+export const SERVER_NAME = "nyc-council-mcp";
+export const REPO_URL = "https://github.com/BetaNYC/nyc-council-mcp";
+const TERMS_PATH = new URL("../data/council-member-terms.json", import.meta.url);
+
+/** Without a token the live tools are not listed, so about_data must not call the live source
+ * "fetched from the source when you ask" (#67). */
+export const LIVE_UNAVAILABLE_REASON = "the live Legistar API is not set up (no LEGISTAR_TOKEN)";
+
+/** The server's MCP instructions: what it covers, then the shared module's own instructions
+ * (call about_data, about_betanyc and whats_changed), then this server's rules. */
+export const SERVER_INSTRUCTIONS =
+  "NYC Council legislation, votes, hearings and members, by BetaNYC. " +
+  BETANYC_INSTRUCTIONS +
+  " Facts in a 'curated' block were checked by BetaNYC and are not official records: say so when you use them. " +
+  "Nothing is invented: a value with no source is left blank.";
+
+function indexState(db: Sqlite.Database | null, key: string): string | null {
+  if (!db) return null;
+  try {
+    const row = db.prepare("SELECT value FROM index_state WHERE key = ?").get(key) as { value: string } | undefined;
+    return row?.value ?? null;
+  } catch {
+    return null;
+  }
+}
+
+function snapshotFetchedAt(): string | null {
+  try {
+    const v = (JSON.parse(readFileSync(TERMS_PATH, "utf8")) as { fetched_at?: unknown }).fetched_at;
+    return typeof v === "string" ? v : null;
+  } catch {
+    return null;
+  }
+}
+
+/** The shared tools for one mode. Throws at startup if DATA-SOURCES.json does not describe this
+ * server. `dataSourcesText` is for tests. */
+export function betanycTools(ctx: { db: Sqlite.Database | null; hasLive: boolean; version: string; dataSourcesText?: string }) {
+  return createBetanycTools({
+    serverName: SERVER_NAME,
+    version: ctx.version,
+    repoUrl: REPO_URL,
+    whatsChangedPath: new URL("../WHATS-CHANGED.md", import.meta.url),
+    dataSourcesPath: new URL("../DATA-SOURCES.json", import.meta.url),
+    ...(ctx.dataSourcesText !== undefined ? { dataSourcesText: ctx.dataSourcesText } : {}),
+    freshness: {
+      // When this server's local index was built (the indexer writes it).
+      index_built: () => indexState(ctx.db, "last_indexed_at"),
+      // When the district snapshot loaded into the index was fetched from NYC Open Data;
+      // with no index, the snapshot that ships with the package.
+      member_terms_fetched: () =>
+        ctx.db ? indexState(ctx.db, "member_terms_fetched_at") : snapshotFetchedAt(),
+    },
+    ...(ctx.hasLive ? {} : { unavailableSources: { live: LIVE_UNAVAILABLE_REASON } }),
+  });
+}
 
 // ---------------------------------------------------------------------------
 // Mode detection
@@ -103,7 +168,7 @@ See README for full setup instructions.
 
   // BetaNYC's shared tools (#75, #48): whats_changed, about_betanyc and about_data, from the
   // shared module. Throws here, at startup, if DATA-SOURCES.json does not describe this server.
-  const shared = createSharedTools({ db, hasLive: Boolean(mode.hasLive && mode.token), version: PACKAGE_VERSION });
+  const shared = betanycTools({ db, hasLive: Boolean(mode.hasLive && mode.token), version: PACKAGE_VERSION });
 
   // Build tool list. get_bill_history is defined in BOTH the local and live sets
   // (local is the default, token-free path; the live one remains for live-only
@@ -130,7 +195,7 @@ See README for full setup instructions.
 
   const server = new Server(
     { name: "nyc-council-mcp", version: PACKAGE_VERSION },
-    { capabilities: { tools: {} }, instructions: shared.instructions }
+    { capabilities: { tools: {} }, instructions: SERVER_INSTRUCTIONS }
   );
 
   server.setRequestHandler(ListToolsRequestSchema, async () => ({ tools: toolDefs }));

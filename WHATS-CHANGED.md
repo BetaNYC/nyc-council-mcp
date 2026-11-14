@@ -10,9 +10,9 @@ To report a bug in this server or ask for a new feature, [open an issue on GitHu
 ## Unreleased: Two tools that explain the server and list what changed
 
 - **Tags:** MCP
-- **What changed:** Two new tools let your AI assistant answer "what changed in this server?" from this page, and "who built this?" with links to BetaNYC and to the place to report a bug in this server or ask for a new feature. This page is new too. It lists the changes a reader would notice, back to the first release.
+- **What changed:** Two new tools let your AI assistant answer "what changed in this server?" from this page, and "who built this?" with links to BetaNYC and to the place to report a bug in this server or ask for a new feature. This page is new too. It lists the changes a reader would notice, back to the first release. Answers about where the data comes from now also give BetaNYC's email address for questions and error reports, lab@beta.nyc.
 - **MCP version:** [nyc-council-mcp 2.9.0](CHANGELOG.md)
-- **More detail:** [Release notes](CHANGELOG.md) · [The issue](https://github.com/BetaNYC/nyc-council-mcp/issues/75)
+- **More detail:** [Release notes](CHANGELOG.md) · [The issue](https://github.com/BetaNYC/nyc-council-mcp/issues/75) · [The contact address issue](https://github.com/BetaNYC/nyc-council-mcp/issues/77)
 
 ## 2026-11-13: Ask the server where its data comes from
 

@@ -1,7 +1,7 @@
 // whats_changed and about_betanyc (#75): BetaNYC's What's changed standard
 // (betanyc-ai-workspace platform/system/whats-changed-standard.md § 7). Both come from the
 // shared module (src/betanyc-tools.ts, a copy of the workspace's canonical file: never edit it
-// here), wired in src/shared-tools.ts beside about_data.
+// here), wired in src/server.ts beside about_data with no wrapper of this repo's own.
 //
 // These tests call the tools the way an AI app does: the built server over stdio, through the
 // server's own CallTool handler. The MCP SDK client checks each structuredContent against the
@@ -19,7 +19,7 @@ import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 
 import { SHARED_MODULE_VERSION, BETANYC_TOOLS, parseWhatsChanged } from "../dist/betanyc-tools.js";
-import { createSharedTools, SERVER_INSTRUCTIONS } from "../dist/shared-tools.js";
+import { betanycTools, SERVER_INSTRUCTIONS } from "../dist/server.js";
 import { LOCAL_TOOL_DEFS } from "../dist/tools/local.js";
 import { LIVE_TOOL_DEFS, LIVE_SEARCH_TOOL_DEF } from "../dist/tools/live.js";
 import { CREATE_TABLES } from "../dist/db/schema.js";
@@ -118,7 +118,7 @@ test("whats_changed over MCP stdio answers from WHATS-CHANGED.md", async () => {
   }
 });
 
-test("about_betanyc over MCP stdio says who built the server, with module version 1.3.5", async () => {
+test("about_betanyc over MCP stdio says who built the server, with module version 1.3.6", async () => {
   const client = await connect({ index: false, token: "dummy-token-not-used" });
   try {
     const res = await client.callTool({ name: "about_betanyc", arguments: {} });
@@ -128,9 +128,9 @@ test("about_betanyc over MCP stdio says who built the server, with module versio
       name: "nyc-council-mcp",
       version: PKG.version,
       repository: REPO,
-      shared_module_version: "1.3.5",
+      shared_module_version: "1.3.6",
     });
-    assert.equal(SHARED_MODULE_VERSION, "1.3.5");
+    assert.equal(SHARED_MODULE_VERSION, "1.3.6");
     assert.equal(body.built_by, "BetaNYC, a project of the Fund for the City of New York");
     assert.deepEqual(body.bugs_and_requests, { issues: `${REPO}/issues`, new_issue: `${REPO}/issues/new` });
     assert.equal(body.whats_changed, `${REPO}/blob/HEAD/WHATS-CHANGED.md`);
@@ -153,13 +153,15 @@ test("the server instructions point at all three shared tools", async () => {
   }
 });
 
-test("the shared tools are the module's own definitions, unchanged apart from about_data", () => {
-  const shared = createSharedTools({ db: null, hasLive: false, version: PKG.version });
+test("the shared tools are the module's own definitions, with no wrapper of this repo's own", () => {
+  const shared = betanycTools({ db: null, hasLive: false, version: PKG.version });
   for (const name of ["whats_changed", "about_betanyc"]) {
     const ours = shared.tools.find((t) => t.name === name);
     const theirs = BETANYC_TOOLS.find((t) => t.name === name);
     assert.deepEqual(ours, theirs, name);
   }
+  const aboutData = shared.tools.find((t) => t.name === "about_data");
+  assert.deepEqual(aboutData.outputSchema, BETANYC_TOOLS.find((t) => t.name === "about_data").outputSchema, "about_data's output is the module's");
   assert.ok(shared.handles("whats_changed") && shared.handles("about_betanyc") && shared.handles("about_data"));
   assert.ok(!shared.handles("get_bill"));
 });

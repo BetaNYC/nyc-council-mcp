@@ -1,5 +1,5 @@
-// betanyc-shared: betanyc-tools.ts v1.3.5
-// betanyc-shared-sha256: 0154ff3a3e3d17f275ce57ab951e58483a1c0311324682470f45339ba318fe55
+// betanyc-shared: betanyc-tools.ts v1.3.6
+// betanyc-shared-sha256: 517ae41ca046fd9f4611ef228177322ed4795bd5c8e6779e853c6c0b85b07bb0
 // Canonical copy: betanyc-ai-workspace scripts/mcp_shared/betanyc-tools.ts. Do not edit a copy
 // in a server repo; change the canonical file, re-stamp it, and copy it again.
 // Drift check: scripts/whats_changed_drift.py. Standard: platform/system/whats-changed-standard.md.
@@ -23,7 +23,7 @@
 import { readFileSync } from "node:fs";
 import { pathToFileURL } from "node:url";
 
-export const SHARED_MODULE_VERSION = "1.3.5";
+export const SHARED_MODULE_VERSION = "1.3.6";
 
 // --------------------------------------------------------------------------- types
 
@@ -158,6 +158,12 @@ export interface BetanycServerConfig {
   catalogUrls?: { dataJson?: string; croissantJson?: string };
   /** callAsync's wait per freshness hook, in milliseconds (default ABOUT_DATA_HOOK_TIMEOUT_MS, 3000). */
   hookTimeoutMs?: number;
+  /** Sources this running server cannot reach, by source id, each with a plain reason, for
+   * example { live: "the live Legistar API is not set up (no LEGISTAR_TOKEN)" }. about_data then
+   * reports that source's as_of as "not available on this server: <reason>" (as_of_status
+   * "unavailable") instead of its freshness. Optional; set it at startup. An unknown id or an
+   * empty reason throws in createBetanycTools. Added in 1.3.6. */
+  unavailableSources?: Record<string, string>;
 }
 
 // --------------------------------------------------------------------------- parsing
@@ -1049,7 +1055,9 @@ const DS_SURROGATE_RE = /[\ud800-\udbff](?![\udc00-\udfff])|(?<![\ud800-\udbff])
 const DS_MAX_DEPTH = 64;
 /** Package pages and repos are where a server is obtained, not a hosted endpoint. */
 const DS_NOT_ENDPOINT_RE = /^https?:\/\/(?:www\.)?(?:npmjs\.com|github\.com)(?:[/?#]|$)/i;
-/** BetaNYC's monitored contact address is not decided yet; see whats_changed.py. */
+/** The placeholder contact address from files written before BetaNYC named its monitored
+ * address (lab@beta.nyc, 2026-11-13; about-data-standard.md § 1). `--release` refuses it, and
+ * about_data never shows it as a contact. */
 export const DS_CONTACT_PLACEHOLDER = "contact-not-yet-named@example.invalid";
 export const DS_STEPS = ["cleaned", "filtered", "reshaped", "fields-removed", "address-matched", "merged", "counted", "curated"] as const;
 /** ISO 19115 maintenance frequency codes, as DCAT-US 3.0 lists them for accrualPeriodicity. */
@@ -1628,6 +1636,10 @@ export const ABOUT_DATA_TOOL: ToolDefinition = {
         required: ["data_json", "croissant_json"],
       },
       who_built_this: { type: "string", description: "Call about_betanyc for who built this server" },
+      contact_email: {
+        type: ["string", "null"],
+        description: "BetaNYC's monitored address for questions and error reports about this data, from DATA-SOURCES.json. Null when the file names none yet",
+      },
       left_out: {
         type: "array",
         description: "Sources in the file that this server cannot show, and why",
@@ -1642,7 +1654,7 @@ export const ABOUT_DATA_TOOL: ToolDefinition = {
       },
       note: NULLABLE_STRING,
     },
-    required: ["server", "source_file", "topic", "topics", "sources", "catalog", "who_built_this", "left_out", "note"],
+    required: ["server", "source_file", "topic", "topics", "sources", "catalog", "who_built_this", "contact_email", "left_out", "note"],
   },
   annotations: { title: "Where this server's data comes from", readOnlyHint: true, openWorldHint: false },
 };
@@ -1760,6 +1772,10 @@ function fromValue(v: unknown, where: string, now: Date, copied: boolean): AsOf 
  * date kept in code beside copied text; never typed into DATA-SOURCES.json; checked before it is
  * repeated (isUsableAsOf). */
 function asOf(s: DataSource, config: BetanycServerConfig, now: Date, outcome: (key: string) => HookOutcome): AsOf {
+  const off = config.unavailableSources;
+  if (off && Object.hasOwn(off, s.id!) && typeof off[s.id!] === "string" && trim(off[s.id!])) {
+    return { as_of: `not available on this server: ${trim(off[s.id!])}`, as_of_status: "unavailable" };
+  }
   const fr = s.freshness!;
   if (fr.kind === "live") return { as_of: "live: fetched from the source when you ask", as_of_status: "live" };
   if (fr.kind === "hook" || fr.kind === "copied") {
@@ -1859,6 +1875,15 @@ function leftOutSources(parsed: DataSourcesParse): { topic: string | null; reaso
   });
 }
 
+/** BetaNYC's contact address from the file's server block, or null when it is missing, invalid,
+ * or still the placeholder: a placeholder is never shown as if it were monitored (nyc-council-mcp#77). */
+function contactEmail(parsed: DataSourcesParse): string | null {
+  const v = parsed.doc?.server?.contact_email;
+  if (typeof v !== "string" || !trim(v) || v === DS_CONTACT_PLACEHOLDER) return null;
+  if (parsed.errors.some((e) => e.path === "server.contact_email" || e.path === "server")) return null;
+  return trim(v);
+}
+
 /** The about_data handler. Reads DATA-SOURCES.json (and WHATS-CHANGED.md for corrections) on
  * every call, so a rebuilt data file shows at once. Only a bad argument is an error. */
 export function handleAboutData(config: BetanycServerConfig, args: unknown, now: Date = new Date()): ToolResult {
@@ -1912,6 +1937,7 @@ function aboutData(config: BetanycServerConfig, args: unknown, now: Date, outcom
     server: { name: config.serverName, version: config.version },
     source_file: dsFileUrl(config),
     who_built_this: who,
+    contact_email: null as string | null,
   };
   const catalog = {
     data_json: config.catalogUrls?.dataJson ?? null,
@@ -1931,6 +1957,7 @@ function aboutData(config: BetanycServerConfig, args: unknown, now: Date, outcom
   }
 
   const doc = parsed.doc;
+  base.contact_email = contactEmail(parsed);
   const usable = doc.sources.filter((s) => s.valid);
   const leftOut = leftOutSources(parsed);
   const topics = usable.map((s) => s.id!);
@@ -2042,7 +2069,8 @@ function aboutData(config: BetanycServerConfig, args: unknown, now: Date, outcom
     for (const c of s.corrections) lines.push(`Correction: ${c.date ? `${c.date}: ` : ""}${c.title ?? "(entry not found)"} ${c.url}`);
     return lines.join("\n");
   });
-  const tail = [catalog.data_json ? `Catalog (DCAT-US 3.0): ${catalog.data_json}` : "", catalog.croissant_json ? `Croissant: ${catalog.croissant_json}` : "", who]
+  const contactLine = base.contact_email ? `Questions or error reports about this data, to BetaNYC: ${base.contact_email}` : "";
+  const tail = [catalog.data_json ? `Catalog (DCAT-US 3.0): ${catalog.data_json}` : "", catalog.croissant_json ? `Croissant: ${catalog.croissant_json}` : "", contactLine, who]
     .filter(Boolean).join("\n");
   const text = [head.join("\n"), ...blocks, tail, note ?? ""].filter(Boolean).join("\n\n");
   return textResult(text, { ...base, topic, topics, sources: out, catalog, left_out: leftOut, note });
@@ -2095,6 +2123,10 @@ export function createBetanycTools(config: BetanycServerConfig): {
       }
     }
     topics = (doc?.sources ?? []).filter((s) => s.valid).map((s) => s.id!);
+  }
+  for (const [id, reason] of Object.entries(config.unavailableSources ?? {})) {
+    if (typeof reason !== "string" || !trim(reason)) problems.push(`unavailableSources.${id} needs a reason`);
+    else if (ds.kind === "ok" && !topics.includes(id)) problems.push(`unavailableSources names ${id}, which is not a source in ${DATA_SOURCES_FILE}`);
   }
   if (problems.length) throw new Error(`betanyc-tools: ${problems.join("; ")}`);
   const tools = BETANYC_TOOLS.map((t) => ({ ...t }));
