@@ -1,6 +1,6 @@
 {
   "name": "@betanyc/nyc-council-mcp",
-  "version": "2.8.0",
+  "version": "2.9.0",
   "mcpName": "io.github.BetaNYC/nyc-council-mcp",
   "description": "MCP server for NYC Council legislative data — hybrid local SQLite index + live Legistar API",
   "keywords": [
@@ -38,6 +38,7 @@
   },
   "files": [
     "dist",
+    "WHATS-CHANGED.md",
     "DATA-SOURCES.json",
     "data.json",
     "data/council-member-terms.json",

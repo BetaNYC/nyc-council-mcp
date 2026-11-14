@@ -36,6 +36,8 @@ on:
       - "DATA-SOURCES.json"
       - "data.json"
       - "scripts/**"
+      - "WHATS-CHANGED.md"
+      - "CHANGELOG.md"
       - ".github/workflows/ci.yml"
   push:
     branches: [main]
@@ -48,6 +50,8 @@ on:
       - "DATA-SOURCES.json"
       - "data.json"
       - "scripts/**"
+      - "WHATS-CHANGED.md"
+      - "CHANGELOG.md"
       - ".github/workflows/ci.yml"
   # Manual trigger — lets us fire a run on any branch. Needed here because a
   # path-scoped pull_request/push event does not fire on the very PR that
@@ -104,8 +108,9 @@ jobs:
   # 2. data.json (DCAT-US 3.0) matches DATA-SOURCES.json; rebuild with the same command
   #    without --check. 3. DATA-SOURCES.json against its JSON Schema and data.json against the
   #    vendored DCAT-US 3.0 schema, with pinned validators (CI only, not runtime dependencies).
-  # The release gate (`about-data check --release`) is NOT wired into release.yml yet. It passes
-  # now that contact_email is lab@beta.nyc (2026-11-13); wiring it in is planned for 2.9.0.
+  # The release gate (`about-data check --release`, which also refuses the placeholder contact)
+  # runs in release.yml before `npm publish` (#76), together with `check --release` for
+  # WHATS-CHANGED.md. It is not run here: a pull request may carry an Unreleased entry.
   about-data:
     name: About data
     runs-on: ubuntu-latest
@@ -134,8 +139,9 @@ jobs:
         run: >-
           node --input-type=module -e '
           const l = await import("./dist/tools/local.js"), v = await import("./dist/tools/live.js");
+          const b = await import("./dist/betanyc-tools.js");
           const names = [...l.LOCAL_TOOL_DEFS, ...v.LIVE_TOOL_DEFS, v.LIVE_SEARCH_TOOL_DEF].map((t) => t.name);
-          console.log(JSON.stringify([...new Set([...names, "about_data"])]));
+          console.log(JSON.stringify([...new Set([...names, ...b.BETANYC_TOOL_NAMES])]));
           ' > "$RUNNER_TEMP/tools.json"
 
       - name: DATA-SOURCES.json is valid and explains every tool
@@ -150,6 +156,30 @@ jobs:
             python scripts/tests/catalog_validate.py data-sources DATA-SOURCES.json
           uv run --no-project --with jsonschema==4.26.0 --with referencing==0.37.0 --with rfc3987==1.3.8 \
             python scripts/tests/catalog_validate.py dcat data.json
+
+  # The What's changed standard (betanyc-ai-workspace platform/system/whats-changed-standard.md
+  # § 10). scripts/whats_changed.py is a copy of the workspace's canonical file: never edit it
+  # here. Checks 1 to 6 (format, dates, tags, anchors, corrections, MCP versions), plus, against
+  # the base branch, 7 (append-only: a published entry is never edited, only given Update
+  # lines) and 8 (a version bump needs an entry tagged MCP naming the new version).
+  # fetch-depth: 0 so the base ref exists. The release gate (`check --release`) runs in
+  # release.yml before `npm publish` (#76).
+  whats-changed:
+    name: What's changed
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (full history)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: What's changed
+        run: python3 scripts/whats_changed.py check WHATS-CHANGED.md --base-ref "origin/${{ github.base_ref || 'main' }}"
 
   # Merged ≠ shipped guard. Consumers run `npx -y @betanyc/nyc-council-mcp`, so
   # the npm registry — not main — is what ships. A PR that changes shipped code

@@ -7,6 +7,62 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Dates are npm publish dates (`npm view @betanyc/nyc-council-mcp time`).
 
+For a plain-language list of the changes a reader would notice, including every correction,
+see [WHATS-CHANGED.md](WHATS-CHANGED.md).
+
+## [2.9.0] - 2026-11-13
+
+### Added
+- **`whats_changed` and `about_betanyc`, BetaNYC's two shared tools
+  ([#75](https://github.com/BetaNYC/nyc-council-mcp/issues/75)).** `whats_changed` answers
+  "what changed in this server?" from the new [`WHATS-CHANGED.md`](WHATS-CHANGED.md), with
+  `since`, `tag` (Site, Data, MCP, Correction) and `limit`. `about_betanyc` says who built the
+  server (BetaNYC, a project of the Fund for the City of New York), how to report a bug or ask
+  for a feature, and which shared module version it runs. Both work in every mode, need no token
+  or index, and make no network call. The server's MCP instructions now point AI apps at them.
+- **`about_data` gives BetaNYC's contact address
+  ([#77](https://github.com/BetaNYC/nyc-council-mcp/issues/77)).** Every answer now carries
+  `contact_email` (lab@beta.nyc, from `DATA-SOURCES.json`) and the line "Questions or error
+  reports about this data, to BetaNYC: lab@beta.nyc".
+- **`WHATS-CHANGED.md`**, the plain-language history for journalists and community board
+  staff, backfilled from this changelog and the merged pull requests back to 1.0.0, with every
+  correction and what to re-check. It ships in the package. CI checks it on every pull request
+  (`whats_changed.py check --base-ref`: format, dates, append-only, and an entry for every
+  version bump).
+
+### Changed
+- **Shared module 1.3.7.** `src/betanyc-tools.ts`, `scripts/whats_changed.py` and the
+  about-data validator kit are BetaNYC's shared 1.3.7 files, copied in unchanged
+  (`whats_changed_drift.py compare`: CURRENT). `about_data` answers gain `contact_email`,
+  `left_out` and, under `report_errors`, `in_the_data_handled_by` and `in_these_figures`. Where
+  BetaNYC changed or curated the data, answers say "This data is BetaNYC's, derived from it, not
+  an official … record" and "Report an error in this data to BetaNYC" (1.3.7's wording, which
+  fits text as well as numbers). `data.json` was rebuilt: each BetaNYC dataset's contact now says
+  where to report an error in BetaNYC's data and where to report one in the original records.
+- **`src/betanyc.ts` is gone, and no wrapper replaces it.** It hid the pointers to
+  `about_betanyc` and `whats_changed` until this release registered them. `src/server.ts` now
+  wires the shared module directly. With no `LEGISTAR_TOKEN`, the live source still says "not
+  available on this server: the live Legistar API is not set up (no LEGISTAR_TOKEN)" (#67),
+  now through the module's own `unavailableSources` option (added in shared module 1.3.6).
+- **`about_data` no longer returns `this_server`**, or the line "This server: live Legistar API
+  … local index …" after its answer. Whether the live API is set up shows in the live source's
+  `as_of`; whether there is a local index shows in each local source's `as_of`.
+- `about_data`'s "who built this" now points to `about_betanyc` instead of repeating it.
+- **The district list's error route names NYC Open Data.** Errors in the City's Council terms
+  file (`uvw5-9znb`) go to NYC Open Data's contact form; `about_data` and `data.json` said to
+  report them to the New York City Council. `DATA-SOURCES.json` now names NYC Open Data
+  (`report_errors.upstream_name`, shared module 1.3.7).
+- The 2.6.0 heading below now carries its publish date, 2026-07-27. It said "unreleased", but
+  the release workflow published 2.6.0 that day.
+
+### Release
+- **The release workflow runs both release checks before `npm publish`
+  ([#76](https://github.com/BetaNYC/nyc-council-mcp/issues/76)):**
+  `whats_changed.py check WHATS-CHANGED.md --release` (fails while an `Unreleased:` entry is
+  left) and `whats_changed.py about-data check DATA-SOURCES.json --release` (fails while the
+  catalog contact is the placeholder). Before the tag, date the `Unreleased:` entry in
+  `WHATS-CHANGED.md` and this heading in the same commit.
+
 ## [2.8.0] - 2026-11-13
 
 ### Added
@@ -233,7 +289,7 @@ No change to the server's behavior or tools.
 ### CI
 - A `windows-latest` / Node 22.x job runs the full build and test suite (#12).
 
-## [2.6.0] - unreleased
+## [2.6.0] - 2026-07-27
 
 ### Added
 - **Roll-call votes and matter history are indexed from the archive**
