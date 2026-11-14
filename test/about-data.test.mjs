@@ -89,6 +89,16 @@ test("districts: the City's dataset, with this server's snapshot date", () => {
   assert.equal(s.as_of, "2026-11-13T02:13:52Z");
 });
 
+test("districts: errors in the City's file go to NYC Open Data's form, credited to NYC Open Data", () => {
+  const { res, body } = ask({ topic: "districts" });
+  const s = one(body, "districts");
+  assert.equal(s.publisher, "New York City Council");
+  assert.equal(s.report_errors.in_the_data, "https://www.nyc.gov/opendata/contact-us");
+  assert.equal(s.report_errors.in_the_data_name, "NYC Open Data");
+  assert.match(res.content[0].text, /an error in the original records to NYC Open Data: https:\/\/www\.nyc\.gov\/opendata\/contact-us/);
+  assert.doesNotMatch(res.content[0].text, /to New York City Council: https:\/\/www\.nyc\.gov\/opendata/);
+});
+
 test("districts with no index: the shipped snapshot's fetch time", () => {
   const s = one(ask({ topic: "districts" }).body, "districts");
   const fetched = JSON.parse(readFileSync(join(ROOT, "data/council-member-terms.json"), "utf8")).fetched_at;

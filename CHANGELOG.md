@@ -48,6 +48,10 @@ see [WHATS-CHANGED.md](WHATS-CHANGED.md).
   … local index …" after its answer. Whether the live API is set up shows in the live source's
   `as_of`; whether there is a local index shows in each local source's `as_of`.
 - `about_data`'s "who built this" now points to `about_betanyc` instead of repeating it.
+- **The district list's error route names NYC Open Data.** Errors in the City's Council terms
+  file (`uvw5-9znb`) go to NYC Open Data's contact form; `about_data` and `data.json` said to
+  report them to the New York City Council. `DATA-SOURCES.json` now names NYC Open Data
+  (`report_errors.upstream_name`, shared module 1.3.7).
 - The 2.6.0 heading below now carries its publish date, 2026-07-27. It said "unreleased", but
   the release workflow published 2.6.0 that day.
 

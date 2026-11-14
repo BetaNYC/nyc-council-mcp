@@ -90,7 +90,7 @@
       "identifier": "https://data.cityofnewyork.us/d/uvw5-9znb",
       "contactPoint": {
         "@type": "Kind",
-        "fn": "BetaNYC (lists this dataset; report errors in the data to New York City Council: https://www.nyc.gov/opendata/contact-us)",
+        "fn": "BetaNYC (lists this dataset; report errors in the data to NYC Open Data: https://www.nyc.gov/opendata/contact-us)",
         "hasEmail": "mailto:lab@beta.nyc"
       },
       "publisher": {
@@ -665,7 +665,7 @@
       "identifier": "https://github.com/BetaNYC/nyc-council-mcp/blob/HEAD/DATA-SOURCES.json#districts",
       "contactPoint": {
         "@type": "Kind",
-        "fn": "BetaNYC (serves this dataset; report errors in this data to BetaNYC: https://github.com/BetaNYC/nyc-council-mcp/issues; errors in the original records to New York City Council: https://www.nyc.gov/opendata/contact-us)",
+        "fn": "BetaNYC (serves this dataset; report errors in this data to BetaNYC: https://github.com/BetaNYC/nyc-council-mcp/issues; errors in the original records to NYC Open Data: https://www.nyc.gov/opendata/contact-us)",
         "hasEmail": "mailto:lab@beta.nyc"
       },
       "publisher": {
@@ -688,7 +688,7 @@
           "identifier": "https://data.cityofnewyork.us/d/uvw5-9znb",
           "contactPoint": {
             "@type": "Kind",
-            "fn": "BetaNYC (lists this dataset; report errors in the data to New York City Council: https://www.nyc.gov/opendata/contact-us)",
+            "fn": "BetaNYC (lists this dataset; report errors in the data to NYC Open Data: https://www.nyc.gov/opendata/contact-us)",
             "hasEmail": "mailto:lab@beta.nyc"
           },
           "publisher": {
