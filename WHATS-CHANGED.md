@@ -21,10 +21,10 @@ To report a bug in this server or ask for a new feature, [open an issue on GitHu
 - **MCP version:** [nyc-council-mcp 2.8.0](CHANGELOG.md#280---2026-11-13)
 - **More detail:** [Where the data comes from](DATA-SOURCES.json) · [Data catalog](data.json) · [The issue](https://github.com/BetaNYC/nyc-council-mcp/issues/48) · [Release notes](CHANGELOG.md#280---2026-11-13)
 
-## 2026-11-13: Committees, chairs, districts and party for every member
+## 2026-11-13: Committees, chairs and districts for every member, and party for sitting members
 
 - **Tags:** MCP, Data
-- **What changed:** The server can now say which committees a member chairs or sits on, who sits on a committee, and who held a Council district on any date since 1999, from the Council's own records and the City's list of Council terms. Member answers also carry party, Wikipedia links and office social accounts, checked by BetaNYC and labeled as not an official record. Party is every ballot line the member won on, copied from Board of Elections certified results.
+- **What changed:** The server can now say which committees a member chairs or sits on, who sits on a committee, and who held a Council district on any date since 1999, from the Council's own records and the City's list of Council terms. Answers about the 51 sitting members also carry party, Wikipedia links and office social accounts, checked by BetaNYC and labeled as not an official record. Party is every ballot line the member won on, copied from Board of Elections certified results.
 - **Who it affects:** Anyone asking about Council members. When the City's list of terms is behind, the answer says so: on November 12, 2026 it did not list Carl Wilson, District 3, a Council Member since May 13, 2026.
 - **MCP version:** [nyc-council-mcp 2.8.0](CHANGELOG.md#280---2026-11-13)
 - **More detail:** [The issue](https://github.com/BetaNYC/nyc-council-mcp/issues/28) · [How the curated facts were checked](data/README.md) · [Release notes](CHANGELOG.md#280---2026-11-13)
@@ -36,11 +36,11 @@ To report a bug in this server or ask for a new feature, [open an issue on GitHu
 - **MCP version:** [nyc-council-mcp 2.8.0](CHANGELOG.md#280---2026-11-13)
 - **More detail:** [Search issue](https://github.com/BetaNYC/nyc-council-mcp/issues/31) · [Links issue](https://github.com/BetaNYC/nyc-council-mcp/issues/45) · [Index date issue](https://github.com/BetaNYC/nyc-council-mcp/issues/25) · [Release notes](CHANGELOG.md#280---2026-11-13)
 
-## 2026-11-13: Upcoming meetings that were called off could show as still on
+## 2026-11-13: Upcoming meetings that were postponed could show as still on
 
 - **Tags:** MCP, Data, Correction
 - **What changed:** Before November 13, 2026, the list of upcoming meetings from the local index could show a meeting as scheduled after the Council had deferred it. The Council's system changed event 22725 to Deferred without marking the record as updated, so the archive the index is built from kept the old status. On November 12, 2026, 10 of 658 meetings in 2026 differed this way. With a Legistar API key set, version 2.8.0 checks each upcoming meeting's status live.
-- **If you used the old numbers:** If you planned around a meeting from this list before November 13, 2026, check its status on the Council's calendar at legistar.council.nyc.gov. Without an API key, the list still comes from the archive, so check a meeting's status there before you rely on it.
+- **If you used the old numbers:** If you planned around a meeting from this list before November 13, 2026, check its status on the Council's calendar at legistar.council.nyc.gov. Without an API key, the list still comes from the archive, so check its status on the Council's calendar before you rely on it.
 - **Who it affects:** People who ran the server with a local index.
 - **MCP version:** [nyc-council-mcp 2.8.0](CHANGELOG.md#280---2026-11-13)
 - **More detail:** [The issue](https://github.com/BetaNYC/nyc-council-mcp/issues/42) · [The fix](https://github.com/BetaNYC/nyc-council-mcp/pull/52)
@@ -73,7 +73,7 @@ To report a bug in this server or ask for a new feature, [open an issue on GitHu
 ## 2026-10-11: One member's profile link opened another member's page
 
 - **Tags:** MCP, Data, Correction
-- **What changed:** Before October 11, 2026, the Council's record for Council Member Virginia Maloney carried Council Member Elsie Encarnación's profile link, and the server passed it on. Version 2.7.0 corrected the link and flags any profile link shared by two people. The Council fixed its record later; on November 12, 2026 it gave Council Member Maloney's own page.
+- **What changed:** Before October 11, 2026, the Council's record for Council Member Virginia Maloney carried Council Member Elsie Encarnación's profile link, and the server passed it on. Version 2.7.0 corrected the link and flags a profile link that two people in the same answer share. The Council fixed its record later; on November 12, 2026 it gave Council Member Maloney's own page.
 - **If you used the old numbers:** If you used a profile link for Council Member Maloney from this server before October 11, 2026, it pointed to Council Member Encarnación's page. Use the member pages on council.nyc.gov.
 - **MCP version:** [nyc-council-mcp 2.7.0](CHANGELOG.md#270---2026-10-11)
 - **More detail:** [The issue](https://github.com/BetaNYC/nyc-council-mcp/issues/38) · [The fix](https://github.com/BetaNYC/nyc-council-mcp/pull/39)
@@ -92,6 +92,15 @@ To report a bug in this server or ask for a new feature, [open an issue on GitHu
 - **If you used the old numbers:** If you looked up a bill by a number without "Int", "Res" or "LU" in that period, check that you got the one you meant: look it up again with its type.
 - **MCP version:** [nyc-council-mcp 2.6.0](CHANGELOG.md#260---2026-07-27)
 - **More detail:** [The issue](https://github.com/BetaNYC/nyc-council-mcp/issues/27) · [The fix](https://github.com/BetaNYC/nyc-council-mcp/pull/33)
+
+## 2026-07-26: Meeting agendas were not linked to the bills on them
+
+- **Tags:** MCP, Data, Correction
+- **What changed:** From May 26 to July 26, 2026, the local index did not link a meeting's agenda items to the bills on them, though the archive it is built from has those links. Asking which meetings a bill was heard at always found none, and a meeting's agenda listed its items with no bill numbers or statuses. Version 2.6.0 links them.
+- **If you used the old numbers:** If you asked which meetings a bill was heard at in that period and got none, that did not mean it had no hearings. If you used a meeting's agenda from the local index, it had no bill numbers. Ask again with the current version, after running its index command, which rebuilds an older index in full.
+- **Who it affects:** People who ran the server with a local index.
+- **MCP version:** [nyc-council-mcp 2.6.0](CHANGELOG.md#260---2026-07-27)
+- **More detail:** [The issue](https://github.com/BetaNYC/nyc-council-mcp/issues/26) · [The fix](https://github.com/BetaNYC/nyc-council-mcp/pull/33)
 
 ## 2026-07-21: Vote tools answered with an empty list
 
@@ -119,17 +128,17 @@ To report a bug in this server or ask for a new feature, [open an issue on GitHu
 ## 2026-07-07: The local index left out every Resolution and Land Use item
 
 - **Tags:** MCP, Data, Correction
-- **What changed:** From May 26 to July 7, 2026, the local index held only Introductions, though the README said it held all bills and resolutions. About 40% of all matters, 6,030 Resolutions and 2,497 Land Use Applications, were missing, so searches for them found nothing. Live searches with several words also matched almost nothing, because they looked for the words as one exact phrase. Version 2.2.0 indexes all three kinds and matches each word in any order.
-- **If you used the old numbers:** If a search in that period found no Resolution or Land Use item, that did not mean none existed. Rebuild your index with the current version and search again. Counts of legislation from the local index in that period left out Resolutions and Land Use items.
+- **What changed:** From May 26 to July 7, 2026, the local index held only Introductions, though the README said it held all bills and resolutions. If you rebuilt your index the usual way after updating, it stayed incomplete until version 2.6.0 on July 26, 2026. About 40% of all matters, 6,030 Resolutions and 2,497 Land Use Applications, were missing, so searches for them found nothing. Live searches with several words also matched almost nothing, because they looked for the words as one exact phrase. Version 2.2.0 indexes all three kinds and matches each word in any order.
+- **If you used the old numbers:** If a search between May 26 and July 26, 2026 found no Resolution or Land Use item, or a live search with several words found nothing before July 7, 2026, that did not mean none existed. Search again with the current version, after running its index command, which rebuilds an older index in full. Counts of legislation from the local index between May 26 and July 26, 2026 left out most Resolutions and Land Use items.
 - **Who it affects:** People who built a local index, and anyone who used the live search with more than one word.
 - **MCP version:** [nyc-council-mcp 2.2.0](CHANGELOG.md#220---2026-07-07)
 - **More detail:** [The fix](https://github.com/BetaNYC/nyc-council-mcp/pull/10) · [Release notes](CHANGELOG.md#220---2026-07-07)
 
-## 2026-07-06: Search filters, live searches and dates
+## 2026-07-06: Agency filter, multi-word searches and evening dates gave wrong answers
 
 - **Tags:** MCP, Correction
-- **What changed:** Until July 6, 2026, the agency setting on the local legislation search did not filter results, live searches with several words failed, a bill number without its type found nothing, and date ranges after 8 p.m. New York time were off by one day. Version 2.1.1 fixes all four.
-- **If you used the old numbers:** If you searched by agency before July 6, 2026, the results were not limited to that agency: search again. If you asked for recent or upcoming items after 8 p.m. New York time, the date range may have been a day off: ask again.
+- **What changed:** Until July 6, 2026, the agency setting on the local legislation search did not filter results. A local search with several words matched only that exact phrase. Live searches and member, committee and bill lookups with several words, such as "public housing", found nothing. A bill number without its type found nothing, and date ranges asked for after 8 p.m. New York time were off by one day. Version 2.1.1 fixes all of these.
+- **If you used the old numbers:** If you searched by agency before July 6, 2026, the results were not limited to that agency: search again. If a search or a member, committee or bill lookup with several words, or a bill number without its type, found nothing before July 6, 2026, ask again. If you asked for recent or upcoming items after 8 p.m. New York time, the date range may have been a day off: ask again.
 - **MCP version:** [nyc-council-mcp 2.1.1](CHANGELOG.md#211---2026-07-06)
 - **More detail:** [The fix](https://github.com/BetaNYC/nyc-council-mcp/pull/8) · [Release notes](CHANGELOG.md#211---2026-07-06)
 
