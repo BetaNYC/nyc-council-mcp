@@ -15,7 +15,7 @@ import Sqlite from "better-sqlite3";
 import { withSourceNote, checkUpcomingLive } from "./tools/local-source.js";
 import { withMemberTerms } from "./tools/member-terms.js";
 import { withCurated } from "./curated.js";
-import { createAboutData } from "./betanyc.js";
+import { createSharedTools } from "./shared-tools.js";
 import { getEventStatuses } from "./legistar.js";
 import { LIVE_TOOL_DEFS, LIVE_SEARCH_TOOL_DEF, handleLiveTool, handleLiveSearch } from "./tools/live.js";
 import { LOCAL_TOOL_DEFS, handleLocalTool } from "./tools/local.js";
@@ -101,9 +101,9 @@ See README for full setup instructions.
     db = openDatabase(mode.dbPath);
   }
 
-  // Where the data comes from (#48), from DATA-SOURCES.json through BetaNYC's shared module.
-  // Throws here, at startup, if the file does not describe this server.
-  const aboutData = createAboutData({ db, hasLive: Boolean(mode.hasLive && mode.token), version: PACKAGE_VERSION });
+  // BetaNYC's shared tools (#75, #48): whats_changed, about_betanyc and about_data, from the
+  // shared module. Throws here, at startup, if DATA-SOURCES.json does not describe this server.
+  const shared = createSharedTools({ db, hasLive: Boolean(mode.hasLive && mode.token), version: PACKAGE_VERSION });
 
   // Build tool list. get_bill_history is defined in BOTH the local and live sets
   // (local is the default, token-free path; the live one remains for live-only
@@ -114,7 +114,7 @@ See README for full setup instructions.
   const toolDefs = [
     ...(mode.hasLocal ? LOCAL_TOOL_DEFS : []),
     ...(mode.hasLive ? [...LIVE_TOOL_DEFS, LIVE_SEARCH_TOOL_DEF] : []),
-    aboutData.tool,
+    ...shared.tools,
   ].filter((t) => {
     if (seenToolNames.has(t.name)) return false;
     seenToolNames.add(t.name);
@@ -130,7 +130,7 @@ See README for full setup instructions.
 
   const server = new Server(
     { name: "nyc-council-mcp", version: PACKAGE_VERSION },
-    { capabilities: { tools: {} }, instructions: aboutData.instructions }
+    { capabilities: { tools: {} }, instructions: shared.instructions }
   );
 
   server.setRequestHandler(ListToolsRequestSchema, async () => ({ tools: toolDefs }));
@@ -139,9 +139,9 @@ See README for full setup instructions.
     const { name, arguments: args } = request.params;
     const safeArgs = (args ?? {}) as Record<string, unknown>;
 
-    // Where the data comes from (#48): every mode, before any other route.
-    if (name === aboutData.tool.name) {
-      return aboutData.call(args);
+    // The shared tools (#75, #48): every mode, before any other route.
+    if (shared.handles(name)) {
+      return shared.call(name, args);
     }
 
     // Route to local (SQLite) handler

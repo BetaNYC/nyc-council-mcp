@@ -15,8 +15,8 @@ import Database from "better-sqlite3";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 
-import { createAboutData, SERVER_INSTRUCTIONS, WHO_BUILT_THIS } from "../dist/betanyc.js";
-import { assertEveryToolExplained } from "../dist/betanyc-tools.js";
+import { createSharedTools, SERVER_INSTRUCTIONS } from "../dist/shared-tools.js";
+import { assertEveryToolExplained, BETANYC_TOOL_NAMES } from "../dist/betanyc-tools.js";
 import { LOCAL_TOOL_DEFS } from "../dist/tools/local.js";
 import { LIVE_TOOL_DEFS, LIVE_SEARCH_TOOL_DEF } from "../dist/tools/live.js";
 import { CREATE_TABLES } from "../dist/db/schema.js";
@@ -24,7 +24,7 @@ import { CREATE_TABLES } from "../dist/db/schema.js";
 const ROOT = fileURLToPath(new URL("..", import.meta.url));
 const DS_TEXT = readFileSync(join(ROOT, "DATA-SOURCES.json"), "utf8");
 const VERSION = JSON.parse(readFileSync(join(ROOT, "package.json"), "utf8")).version;
-const ALL_TOOLS = [...new Set([...LOCAL_TOOL_DEFS, ...LIVE_TOOL_DEFS, LIVE_SEARCH_TOOL_DEF, { name: "about_data" }].map((t) => t.name))];
+const ALL_TOOLS = [...new Set([...LOCAL_TOOL_DEFS, ...LIVE_TOOL_DEFS, LIVE_SEARCH_TOOL_DEF].map((t) => t.name).concat(BETANYC_TOOL_NAMES))];
 
 function indexDb() {
   const db = new Database(":memory:");
@@ -38,7 +38,7 @@ function indexDb() {
 }
 
 const ask = (args, db = null, hasLive = false) => {
-  const res = createAboutData({ db, hasLive, version: VERSION }).call(args);
+  const res = createSharedTools({ db, hasLive, version: VERSION }).call("about_data", args);
   return { res, body: res.structuredContent };
 };
 const one = (body, topic) => body.sources.find((s) => s.topic === topic);
@@ -135,12 +135,11 @@ test("the archive sources name the Council as publisher and jehiah/nyc_legislati
   assert.deepEqual(one(ask({ topic: "events" }).body, "events").changed_by_betanyc.steps, ["reshaped"]);
 });
 
-test("an unreadable DATA-SOURCES.json: the note does not point at about_betanyc either", () => {
-  const res = createAboutData({ db: null, hasLive: false, version: VERSION, dataSourcesText: "{" }).call({});
-  const body = res.structuredContent;
-  assert.match(body.note, /cannot be read/);
-  assert.doesNotMatch(body.note, /about_betanyc/);
-  assert.doesNotMatch(res.content[0].text, /about_betanyc/);
+test("an unreadable DATA-SOURCES.json: the answer says so, with no error flag", () => {
+  const res = createSharedTools({ db: null, hasLive: false, version: VERSION, dataSourcesText: "{" }).call("about_data", {});
+  assert.ok(!res.isError);
+  assert.match(res.structuredContent.note, /cannot be read/);
+  assert.deepEqual(res.structuredContent.this_server, { live_api: false, local_index: false });
 });
 
 test("a tool name works as a topic: get_council_member covers live, districts and the curated facts", () => {
@@ -154,20 +153,18 @@ test("an unknown topic is an error that lists the topics", () => {
   assert.match(res.content[0].text, /districts/);
 });
 
-test("nothing points at about_betanyc or whats_changed before 2.9.0 registers them", () => {
+test("who built this: about_data points at about_betanyc, which 2.9.0 registers (#75)", () => {
   const { res, body } = ask({});
-  assert.equal(body.who_built_this, WHO_BUILT_THIS);
-  assert.match(WHO_BUILT_THIS, /BetaNYC, a project of the Fund for the City of New York/);
-  assert.match(WHO_BUILT_THIS, /github\.com\/BetaNYC\/nyc-council-mcp\/issues/);
-  assert.doesNotMatch(res.content[0].text, /about_betanyc|whats_changed/);
-  assert.doesNotMatch(SERVER_INSTRUCTIONS, /about_betanyc|whats_changed/);
+  assert.match(body.who_built_this, /about_betanyc/);
+  assert.match(res.content[0].text, /about_betanyc/);
   assert.match(SERVER_INSTRUCTIONS, /call about_data/);
   assert.match(SERVER_INSTRUCTIONS, /figures_official/);
+  assert.match(SERVER_INSTRUCTIONS, /call about_betanyc/);
 });
 
 test("the server fails at startup when DATA-SOURCES.json names another repo", () => {
   const other = DS_TEXT.replace('"repository": "https://github.com/BetaNYC/nyc-council-mcp"', '"repository": "https://github.com/BetaNYC/other"');
-  assert.throws(() => createAboutData({ db: null, hasLive: false, version: VERSION, dataSourcesText: other }), /repository/);
+  assert.throws(() => createSharedTools({ db: null, hasLive: false, version: VERSION, dataSourcesText: other }), /repository/);
 });
 
 test("the package ships DATA-SOURCES.json and data.json", () => {
@@ -195,11 +192,10 @@ test("about_data over MCP stdio: live, party and districts", async () => {
     const listed = (await client.listTools()).tools.find((t) => t.name === "about_data");
     assert.ok(listed, "about_data is listed");
     assert.match(listed.description, /Topics on this server: live, bills/);
-    assert.doesNotMatch(JSON.stringify(listed), /about_betanyc|whats_changed/);
     assert.ok(listed.outputSchema.properties.this_server);
     assert.match(client.getInstructions() ?? "", /call about_data/);
     const names = (await client.listTools()).tools.map((t) => t.name);
-    assert.ok(!names.includes("about_betanyc") && !names.includes("whats_changed"));
+    assert.ok(names.includes("about_betanyc") && names.includes("whats_changed"), "2.9.0 registers both (#75)");
 
     const live = await client.callTool({ name: "about_data", arguments: { topic: "live" } });
     // local-only mode: no token, so live is not available on this server

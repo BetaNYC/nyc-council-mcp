@@ -7,6 +7,48 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Dates are npm publish dates (`npm view @betanyc/nyc-council-mcp time`).
 
+For a plain-language list of the changes a reader would notice, including every correction,
+see [WHATS-CHANGED.md](WHATS-CHANGED.md).
+
+## [2.9.0] - unreleased
+
+### Added
+- **`whats_changed` and `about_betanyc`, BetaNYC's two shared tools
+  ([#75](https://github.com/BetaNYC/nyc-council-mcp/issues/75)).** `whats_changed` answers
+  "what changed in this server?" from the new [`WHATS-CHANGED.md`](WHATS-CHANGED.md), with
+  `since`, `tag` (Site, Data, MCP, Correction) and `limit`. `about_betanyc` says who built the
+  server (BetaNYC, a project of the Fund for the City of New York), how to report a bug or ask
+  for a feature, and which shared module version it runs. Both work in every mode, need no token
+  or index, and make no network call. The server's MCP instructions now point AI apps at them.
+- **`WHATS-CHANGED.md`**, the plain-language history for journalists and community board
+  staff, backfilled from this changelog and the merged pull requests back to 1.0.0, with every
+  correction and what to re-check. It ships in the package. CI checks it on every pull request
+  (`whats_changed.py check --base-ref`: format, dates, append-only, and an entry for every
+  version bump).
+
+### Changed
+- **Shared module 1.3.5.** `src/betanyc-tools.ts`, `scripts/whats_changed.py` and the
+  about-data validator kit are now BetaNYC's shared 1.3.5 files, copied in unchanged
+  (`whats_changed_drift.py compare`: CURRENT). `about_data` answers gain `left_out` and, under
+  `report_errors`, `in_the_data_handled_by` and `in_these_figures`. `data.json` was rebuilt: each
+  BetaNYC dataset's contact now says where to report an error in BetaNYC's figures and where to
+  report one in the original records.
+- **`src/betanyc.ts` is gone.** It hid the pointers to `about_betanyc` and `whats_changed` until
+  this release registered them. The one thing it did that the shared module cannot,
+  saying the live source is not available when no `LEGISTAR_TOKEN` is set and adding
+  `this_server` to `about_data`'s answer (#67), moved to `src/shared-tools.ts`.
+- `about_data`'s "who built this" now points to `about_betanyc` instead of repeating it.
+- The 2.6.0 heading below now carries its publish date, 2026-07-27. It said "unreleased", but
+  the release workflow published 2.6.0 that day.
+
+### Release
+- **The release workflow runs both release checks before `npm publish`
+  ([#76](https://github.com/BetaNYC/nyc-council-mcp/issues/76)):**
+  `whats_changed.py check WHATS-CHANGED.md --release` (fails while an `Unreleased:` entry is
+  left) and `whats_changed.py about-data check DATA-SOURCES.json --release` (fails while the
+  catalog contact is the placeholder). Before the tag, date the `Unreleased:` entry in
+  `WHATS-CHANGED.md` and this heading in the same commit.
+
 ## [2.8.0] - 2026-11-13
 
 ### Added
@@ -233,7 +275,7 @@ No change to the server's behavior or tools.
 ### CI
 - A `windows-latest` / Node 22.x job runs the full build and test suite (#12).
 
-## [2.6.0] - unreleased
+## [2.6.0] - 2026-07-27
 
 ### Added
 - **Roll-call votes and matter history are indexed from the archive**

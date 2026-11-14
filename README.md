@@ -8,6 +8,8 @@ An [MCP (Model Context Protocol)](https://modelcontextprotocol.io/) server for N
 
 Built by [BetaNYC](https://beta.nyc) with [Claude](https://claude.ai).
 
+**What's changed:** [WHATS-CHANGED.md](WHATS-CHANGED.md) lists every change a reader would notice, newest first, including every correction and what to re-check. Your AI assistant can read it too, with the `whats_changed` tool.
+
 ---
 
 ## What it does
@@ -17,6 +19,12 @@ Ask an AI assistant about New York City Council legislation and get answers grou
 The local index holds every matter in the [jehiah/nyc_legislation](https://github.com/jehiah/nyc_legislation) archive: on 2026-11-11 that was 21,803 matters (13,059 Introductions, 6,198 Resolutions, 2,545 Land Use items), 17,532 meetings, 517,562 individual recorded votes and 254 people. The live tools read the Council's [Legistar API](https://council.nyc.gov/legislation/api/) directly.
 
 ---
+
+## What's new in 2.9.0
+
+- **"What changed?" and "Who built this?"** Two new tools work in every mode, with no token or index. `whats_changed` answers from [WHATS-CHANGED.md](WHATS-CHANGED.md), the plain-language history of this server back to 1.0.0, including every correction and what to re-check. `about_betanyc` says who built the server, how to report a bug or ask for a feature, and which version of BetaNYC's shared code it runs.
+- **BetaNYC's shared module 1.3.5.** `about_data` answers also say who fixes an error in the data, the publisher or BetaNYC, and list any source the server cannot show.
+- With both data sources set up, the server now lists 28 tools.
 
 ## What's new in 2.8.0
 
@@ -256,11 +264,20 @@ These require `LEGISTAR_TOKEN`.
 | `list_recent_legislation` | Most recently introduced legislation (catches bills since last index) |
 | `search_legislation_live` | Live Legistar search (slower than local, always current). Multi-word queries match all words in any order; quote a `"phrase"` for adjacency. No relevance ranking upstream — results are ordered by intro date (`order='date_asc'` for oldest-first). |
 
+### About this server (every mode)
+
+These need no token or index, and make no network call. They come from BetaNYC's shared module, the same in every BetaNYC MCP server.
+
+| Tool | Description |
+|---|---|
+| `whats_changed` | What changed in this server, newest first, from [WHATS-CHANGED.md](WHATS-CHANGED.md): new tools, new data, and every correction with what to re-check. `since` (`YYYY-MM-DD`), `tag` (`Site`, `Data`, `MCP` or `Correction`) and `limit` (1 to 50, default 10) narrow it. A change not released yet is left out |
+| `about_betanyc` | Who built this server (BetaNYC, a project of the Fund for the City of New York), links to BetaNYC, where to report a bug in this server or ask for a new feature, and the version of BetaNYC's shared module it runs. No inputs |
+
 ### Where the data comes from (every mode)
 
 | Tool | Description |
 |---|---|
-| `about_data` | Ask the server where its data comes from. For each kind of data it gives the source and its publisher, whether it is an official record or BetaNYC's curation, how it was gathered and what BetaNYC changed, how current it is on this server (the index build time, the district snapshot's fetch time, the curated files' check dates), what it covers, terms of use and a credit line, where to check a figure, where to report an error, and which tools use it. `topic` narrows it to one kind of data (`live`, `bills`, `votes`, `events`, `committees`, `districts`, `party`, `wikidata`, `social`) or to the data behind one tool (for example `get_council_member`). The answer also says who built the server: BetaNYC, a project of the Fund for the City of New York. Needs no token or index. The server's MCP instructions tell the AI app to call it whenever someone asks about sources, freshness or accuracy, and to say when figures are not an official record. Answers come from [`DATA-SOURCES.json`](DATA-SOURCES.json), read by BetaNYC's shared module. |
+| `about_data` | Ask the server where its data comes from. For each kind of data it gives the source and its publisher, whether it is an official record or BetaNYC's curation, how it was gathered and what BetaNYC changed, how current it is on this server (the index build time, the district snapshot's fetch time, the curated files' check dates), what it covers, terms of use and a credit line, where to check a figure, where to report an error, and which tools use it. `topic` narrows it to one kind of data (`live`, `bills`, `votes`, `events`, `committees`, `districts`, `party`, `wikidata`, `social`) or to the data behind one tool (for example `get_council_member`). For who built the server, the answer points to `about_betanyc`. Needs no token or index. The server's MCP instructions tell the AI app to call it whenever someone asks about sources, freshness or accuracy, and to say when figures are not an official record. Answers come from [`DATA-SOURCES.json`](DATA-SOURCES.json), read by BetaNYC's shared module. |
 
 ### Tool details
 
@@ -510,7 +527,7 @@ LEGISTAR_LIVE_URL_TEST=1 npm test         # with LEGISTAR_TOKEN set: adds the li
 
 Tests use Node's built-in runner (`node --test test/*.test.mjs`) and never need the network unless `LEGISTAR_LIVE_URL_TEST` is set. [CI](.github/workflows/ci.yml) runs them on every pull request to `main`, on Ubuntu (Node 20 and 22) and Windows (Node 22), and a version guard fails any PR that changes shipped code without a version bump.
 
-CI fails if `DATA-SOURCES.json` is invalid or leaves a tool without a source (a test checks this too), or if [`data.json`](data.json), the DCAT-US 3.0 catalog made from it, is out of date or invalid. These checks follow BetaNYC's about-data standard. Rebuild it with `python3 scripts/whats_changed.py about-data catalog DATA-SOURCES.json`. `src/betanyc-tools.ts`, `scripts/whats_changed.py`, `scripts/tests/catalog_validate.py` and `scripts/mcp_shared/` are copies of BetaNYC's shared files: do not edit them here.
+CI fails if `DATA-SOURCES.json` is invalid or leaves a tool without a source (a test checks this too), or if [`data.json`](data.json), the DCAT-US 3.0 catalog made from it, is out of date or invalid. These checks follow BetaNYC's about-data standard. Rebuild it with `python3 scripts/whats_changed.py about-data catalog DATA-SOURCES.json`. CI also checks [WHATS-CHANGED.md](WHATS-CHANGED.md) on every pull request: its format, that a published entry is only ever added to, and that a version bump comes with an entry naming the new version. `src/betanyc-tools.ts`, `scripts/whats_changed.py`, `scripts/tests/catalog_validate.py` and `scripts/mcp_shared/` are copies of BetaNYC's shared files: do not edit them here.
 
 The council terms snapshot (`data/council-member-terms.json`) is refreshed by `node scripts/refresh-member-terms.mjs`. A [monthly workflow](.github/workflows/refresh-member-terms.yml) runs it and opens a PR when the City's rows change. The snapshot ships in the package, so a refresh needs a version bump like code does.
 
@@ -530,11 +547,12 @@ roll call (both live in the same field, so a tally must filter rather than count
 
 Publishing is automated. To cut a release:
 
-1. Bump `version` in `package.json` in a PR (with a matching [CHANGELOG.md](CHANGELOG.md) entry).
+1. Bump `version` in `package.json` in a PR, with a matching [CHANGELOG.md](CHANGELOG.md) entry and a [WHATS-CHANGED.md](WHATS-CHANGED.md) entry tagged MCP. The What's changed entry is `## Unreleased: Title` until the release.
 2. Merge the PR.
-3. Push the matching tag: `git tag v<version> && git push origin v<version>`.
-4. The [release workflow](.github/workflows/release.yml) runs tests, verifies the tag matches `package.json` and `server.json`, publishes to npm with provenance, and creates a GitHub Release.
-5. When it succeeds, [publish-mcp.yml](.github/workflows/publish-mcp.yml) lists that version in the [official MCP Registry](https://registry.modelcontextprotocol.io) as `io.github.BetaNYC/nyc-council-mcp`. Bump `version` in `server.json` (both places) together with `package.json`.
+3. On the release day, in one commit: change `## Unreleased: Title` to `## YYYY-MM-DD: Title` (same title), give the CHANGELOG heading the same date, and point the entry's MCP version link at the dated CHANGELOG heading.
+4. Push the matching tag: `git tag v<version> && git push origin v<version>`.
+5. The [release workflow](.github/workflows/release.yml) runs tests, verifies the tag matches `package.json` and `server.json`, runs the two release checks (an `Unreleased:` entry left in WHATS-CHANGED.md, or an error or placeholder contact in DATA-SOURCES.json, stops it), publishes to npm with provenance, and creates a GitHub Release.
+6. When it succeeds, [publish-mcp.yml](.github/workflows/publish-mcp.yml) lists that version in the [official MCP Registry](https://registry.modelcontextprotocol.io) as `io.github.BetaNYC/nyc-council-mcp`. Bump `version` in `server.json` (both places) together with `package.json`.
 
 Prerequisite: the `NPM_TOKEN` org secret (an npm automation token with publish rights on `@betanyc`) must be configured. Do not run `npm publish` by hand.
 

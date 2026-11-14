@@ -305,7 +305,7 @@
       "identifier": "https://github.com/BetaNYC/nyc-council-mcp/blob/HEAD/DATA-SOURCES.json#bills",
       "contactPoint": {
         "@type": "Kind",
-        "fn": "BetaNYC",
+        "fn": "BetaNYC (serves this dataset; report errors in these figures to BetaNYC: https://github.com/BetaNYC/nyc-council-mcp/issues; errors in the original records to New York City Council: https://council.nyc.gov/legislation/api/)",
         "hasEmail": "mailto:lab@beta.nyc"
       },
       "publisher": {
@@ -396,7 +396,7 @@
       "identifier": "https://github.com/BetaNYC/nyc-council-mcp/blob/HEAD/DATA-SOURCES.json#votes",
       "contactPoint": {
         "@type": "Kind",
-        "fn": "BetaNYC",
+        "fn": "BetaNYC (serves this dataset; report errors in these figures to BetaNYC: https://github.com/BetaNYC/nyc-council-mcp/issues; errors in the original records to New York City Council: https://council.nyc.gov/legislation/api/)",
         "hasEmail": "mailto:lab@beta.nyc"
       },
       "publisher": {
@@ -574,7 +574,7 @@
       "identifier": "https://github.com/BetaNYC/nyc-council-mcp/blob/HEAD/DATA-SOURCES.json#committees",
       "contactPoint": {
         "@type": "Kind",
-        "fn": "BetaNYC",
+        "fn": "BetaNYC (serves this dataset; report errors in these figures to BetaNYC: https://github.com/BetaNYC/nyc-council-mcp/issues; errors in the original records to New York City Council: https://council.nyc.gov/legislation/api/)",
         "hasEmail": "mailto:lab@beta.nyc"
       },
       "publisher": {
@@ -665,7 +665,7 @@
       "identifier": "https://github.com/BetaNYC/nyc-council-mcp/blob/HEAD/DATA-SOURCES.json#districts",
       "contactPoint": {
         "@type": "Kind",
-        "fn": "BetaNYC",
+        "fn": "BetaNYC (serves this dataset; report errors in these figures to BetaNYC: https://github.com/BetaNYC/nyc-council-mcp/issues; errors in the original records to New York City Council: https://www.nyc.gov/opendata/contact-us)",
         "hasEmail": "mailto:lab@beta.nyc"
       },
       "publisher": {
@@ -756,7 +756,7 @@
       "identifier": "https://github.com/BetaNYC/nyc-council-mcp/blob/HEAD/DATA-SOURCES.json#party",
       "contactPoint": {
         "@type": "Kind",
-        "fn": "BetaNYC",
+        "fn": "BetaNYC (serves this dataset; report errors in these figures to BetaNYC: https://github.com/BetaNYC/nyc-council-mcp/issues; errors in the original records to NYC Board of Elections: https://www.vote.nyc/index%2Ephp/page/contact-us)",
         "hasEmail": "mailto:lab@beta.nyc"
       },
       "publisher": {
@@ -844,7 +844,7 @@
       "identifier": "https://github.com/BetaNYC/nyc-council-mcp/blob/HEAD/DATA-SOURCES.json#wikidata",
       "contactPoint": {
         "@type": "Kind",
-        "fn": "BetaNYC",
+        "fn": "BetaNYC (serves this dataset; report errors in these figures to BetaNYC: https://github.com/BetaNYC/nyc-council-mcp/issues; errors in the original records to Wikimedia Foundation: https://www.wikidata.org/)",
         "hasEmail": "mailto:lab@beta.nyc"
       },
       "publisher": {
@@ -933,7 +933,7 @@
       "identifier": "https://github.com/BetaNYC/nyc-council-mcp/blob/HEAD/DATA-SOURCES.json#social",
       "contactPoint": {
         "@type": "Kind",
-        "fn": "BetaNYC",
+        "fn": "BetaNYC (serves this dataset; report errors in these figures to BetaNYC: https://github.com/BetaNYC/nyc-council-mcp/issues; errors in the original records to New York City Council: https://council.nyc.gov/)",
         "hasEmail": "mailto:lab@beta.nyc"
       },
       "publisher": {
