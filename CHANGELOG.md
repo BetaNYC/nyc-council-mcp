@@ -10,7 +10,7 @@ Dates are npm publish dates (`npm view @betanyc/nyc-council-mcp time`).
 For a plain-language list of the changes a reader would notice, including every correction,
 see [WHATS-CHANGED.md](WHATS-CHANGED.md).
 
-## [2.9.0] - unreleased
+## [2.9.0] - 2026-11-13
 
 ### Added
 - **`whats_changed` and `about_betanyc`, BetaNYC's two shared tools
