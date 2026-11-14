@@ -305,7 +305,7 @@
       "identifier": "https://github.com/BetaNYC/nyc-council-mcp/blob/HEAD/DATA-SOURCES.json#bills",
       "contactPoint": {
         "@type": "Kind",
-        "fn": "BetaNYC (serves this dataset; report errors in these figures to BetaNYC: https://github.com/BetaNYC/nyc-council-mcp/issues; errors in the original records to New York City Council: https://council.nyc.gov/legislation/api/)",
+        "fn": "BetaNYC (serves this dataset; report errors in this data to BetaNYC: https://github.com/BetaNYC/nyc-council-mcp/issues; errors in the original records to New York City Council: https://council.nyc.gov/legislation/api/)",
         "hasEmail": "mailto:lab@beta.nyc"
       },
       "publisher": {
@@ -355,7 +355,7 @@
         }
       ],
       "provenance": [
-        "Official source: yes. These figures are BetaNYC's, derived from it, not an official New York City Council report.",
+        "Official source: yes. This data is BetaNYC's, derived from it, not an official New York City Council record.",
         "This server answers from a local SQLite index, with no network call. The index is built from a clone of jehiah/nyc_legislation (https://github.com/jehiah/nyc_legislation), an unofficial mirror that copies the Council's Legistar records through the Legistar API. Every local answer ends with a line naming when the index was built and the archive commit it was built from.",
         "Changed by BetaNYC: Records are restructured into database tables with their values unchanged. aggregate_bills counts bills by a field, and co_sponsors counts the bills each pair of members sponsored together."
       ],
@@ -396,7 +396,7 @@
       "identifier": "https://github.com/BetaNYC/nyc-council-mcp/blob/HEAD/DATA-SOURCES.json#votes",
       "contactPoint": {
         "@type": "Kind",
-        "fn": "BetaNYC (serves this dataset; report errors in these figures to BetaNYC: https://github.com/BetaNYC/nyc-council-mcp/issues; errors in the original records to New York City Council: https://council.nyc.gov/legislation/api/)",
+        "fn": "BetaNYC (serves this dataset; report errors in this data to BetaNYC: https://github.com/BetaNYC/nyc-council-mcp/issues; errors in the original records to New York City Council: https://council.nyc.gov/legislation/api/)",
         "hasEmail": "mailto:lab@beta.nyc"
       },
       "publisher": {
@@ -446,7 +446,7 @@
         }
       ],
       "provenance": [
-        "Official source: yes. These figures are BetaNYC's, derived from it, not an official New York City Council report.",
+        "Official source: yes. This data is BetaNYC's, derived from it, not an official New York City Council record.",
         "This server answers from a local SQLite index, with no network call. The index is built from a clone of jehiah/nyc_legislation (https://github.com/jehiah/nyc_legislation), an unofficial mirror that copies the Council's Legistar records through the Legistar API. Every local answer ends with a line naming when the index was built and the archive commit it was built from.",
         "Changed by BetaNYC: Records are restructured into database tables with their values unchanged. vote_breakdown tallies each roll call's positions (affirmative, negative, abstain), never counting an absence as a vote."
       ],
@@ -574,7 +574,7 @@
       "identifier": "https://github.com/BetaNYC/nyc-council-mcp/blob/HEAD/DATA-SOURCES.json#committees",
       "contactPoint": {
         "@type": "Kind",
-        "fn": "BetaNYC (serves this dataset; report errors in these figures to BetaNYC: https://github.com/BetaNYC/nyc-council-mcp/issues; errors in the original records to New York City Council: https://council.nyc.gov/legislation/api/)",
+        "fn": "BetaNYC (serves this dataset; report errors in this data to BetaNYC: https://github.com/BetaNYC/nyc-council-mcp/issues; errors in the original records to New York City Council: https://council.nyc.gov/legislation/api/)",
         "hasEmail": "mailto:lab@beta.nyc"
       },
       "publisher": {
@@ -624,7 +624,7 @@
         }
       ],
       "provenance": [
-        "Official source: yes. These figures are BetaNYC's, derived from it, not an official New York City Council report.",
+        "Official source: yes. This data is BetaNYC's, derived from it, not an official New York City Council record.",
         "This server answers from a local SQLite index, with no network call. The index is built from a clone of jehiah/nyc_legislation (https://github.com/jehiah/nyc_legislation), an unofficial mirror that copies the Council's Legistar records through the Legistar API. Every local answer ends with a line naming when the index was built and the archive commit it was built from.",
         "Changed by BetaNYC: Records are restructured into database tables with their values unchanged. list_committees counts the bills and meetings recorded for each body."
       ],
@@ -665,7 +665,7 @@
       "identifier": "https://github.com/BetaNYC/nyc-council-mcp/blob/HEAD/DATA-SOURCES.json#districts",
       "contactPoint": {
         "@type": "Kind",
-        "fn": "BetaNYC (serves this dataset; report errors in these figures to BetaNYC: https://github.com/BetaNYC/nyc-council-mcp/issues; errors in the original records to New York City Council: https://www.nyc.gov/opendata/contact-us)",
+        "fn": "BetaNYC (serves this dataset; report errors in this data to BetaNYC: https://github.com/BetaNYC/nyc-council-mcp/issues; errors in the original records to New York City Council: https://www.nyc.gov/opendata/contact-us)",
         "hasEmail": "mailto:lab@beta.nyc"
       },
       "publisher": {
@@ -715,7 +715,7 @@
         }
       ],
       "provenance": [
-        "Official source: yes. These figures are BetaNYC's, derived from it, not an official New York City Council report.",
+        "Official source: yes. This data is BetaNYC's, derived from it, not an official New York City Council record.",
         "The Council publishes this dataset on NYC Open Data, the City's open data portal. A copy ships with this server (data/council-member-terms.json) and is loaded into the local index. A monthly job re-fetches it and opens a pull request when the rows change.",
         "Changed by BetaNYC: The rows are used as published, loaded into the index and joined to Legistar people on person ID, never on names. district_member works out who held a district on a date from them."
       ],
@@ -756,7 +756,7 @@
       "identifier": "https://github.com/BetaNYC/nyc-council-mcp/blob/HEAD/DATA-SOURCES.json#party",
       "contactPoint": {
         "@type": "Kind",
-        "fn": "BetaNYC (serves this dataset; report errors in these figures to BetaNYC: https://github.com/BetaNYC/nyc-council-mcp/issues; errors in the original records to NYC Board of Elections: https://www.vote.nyc/index%2Ephp/page/contact-us)",
+        "fn": "BetaNYC (serves this dataset; report errors in this data to BetaNYC: https://github.com/BetaNYC/nyc-council-mcp/issues; errors in the original records to NYC Board of Elections: https://www.vote.nyc/index%2Ephp/page/contact-us)",
         "hasEmail": "mailto:lab@beta.nyc"
       },
       "publisher": {
@@ -844,7 +844,7 @@
       "identifier": "https://github.com/BetaNYC/nyc-council-mcp/blob/HEAD/DATA-SOURCES.json#wikidata",
       "contactPoint": {
         "@type": "Kind",
-        "fn": "BetaNYC (serves this dataset; report errors in these figures to BetaNYC: https://github.com/BetaNYC/nyc-council-mcp/issues; errors in the original records to Wikimedia Foundation: https://www.wikidata.org/)",
+        "fn": "BetaNYC (serves this dataset; report errors in this data to BetaNYC: https://github.com/BetaNYC/nyc-council-mcp/issues; errors in the original records to Wikimedia Foundation: https://www.wikidata.org/)",
         "hasEmail": "mailto:lab@beta.nyc"
       },
       "publisher": {
@@ -933,7 +933,7 @@
       "identifier": "https://github.com/BetaNYC/nyc-council-mcp/blob/HEAD/DATA-SOURCES.json#social",
       "contactPoint": {
         "@type": "Kind",
-        "fn": "BetaNYC (serves this dataset; report errors in these figures to BetaNYC: https://github.com/BetaNYC/nyc-council-mcp/issues; errors in the original records to New York City Council: https://council.nyc.gov/)",
+        "fn": "BetaNYC (serves this dataset; report errors in this data to BetaNYC: https://github.com/BetaNYC/nyc-council-mcp/issues; errors in the original records to New York City Council: https://council.nyc.gov/)",
         "hasEmail": "mailto:lab@beta.nyc"
       },
       "publisher": {

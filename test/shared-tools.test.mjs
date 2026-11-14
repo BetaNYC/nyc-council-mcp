@@ -118,7 +118,7 @@ test("whats_changed over MCP stdio answers from WHATS-CHANGED.md", async () => {
   }
 });
 
-test("about_betanyc over MCP stdio says who built the server, with module version 1.3.6", async () => {
+test("about_betanyc over MCP stdio says who built the server, with module version 1.3.7", async () => {
   const client = await connect({ index: false, token: "dummy-token-not-used" });
   try {
     const res = await client.callTool({ name: "about_betanyc", arguments: {} });
@@ -128,9 +128,9 @@ test("about_betanyc over MCP stdio says who built the server, with module versio
       name: "nyc-council-mcp",
       version: PKG.version,
       repository: REPO,
-      shared_module_version: "1.3.6",
+      shared_module_version: "1.3.7",
     });
-    assert.equal(SHARED_MODULE_VERSION, "1.3.6");
+    assert.equal(SHARED_MODULE_VERSION, "1.3.7");
     assert.equal(body.built_by, "BetaNYC, a project of the Fund for the City of New York");
     assert.deepEqual(body.bugs_and_requests, { issues: `${REPO}/issues`, new_issue: `${REPO}/issues/new` });
     assert.equal(body.whats_changed, `${REPO}/blob/HEAD/WHATS-CHANGED.md`);

@@ -31,18 +31,19 @@ see [WHATS-CHANGED.md](WHATS-CHANGED.md).
   version bump).
 
 ### Changed
-- **Shared module 1.3.6.** `src/betanyc-tools.ts` is BetaNYC's shared module 1.3.6, and
-  `scripts/whats_changed.py` and the about-data validator kit are its 1.3.5 files (unchanged in
-  1.3.6), all copied in unchanged (`whats_changed_drift.py compare`: CURRENT). `about_data`
-  answers gain `contact_email`, `left_out` and, under
-  `report_errors`, `in_the_data_handled_by` and `in_these_figures`. `data.json` was rebuilt: each
-  BetaNYC dataset's contact now says where to report an error in BetaNYC's figures and where to
-  report one in the original records.
+- **Shared module 1.3.7.** `src/betanyc-tools.ts`, `scripts/whats_changed.py` and the
+  about-data validator kit are BetaNYC's shared 1.3.7 files, copied in unchanged
+  (`whats_changed_drift.py compare`: CURRENT). `about_data` answers gain `contact_email`,
+  `left_out` and, under `report_errors`, `in_the_data_handled_by` and `in_these_figures`. Where
+  BetaNYC changed or curated the data, answers say "This data is BetaNYC's, derived from it, not
+  an official … record" and "Report an error in this data to BetaNYC" (1.3.7's wording, which
+  fits text as well as numbers). `data.json` was rebuilt: each BetaNYC dataset's contact now says
+  where to report an error in BetaNYC's data and where to report one in the original records.
 - **`src/betanyc.ts` is gone, and no wrapper replaces it.** It hid the pointers to
   `about_betanyc` and `whats_changed` until this release registered them. `src/server.ts` now
   wires the shared module directly. With no `LEGISTAR_TOKEN`, the live source still says "not
   available on this server: the live Legistar API is not set up (no LEGISTAR_TOKEN)" (#67),
-  now through the module's own `unavailableSources` option (1.3.6).
+  now through the module's own `unavailableSources` option (added in shared module 1.3.6).
 - **`about_data` no longer returns `this_server`**, or the line "This server: live Legistar API
   … local index …" after its answer. Whether the live API is set up shows in the live source's
   `as_of`; whether there is a local index shows in each local source's `as_of`.

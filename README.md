@@ -23,7 +23,7 @@ The local index holds every matter in the [jehiah/nyc_legislation](https://githu
 ## What's new in 2.9.0
 
 - **"What changed?" and "Who built this?"** Two new tools work in every mode, with no token or index. `whats_changed` answers from [WHATS-CHANGED.md](WHATS-CHANGED.md), the plain-language history of this server back to 1.0.0, including every correction and what to re-check. `about_betanyc` says who built the server, how to report a bug or ask for a feature, and which version of BetaNYC's shared code it runs.
-- **BetaNYC's shared module 1.3.6.** `about_data` answers now give BetaNYC's contact for questions and error reports about the data (lab@beta.nyc), say who fixes an error in the data, the publisher or BetaNYC, and list any source the server cannot show.
+- **BetaNYC's shared module 1.3.7.** `about_data` answers now give BetaNYC's contact for questions and error reports about the data (lab@beta.nyc), say who fixes an error in the data, the publisher or BetaNYC, and list any source the server cannot show.
 - With both data sources set up, the server now lists 28 tools.
 
 ## What's new in 2.8.0
