@@ -69,7 +69,7 @@ test("party: curated by BetaNYC from Board of Elections results, not official, d
   const checked = JSON.parse(readFileSync(join(ROOT, "data/council-party.json"), "utf8")).checked_at;
   assert.equal(s.as_of, checked);
   assert.ok(s.caveats.some((c) => /second_check/.test(c)), "row status and second check are summarized");
-  assert.match(res.content[0].text, /Not an official record/);
+  assert.match(res.content[0].text, /^BetaNYC produced this\. It is not an official record\. Built from: NYC Board of Elections certified results, https:\/\/www\.vote\.nyc\/page\/election-results-summary$/m);
 });
 
 test("wikidata and social: curated, not official, dated by their check", () => {
@@ -117,12 +117,13 @@ test("no index on this server: local sources say so instead of a date", () => {
   assert.doesNotMatch(s.as_of, /\d{4}-\d{2}-\d{2}/);
 });
 
-test("live: fetched when asked, the Council's record passed on unchanged", () => {
+test("live: fetched when asked, the Council's record modified by BetaNYC (links corrected, titles cut)", () => {
   const { body } = ask({ topic: "live" }, indexDb(), true);
   const s = one(body, "live");
   assert.equal(s.as_of_status, "live");
   assert.equal(s.as_of, "live: fetched from the source when you ask");
-  assert.equal(s.figures_official, true);
+  assert.equal(s.figures_official, false);
+  assert.deepEqual(s.changed_by_betanyc.steps, ["cleaned", "reshaped"]);
 });
 
 test("no token: the live source says it is not available here, not 'fetched when you ask'", () => {
@@ -175,7 +176,7 @@ test("who built this: about_data points at about_betanyc, which 2.9.0 registers 
   assert.match(body.who_built_this, /about_betanyc/);
   assert.match(res.content[0].text, /about_betanyc/);
   assert.match(SERVER_INSTRUCTIONS, /call about_data/);
-  assert.match(SERVER_INSTRUCTIONS, /figures_official/);
+  assert.match(SERVER_INSTRUCTIONS, /Never call data official when BetaNYC modified or produced it/);
   assert.match(SERVER_INSTRUCTIONS, /call about_betanyc/);
 });
 
@@ -219,11 +220,11 @@ test("about_data over MCP stdio: live, party and districts", async () => {
     assert.equal(live.structuredContent.sources[0].as_of_status, "unavailable");
     assert.match(live.structuredContent.sources[0].as_of, /no LEGISTAR_TOKEN/);
     assert.equal(live.structuredContent.contact_email, "lab@beta.nyc");
-    assert.match(live.content[0].text, /Official record: yes, passed on as New York City Council publishes it/);
+    assert.match(live.content[0].text, /^BetaNYC modified this data: cleaned it and reshaped it\. This copy should not be considered the official record\. Official record: NYC Council Legistar Web API \(Granicus\), https:\/\/council\.nyc\.gov\/legislation\/api\/$/m);
 
     const party = await client.callTool({ name: "about_data", arguments: { topic: "party" } });
     assert.equal(party.structuredContent.sources[0].official, false);
-    assert.match(party.content[0].text, /Not an official record: curated by BetaNYC/);
+    assert.match(party.content[0].text, /BetaNYC produced this\. It is not an official record\./);
 
     const districts = await client.callTool({ name: "about_data", arguments: { topic: "districts" } });
     assert.equal(districts.structuredContent.sources[0].as_of, "2026-11-13T02:13:52Z");

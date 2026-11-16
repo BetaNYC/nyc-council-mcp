@@ -36,8 +36,12 @@
       "official": true,
       "how_gathered": "Read-only requests to the Council's own API at the moment you ask. Needs LEGISTAR_TOKEN; a server without one has no live tools.",
       "changes": {
-        "changed": false,
-        "steps": []
+        "changed": true,
+        "steps": [
+          "cleaned",
+          "reshaped"
+        ],
+        "detail": "Member profile links the Council's record gets wrong are corrected from a checked list (the list is empty since 2026-11-12), and a profile link two members share is flagged. Upcoming-hearing summaries leave out empty fields and cut item titles longer than 300 characters; detail \"full\" returns the hearing record as the API sends it."
       },
       "verify_at": "https://legistar.council.nyc.gov/",
       "freshness": {
@@ -72,7 +76,7 @@
       ],
       "caveats": [
         "Legistar sometimes changes a meeting's status without updating its timestamp; upcoming_events checks status live when it can.",
-        "A known-bad Legistar profile link (PersonWWW2) is corrected from a small dated list in the code, with the original kept in PersonWWW2_upstream. Other values are passed on as the API returns them.",
+        "A known-bad Legistar profile link (PersonWWW2) is corrected from a small dated list in the code, with the original kept in PersonWWW2_upstream. Upcoming-hearing summaries cut item titles longer than 300 characters and say so (EventItemTitleTruncated).",
         "get_council_member adds BetaNYC's curated facts (topics party, wikidata, social) and, with a local index, districts (topic districts). Those are separate sources."
       ],
       "corrections": []
@@ -81,11 +85,11 @@
       "id": "bills",
       "title": "Bills and their history",
       "what": "Introductions, resolutions and land use items: titles, summaries, full text, sponsors, Local Law numbers, attachments and history.",
-      "source_name": "NYC Council Legistar",
+      "source_name": "NYC Council Legistar: Legislation",
       "publisher": {
         "name": "New York City Council"
       },
-      "source_url": "https://legistar.council.nyc.gov/",
+      "source_url": "https://legistar.council.nyc.gov/Legislation.aspx",
       "official": true,
       "how_gathered": "This server answers from a local SQLite index, with no network call. The index is built from a clone of jehiah/nyc_legislation (https://github.com/jehiah/nyc_legislation), an unofficial mirror that copies the Council's Legistar records through the Legistar API. Every local answer ends with a line naming when the index was built and the archive commit it was built from.",
       "changes": {
@@ -136,11 +140,11 @@
       "id": "votes",
       "title": "Roll-call votes",
       "what": "Roll-call votes by member, with the date, action and body of each vote.",
-      "source_name": "NYC Council Legistar",
+      "source_name": "NYC Council Legistar: Legislation",
       "publisher": {
         "name": "New York City Council"
       },
-      "source_url": "https://legistar.council.nyc.gov/",
+      "source_url": "https://legistar.council.nyc.gov/Legislation.aspx",
       "official": true,
       "how_gathered": "This server answers from a local SQLite index, with no network call. The index is built from a clone of jehiah/nyc_legislation (https://github.com/jehiah/nyc_legislation), an unofficial mirror that copies the Council's Legistar records through the Legistar API. Every local answer ends with a line naming when the index was built and the archive commit it was built from.",
       "changes": {
@@ -186,11 +190,11 @@
       "id": "events",
       "title": "Meetings and hearings",
       "what": "Meetings and hearings, their agendas and the items heard.",
-      "source_name": "NYC Council Legistar",
+      "source_name": "NYC Council Legistar: Calendar",
       "publisher": {
         "name": "New York City Council"
       },
-      "source_url": "https://legistar.council.nyc.gov/",
+      "source_url": "https://legistar.council.nyc.gov/Calendar.aspx",
       "official": true,
       "how_gathered": "This server answers from a local SQLite index, with no network call. The index is built from a clone of jehiah/nyc_legislation (https://github.com/jehiah/nyc_legislation), an unofficial mirror that copies the Council's Legistar records through the Legistar API. Every local answer ends with a line naming when the index was built and the archive commit it was built from.",
       "changes": {
@@ -237,11 +241,11 @@
       "id": "committees",
       "title": "Committees, caucuses and delegations",
       "what": "Committee, caucus, conference and delegation memberships with roles and dates (Legistar OfficeRecords).",
-      "source_name": "NYC Council Legistar",
+      "source_name": "NYC Council Legistar: Committees",
       "publisher": {
         "name": "New York City Council"
       },
-      "source_url": "https://legistar.council.nyc.gov/",
+      "source_url": "https://legistar.council.nyc.gov/Departments.aspx",
       "official": true,
       "how_gathered": "This server answers from a local SQLite index, with no network call. The index is built from a clone of jehiah/nyc_legislation (https://github.com/jehiah/nyc_legislation), an unofficial mirror that copies the Council's Legistar records through the Legistar API. Every local answer ends with a line naming when the index was built and the archive commit it was built from.",
       "changes": {
@@ -289,7 +293,7 @@
       "id": "districts",
       "title": "Council terms and districts",
       "what": "Every Council term since 1999, with its district.",
-      "source_name": "City Council Members (1999 to Present), NYC Open Data dataset uvw5-9znb",
+      "source_name": "City Council Members (1999 to Present)",
       "publisher": {
         "name": "New York City Council"
       },
@@ -449,7 +453,7 @@
       "id": "social",
       "title": "Office social accounts",
       "what": "Council office accounts on Bluesky, Instagram, Threads and LinkedIn.",
-      "source_name": "council.nyc.gov member pages and the Council's Bluesky starter pack; the account's own profile last",
+      "source_name": "NYC Council member pages and the Council's Bluesky starter pack",
       "publisher": {
         "name": "New York City Council"
       },

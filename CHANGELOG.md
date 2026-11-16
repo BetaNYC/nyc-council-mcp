@@ -10,6 +10,31 @@ Dates are npm publish dates (`npm view @betanyc/nyc-council-mcp time`).
 For a plain-language list of the changes a reader would notice, including every correction,
 see [WHATS-CHANGED.md](WHATS-CHANGED.md).
 
+## [2.9.1] - Unreleased
+
+Moves to BetaNYC's shared module 1.4.0 (BetaNYC/betanyc-ai-workspace#1672).
+
+### Changed
+
+- `src/betanyc-tools.ts`, `scripts/whats_changed.py`, `scripts/mcp_shared/data-sources.schema.json`
+  and `scripts/tests/catalog_validate.py` are BetaNYC's shared module 1.4.0, copied in
+  unchanged. `about_data` gives each source one of three answers on whether it is official,
+  each naming the source, its publisher and a link: "Publisher: … BetaNYC did not modify it",
+  "BetaNYC modified this data: …" or "BetaNYC produced this". The server instructions name the
+  three answers instead of `figures_official`.
+- `DATA-SOURCES.json` for 1.4.0:
+  - `live` is modified by BetaNYC (steps `cleaned`, `reshaped`): member profile links the
+    Council's record gets wrong are corrected from a checked list, a link two members share is
+    flagged, and upcoming-hearing summaries cut item titles longer than 300 characters. Its
+    caveat no longer says every other value is passed on as returned.
+  - `bills` and `votes`, `events`, and `committees` were all "NYC Council Legistar" with one
+    link. Each now names and links its Legistar page: "NYC Council Legistar: Legislation"
+    (`Legislation.aspx`), "…: Calendar" (`Calendar.aspx`), "…: Committees" (`Departments.aspx`).
+  - `districts`: the source is named by the dataset's own title, without its id.
+  - `social`: the source name no longer has ";" (1.4.0 rejects it); how the account is
+    checked stays in `how_gathered`.
+- `data.json` rebuilt. 2.9.1 in `package.json`, the lockfile and `server.json`.
+
 ## [2.9.0] - 2026-11-13
 
 ### Added
