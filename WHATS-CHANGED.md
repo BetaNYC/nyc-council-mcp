@@ -7,6 +7,13 @@ This page lists the changes to nyc-council-mcp that a reader would notice: new t
 
 To report a bug in this server or ask for a new feature, [open an issue on GitHub](https://github.com/BetaNYC/nyc-council-mcp/issues).
 
+## Unreleased: Answers about the data say plainly whether it is official
+
+- **Tags:** MCP
+- **What changed:** When you ask where the data comes from, each answer now says one of three things: the publisher's own record, which BetaNYC did not modify; a copy BetaNYC modified, which should not be considered the official record; or data BetaNYC produced. Each answer names the dataset, its publisher and a link to it. The live Legistar answers now say BetaNYC modified them, because the server corrects known-bad member profile links and shortens very long hearing titles.
+- **MCP version:** [nyc-council-mcp 2.9.1](CHANGELOG.md)
+- **More detail:** [Where the data comes from](DATA-SOURCES.json) · [Release notes](CHANGELOG.md)
+
 ## 2026-11-13: Two tools that explain the server and list what changed
 
 - **Tags:** MCP

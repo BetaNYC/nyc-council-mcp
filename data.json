@@ -50,11 +50,11 @@
       ]
     },
     {
-      "@id": "https://legistar.council.nyc.gov/",
+      "@id": "https://legistar.council.nyc.gov/Legislation.aspx",
       "@type": "Dataset",
-      "title": "NYC Council Legistar",
-      "description": "NYC Council Legistar, published by New York City Council.",
-      "identifier": "https://legistar.council.nyc.gov/",
+      "title": "NYC Council Legistar: Legislation",
+      "description": "NYC Council Legistar: Legislation, published by New York City Council.",
+      "identifier": "https://legistar.council.nyc.gov/Legislation.aspx",
       "contactPoint": {
         "@type": "Kind",
         "fn": "New York City Council",
@@ -66,8 +66,74 @@
       },
       "landingPage": {
         "@type": "Document",
-        "title": "NYC Council Legistar",
-        "accessURL": "https://legistar.council.nyc.gov/"
+        "title": "NYC Council Legistar: Legislation",
+        "accessURL": "https://legistar.council.nyc.gov/Legislation.aspx"
+      },
+      "page": [
+        {
+          "@type": "Document",
+          "title": "Check a figure at the source",
+          "accessURL": "https://legistar.council.nyc.gov/"
+        }
+      ],
+      "accrualPeriodicity": "irregular",
+      "rights": [
+        "License: None stated by the publisher; the jehiah/nyc_legislation archive states no license either",
+        "Terms of use: https://council.nyc.gov/legislation/api/"
+      ]
+    },
+    {
+      "@id": "https://legistar.council.nyc.gov/Calendar.aspx",
+      "@type": "Dataset",
+      "title": "NYC Council Legistar: Calendar",
+      "description": "NYC Council Legistar: Calendar, published by New York City Council.",
+      "identifier": "https://legistar.council.nyc.gov/Calendar.aspx",
+      "contactPoint": {
+        "@type": "Kind",
+        "fn": "New York City Council",
+        "hasEmail": "mailto:correspondence@council.nyc.gov"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "New York City Council"
+      },
+      "landingPage": {
+        "@type": "Document",
+        "title": "NYC Council Legistar: Calendar",
+        "accessURL": "https://legistar.council.nyc.gov/Calendar.aspx"
+      },
+      "page": [
+        {
+          "@type": "Document",
+          "title": "Check a figure at the source",
+          "accessURL": "https://legistar.council.nyc.gov/"
+        }
+      ],
+      "accrualPeriodicity": "irregular",
+      "rights": [
+        "License: None stated by the publisher; the jehiah/nyc_legislation archive states no license either",
+        "Terms of use: https://council.nyc.gov/legislation/api/"
+      ]
+    },
+    {
+      "@id": "https://legistar.council.nyc.gov/Departments.aspx",
+      "@type": "Dataset",
+      "title": "NYC Council Legistar: Committees",
+      "description": "NYC Council Legistar: Committees, published by New York City Council.",
+      "identifier": "https://legistar.council.nyc.gov/Departments.aspx",
+      "contactPoint": {
+        "@type": "Kind",
+        "fn": "New York City Council",
+        "hasEmail": "mailto:correspondence@council.nyc.gov"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "New York City Council"
+      },
+      "landingPage": {
+        "@type": "Document",
+        "title": "NYC Council Legistar: Committees",
+        "accessURL": "https://legistar.council.nyc.gov/Departments.aspx"
       },
       "page": [
         {
@@ -85,8 +151,8 @@
     {
       "@id": "https://data.cityofnewyork.us/d/uvw5-9znb",
       "@type": "Dataset",
-      "title": "City Council Members (1999 to Present), NYC Open Data dataset uvw5-9znb",
-      "description": "City Council Members (1999 to Present), NYC Open Data dataset uvw5-9znb, published by New York City Council.",
+      "title": "City Council Members (1999 to Present)",
+      "description": "City Council Members (1999 to Present), published by New York City Council.",
       "identifier": "https://data.cityofnewyork.us/d/uvw5-9znb",
       "contactPoint": {
         "@type": "Kind",
@@ -99,7 +165,7 @@
       },
       "landingPage": {
         "@type": "Document",
-        "title": "City Council Members (1999 to Present), NYC Open Data dataset uvw5-9znb",
+        "title": "City Council Members (1999 to Present)",
         "accessURL": "https://data.cityofnewyork.us/d/uvw5-9znb"
       },
       "page": [
@@ -187,8 +253,8 @@
     {
       "@id": "https://council.nyc.gov/",
       "@type": "Dataset",
-      "title": "council.nyc.gov member pages and the Council's Bluesky starter pack; the account's own profile last",
-      "description": "council.nyc.gov member pages and the Council's Bluesky starter pack; the account's own profile last, published by New York City Council.",
+      "title": "NYC Council member pages and the Council's Bluesky starter pack",
+      "description": "NYC Council member pages and the Council's Bluesky starter pack, published by New York City Council.",
       "identifier": "https://council.nyc.gov/",
       "contactPoint": {
         "@type": "Kind",
@@ -201,7 +267,7 @@
       },
       "landingPage": {
         "@type": "Document",
-        "title": "council.nyc.gov member pages and the Council's Bluesky starter pack; the account's own profile last",
+        "title": "NYC Council member pages and the Council's Bluesky starter pack",
         "accessURL": "https://council.nyc.gov/"
       },
       "page": [
@@ -225,7 +291,7 @@
       "identifier": "https://github.com/BetaNYC/nyc-council-mcp/blob/HEAD/DATA-SOURCES.json#live",
       "contactPoint": {
         "@type": "Kind",
-        "fn": "BetaNYC (serves this dataset; report errors in the data to New York City Council: https://council.nyc.gov/legislation/api/; errors in this server: https://github.com/BetaNYC/nyc-council-mcp/issues)",
+        "fn": "BetaNYC (serves this dataset; report errors in the data to BetaNYC: https://github.com/BetaNYC/nyc-council-mcp/issues; errors in the original records to New York City Council: https://council.nyc.gov/legislation/api/)",
         "hasEmail": "mailto:lab@beta.nyc"
       },
       "publisher": {
@@ -275,8 +341,9 @@
         }
       ],
       "provenance": [
-        "Official record: yes, passed on as New York City Council publishes it.",
-        "Read-only requests to the Council's own API at the moment you ask. Needs LEGISTAR_TOKEN; a server without one has no live tools."
+        "BetaNYC modified this data: cleaned it and reshaped it. This copy should not be considered the official record. Official record: NYC Council Legistar Web API (Granicus), https://council.nyc.gov/legislation/api/",
+        "Read-only requests to the Council's own API at the moment you ask. Needs LEGISTAR_TOKEN; a server without one has no live tools.",
+        "Modified by BetaNYC: Member profile links the Council's record gets wrong are corrected from a checked list (the list is empty since 2026-11-12), and a profile link two members share is flagged. Upcoming-hearing summaries leave out empty fields and cut item titles longer than 300 characters; detail \"full\" returns the hearing record as the API sends it."
       ],
       "page": [
         {
@@ -289,13 +356,23 @@
         "@type": "Location",
         "prefLabel": "New York City Council"
       },
+      "wasGeneratedBy": [
+        {
+          "@type": "Activity",
+          "label": "cleaned"
+        },
+        {
+          "@type": "Activity",
+          "label": "reshaped"
+        }
+      ],
       "accrualPeriodicity": "continual",
       "rights": [
         "License: None stated by the publisher",
         "Credit: Source: New York City Council, Legistar.",
         "Terms of use: https://council.nyc.gov/legislation/api/"
       ],
-      "scopeNote": "Caveat: Legistar sometimes changes a meeting's status without updating its timestamp; upcoming_events checks status live when it can. Caveat: A known-bad Legistar profile link (PersonWWW2) is corrected from a small dated list in the code, with the original kept in PersonWWW2_upstream. Other values are passed on as the API returns them. Caveat: get_council_member adds BetaNYC's curated facts (topics party, wikidata, social) and, with a local index, districts (topic districts). Those are separate sources."
+      "scopeNote": "Caveat: Legistar sometimes changes a meeting's status without updating its timestamp; upcoming_events checks status live when it can. Caveat: A known-bad Legistar profile link (PersonWWW2) is corrected from a small dated list in the code, with the original kept in PersonWWW2_upstream. Upcoming-hearing summaries cut item titles longer than 300 characters and say so (EventItemTitleTruncated). Caveat: get_council_member adds BetaNYC's curated facts (topics party, wikidata, social) and, with a local index, districts (topic districts). Those are separate sources."
     },
     {
       "@id": "https://github.com/BetaNYC/nyc-council-mcp/blob/HEAD/DATA-SOURCES.json#bills",
@@ -305,7 +382,7 @@
       "identifier": "https://github.com/BetaNYC/nyc-council-mcp/blob/HEAD/DATA-SOURCES.json#bills",
       "contactPoint": {
         "@type": "Kind",
-        "fn": "BetaNYC (serves this dataset; report errors in this data to BetaNYC: https://github.com/BetaNYC/nyc-council-mcp/issues; errors in the original records to New York City Council: https://council.nyc.gov/legislation/api/)",
+        "fn": "BetaNYC (serves this dataset; report errors in the data to BetaNYC: https://github.com/BetaNYC/nyc-council-mcp/issues; errors in the original records to New York City Council: https://council.nyc.gov/legislation/api/)",
         "hasEmail": "mailto:lab@beta.nyc"
       },
       "publisher": {
@@ -321,11 +398,11 @@
       },
       "source": [
         {
-          "@id": "https://legistar.council.nyc.gov/",
+          "@id": "https://legistar.council.nyc.gov/Legislation.aspx",
           "@type": "Dataset",
-          "title": "NYC Council Legistar",
-          "description": "NYC Council Legistar, published by New York City Council.",
-          "identifier": "https://legistar.council.nyc.gov/",
+          "title": "NYC Council Legistar: Legislation",
+          "description": "NYC Council Legistar: Legislation, published by New York City Council.",
+          "identifier": "https://legistar.council.nyc.gov/Legislation.aspx",
           "contactPoint": {
             "@type": "Kind",
             "fn": "New York City Council",
@@ -337,8 +414,8 @@
           },
           "landingPage": {
             "@type": "Document",
-            "title": "NYC Council Legistar",
-            "accessURL": "https://legistar.council.nyc.gov/"
+            "title": "NYC Council Legistar: Legislation",
+            "accessURL": "https://legistar.council.nyc.gov/Legislation.aspx"
           },
           "page": [
             {
@@ -355,9 +432,9 @@
         }
       ],
       "provenance": [
-        "Official source: yes. This data is BetaNYC's, derived from it, not an official New York City Council record.",
+        "BetaNYC modified this data: reshaped it and counted or added up records. This copy should not be considered the official record. Official record: NYC Council Legistar: Legislation, https://legistar.council.nyc.gov/Legislation.aspx",
         "This server answers from a local SQLite index, with no network call. The index is built from a clone of jehiah/nyc_legislation (https://github.com/jehiah/nyc_legislation), an unofficial mirror that copies the Council's Legistar records through the Legistar API. Every local answer ends with a line naming when the index was built and the archive commit it was built from.",
-        "Changed by BetaNYC: Records are restructured into database tables with their values unchanged. aggregate_bills counts bills by a field, and co_sponsors counts the bills each pair of members sponsored together."
+        "Modified by BetaNYC: Records are restructured into database tables with their values unchanged. aggregate_bills counts bills by a field, and co_sponsors counts the bills each pair of members sponsored together."
       ],
       "page": [
         {
@@ -396,7 +473,7 @@
       "identifier": "https://github.com/BetaNYC/nyc-council-mcp/blob/HEAD/DATA-SOURCES.json#votes",
       "contactPoint": {
         "@type": "Kind",
-        "fn": "BetaNYC (serves this dataset; report errors in this data to BetaNYC: https://github.com/BetaNYC/nyc-council-mcp/issues; errors in the original records to New York City Council: https://council.nyc.gov/legislation/api/)",
+        "fn": "BetaNYC (serves this dataset; report errors in the data to BetaNYC: https://github.com/BetaNYC/nyc-council-mcp/issues; errors in the original records to New York City Council: https://council.nyc.gov/legislation/api/)",
         "hasEmail": "mailto:lab@beta.nyc"
       },
       "publisher": {
@@ -412,11 +489,11 @@
       },
       "source": [
         {
-          "@id": "https://legistar.council.nyc.gov/",
+          "@id": "https://legistar.council.nyc.gov/Legislation.aspx",
           "@type": "Dataset",
-          "title": "NYC Council Legistar",
-          "description": "NYC Council Legistar, published by New York City Council.",
-          "identifier": "https://legistar.council.nyc.gov/",
+          "title": "NYC Council Legistar: Legislation",
+          "description": "NYC Council Legistar: Legislation, published by New York City Council.",
+          "identifier": "https://legistar.council.nyc.gov/Legislation.aspx",
           "contactPoint": {
             "@type": "Kind",
             "fn": "New York City Council",
@@ -428,8 +505,8 @@
           },
           "landingPage": {
             "@type": "Document",
-            "title": "NYC Council Legistar",
-            "accessURL": "https://legistar.council.nyc.gov/"
+            "title": "NYC Council Legistar: Legislation",
+            "accessURL": "https://legistar.council.nyc.gov/Legislation.aspx"
           },
           "page": [
             {
@@ -446,9 +523,9 @@
         }
       ],
       "provenance": [
-        "Official source: yes. This data is BetaNYC's, derived from it, not an official New York City Council record.",
+        "BetaNYC modified this data: reshaped it and counted or added up records. This copy should not be considered the official record. Official record: NYC Council Legistar: Legislation, https://legistar.council.nyc.gov/Legislation.aspx",
         "This server answers from a local SQLite index, with no network call. The index is built from a clone of jehiah/nyc_legislation (https://github.com/jehiah/nyc_legislation), an unofficial mirror that copies the Council's Legistar records through the Legistar API. Every local answer ends with a line naming when the index was built and the archive commit it was built from.",
-        "Changed by BetaNYC: Records are restructured into database tables with their values unchanged. vote_breakdown tallies each roll call's positions (affirmative, negative, abstain), never counting an absence as a vote."
+        "Modified by BetaNYC: Records are restructured into database tables with their values unchanged. vote_breakdown tallies each roll call's positions (affirmative, negative, abstain), never counting an absence as a vote."
       ],
       "page": [
         {
@@ -487,7 +564,7 @@
       "identifier": "https://github.com/BetaNYC/nyc-council-mcp/blob/HEAD/DATA-SOURCES.json#events",
       "contactPoint": {
         "@type": "Kind",
-        "fn": "BetaNYC (serves this dataset; report errors in the data to New York City Council: https://council.nyc.gov/legislation/api/; errors in this server: https://github.com/BetaNYC/nyc-council-mcp/issues)",
+        "fn": "BetaNYC (serves this dataset; report errors in the data to BetaNYC: https://github.com/BetaNYC/nyc-council-mcp/issues; errors in the original records to New York City Council: https://council.nyc.gov/legislation/api/)",
         "hasEmail": "mailto:lab@beta.nyc"
       },
       "publisher": {
@@ -503,11 +580,11 @@
       },
       "source": [
         {
-          "@id": "https://legistar.council.nyc.gov/",
+          "@id": "https://legistar.council.nyc.gov/Calendar.aspx",
           "@type": "Dataset",
-          "title": "NYC Council Legistar",
-          "description": "NYC Council Legistar, published by New York City Council.",
-          "identifier": "https://legistar.council.nyc.gov/",
+          "title": "NYC Council Legistar: Calendar",
+          "description": "NYC Council Legistar: Calendar, published by New York City Council.",
+          "identifier": "https://legistar.council.nyc.gov/Calendar.aspx",
           "contactPoint": {
             "@type": "Kind",
             "fn": "New York City Council",
@@ -519,8 +596,8 @@
           },
           "landingPage": {
             "@type": "Document",
-            "title": "NYC Council Legistar",
-            "accessURL": "https://legistar.council.nyc.gov/"
+            "title": "NYC Council Legistar: Calendar",
+            "accessURL": "https://legistar.council.nyc.gov/Calendar.aspx"
           },
           "page": [
             {
@@ -537,9 +614,9 @@
         }
       ],
       "provenance": [
-        "Official record: yes, reshaped by BetaNYC (values unchanged).",
+        "BetaNYC modified this data: reshaped it. This copy should not be considered the official record. Official record: NYC Council Legistar: Calendar, https://legistar.council.nyc.gov/Calendar.aspx",
         "This server answers from a local SQLite index, with no network call. The index is built from a clone of jehiah/nyc_legislation (https://github.com/jehiah/nyc_legislation), an unofficial mirror that copies the Council's Legistar records through the Legistar API. Every local answer ends with a line naming when the index was built and the archive commit it was built from.",
-        "Reshaped by BetaNYC (values unchanged): Records are restructured into database tables with their values unchanged."
+        "Modified by BetaNYC: Records are restructured into database tables with their values unchanged."
       ],
       "page": [
         {
@@ -574,7 +651,7 @@
       "identifier": "https://github.com/BetaNYC/nyc-council-mcp/blob/HEAD/DATA-SOURCES.json#committees",
       "contactPoint": {
         "@type": "Kind",
-        "fn": "BetaNYC (serves this dataset; report errors in this data to BetaNYC: https://github.com/BetaNYC/nyc-council-mcp/issues; errors in the original records to New York City Council: https://council.nyc.gov/legislation/api/)",
+        "fn": "BetaNYC (serves this dataset; report errors in the data to BetaNYC: https://github.com/BetaNYC/nyc-council-mcp/issues; errors in the original records to New York City Council: https://council.nyc.gov/legislation/api/)",
         "hasEmail": "mailto:lab@beta.nyc"
       },
       "publisher": {
@@ -590,11 +667,11 @@
       },
       "source": [
         {
-          "@id": "https://legistar.council.nyc.gov/",
+          "@id": "https://legistar.council.nyc.gov/Departments.aspx",
           "@type": "Dataset",
-          "title": "NYC Council Legistar",
-          "description": "NYC Council Legistar, published by New York City Council.",
-          "identifier": "https://legistar.council.nyc.gov/",
+          "title": "NYC Council Legistar: Committees",
+          "description": "NYC Council Legistar: Committees, published by New York City Council.",
+          "identifier": "https://legistar.council.nyc.gov/Departments.aspx",
           "contactPoint": {
             "@type": "Kind",
             "fn": "New York City Council",
@@ -606,8 +683,8 @@
           },
           "landingPage": {
             "@type": "Document",
-            "title": "NYC Council Legistar",
-            "accessURL": "https://legistar.council.nyc.gov/"
+            "title": "NYC Council Legistar: Committees",
+            "accessURL": "https://legistar.council.nyc.gov/Departments.aspx"
           },
           "page": [
             {
@@ -624,9 +701,9 @@
         }
       ],
       "provenance": [
-        "Official source: yes. This data is BetaNYC's, derived from it, not an official New York City Council record.",
+        "BetaNYC modified this data: reshaped it and counted or added up records. This copy should not be considered the official record. Official record: NYC Council Legistar: Committees, https://legistar.council.nyc.gov/Departments.aspx",
         "This server answers from a local SQLite index, with no network call. The index is built from a clone of jehiah/nyc_legislation (https://github.com/jehiah/nyc_legislation), an unofficial mirror that copies the Council's Legistar records through the Legistar API. Every local answer ends with a line naming when the index was built and the archive commit it was built from.",
-        "Changed by BetaNYC: Records are restructured into database tables with their values unchanged. list_committees counts the bills and meetings recorded for each body."
+        "Modified by BetaNYC: Records are restructured into database tables with their values unchanged. list_committees counts the bills and meetings recorded for each body."
       ],
       "page": [
         {
@@ -665,7 +742,7 @@
       "identifier": "https://github.com/BetaNYC/nyc-council-mcp/blob/HEAD/DATA-SOURCES.json#districts",
       "contactPoint": {
         "@type": "Kind",
-        "fn": "BetaNYC (serves this dataset; report errors in this data to BetaNYC: https://github.com/BetaNYC/nyc-council-mcp/issues; errors in the original records to NYC Open Data: https://www.nyc.gov/opendata/contact-us)",
+        "fn": "BetaNYC (serves this dataset; report errors in the data to BetaNYC: https://github.com/BetaNYC/nyc-council-mcp/issues; errors in the original records to NYC Open Data: https://www.nyc.gov/opendata/contact-us)",
         "hasEmail": "mailto:lab@beta.nyc"
       },
       "publisher": {
@@ -683,8 +760,8 @@
         {
           "@id": "https://data.cityofnewyork.us/d/uvw5-9znb",
           "@type": "Dataset",
-          "title": "City Council Members (1999 to Present), NYC Open Data dataset uvw5-9znb",
-          "description": "City Council Members (1999 to Present), NYC Open Data dataset uvw5-9znb, published by New York City Council.",
+          "title": "City Council Members (1999 to Present)",
+          "description": "City Council Members (1999 to Present), published by New York City Council.",
           "identifier": "https://data.cityofnewyork.us/d/uvw5-9znb",
           "contactPoint": {
             "@type": "Kind",
@@ -697,7 +774,7 @@
           },
           "landingPage": {
             "@type": "Document",
-            "title": "City Council Members (1999 to Present), NYC Open Data dataset uvw5-9znb",
+            "title": "City Council Members (1999 to Present)",
             "accessURL": "https://data.cityofnewyork.us/d/uvw5-9znb"
           },
           "page": [
@@ -715,9 +792,9 @@
         }
       ],
       "provenance": [
-        "Official source: yes. This data is BetaNYC's, derived from it, not an official New York City Council record.",
+        "BetaNYC modified this data: reshaped it and joined it with other data. This copy should not be considered the official record. Official record: City Council Members (1999 to Present) (New York City Council), https://data.cityofnewyork.us/d/uvw5-9znb",
         "The Council publishes this dataset on NYC Open Data, the City's open data portal. A copy ships with this server (data/council-member-terms.json) and is loaded into the local index. A monthly job re-fetches it and opens a pull request when the rows change.",
-        "Changed by BetaNYC: The rows are used as published, loaded into the index and joined to Legistar people on person ID, never on names. district_member works out who held a district on a date from them."
+        "Modified by BetaNYC: The rows are used as published, loaded into the index and joined to Legistar people on person ID, never on names. district_member works out who held a district on a date from them."
       ],
       "page": [
         {
@@ -756,7 +833,7 @@
       "identifier": "https://github.com/BetaNYC/nyc-council-mcp/blob/HEAD/DATA-SOURCES.json#party",
       "contactPoint": {
         "@type": "Kind",
-        "fn": "BetaNYC (serves this dataset; report errors in this data to BetaNYC: https://github.com/BetaNYC/nyc-council-mcp/issues; errors in the original records to NYC Board of Elections: https://www.vote.nyc/index%2Ephp/page/contact-us)",
+        "fn": "BetaNYC (serves this dataset; report errors in the data to BetaNYC: https://github.com/BetaNYC/nyc-council-mcp/issues; errors in the original records to NYC Board of Elections: https://www.vote.nyc/index%2Ephp/page/contact-us)",
         "hasEmail": "mailto:lab@beta.nyc"
       },
       "publisher": {
@@ -807,9 +884,9 @@
         }
       ],
       "provenance": [
-        "Not an official record: curated by BetaNYC from material published by NYC Board of Elections.",
+        "BetaNYC produced this. It is not an official record. Built from: NYC Board of Elections certified results, https://www.vote.nyc/page/election-results-summary",
         "Curated by BetaNYC: lines and votes copied from the Board's certified 'Statement and Return Report for Certification' for the election that gave each member their seat, with a link to that document on each row. Never inferred from a caucus or from Wikidata. Shipped in data/council-party.json; nothing is looked up at run time.",
-        "Changed by BetaNYC: Hand-collected per member from certified results, then re-checked: all 50 general-election rows were compared by script with the Board's CSVs (no differences). Each row records its source, check date, status and second check."
+        "Modified by BetaNYC: Hand-collected per member from certified results, then re-checked: all 50 general-election rows were compared by script with the Board's CSVs (no differences). Each row records its source, check date, status and second check."
       ],
       "page": [
         {
@@ -844,7 +921,7 @@
       "identifier": "https://github.com/BetaNYC/nyc-council-mcp/blob/HEAD/DATA-SOURCES.json#wikidata",
       "contactPoint": {
         "@type": "Kind",
-        "fn": "BetaNYC (serves this dataset; report errors in this data to BetaNYC: https://github.com/BetaNYC/nyc-council-mcp/issues; errors in the original records to Wikimedia Foundation: https://www.wikidata.org/)",
+        "fn": "BetaNYC (serves this dataset; report errors in the data to BetaNYC: https://github.com/BetaNYC/nyc-council-mcp/issues; errors in the original records to Wikimedia Foundation: https://www.wikidata.org/)",
         "hasEmail": "mailto:lab@beta.nyc"
       },
       "publisher": {
@@ -896,9 +973,9 @@
         }
       ],
       "provenance": [
-        "Not an official record: curated by BetaNYC from material published by Wikimedia Foundation.",
+        "BetaNYC produced this. It is not an official record. Built from: Wikidata and English Wikipedia (Wikimedia Foundation), https://www.wikidata.org/",
         "Curated by BetaNYC: each item was checked to be a person whose English Wikipedia article names their Council district. Shipped in data/council-wikidata.json; nothing is looked up at run time.",
-        "Changed by BetaNYC: Hand-matched per member, then every row re-checked against Wikidata and Wikipedia. Party is not taken from Wikidata."
+        "Modified by BetaNYC: Hand-matched per member, then every row re-checked against Wikidata and Wikipedia. Party is not taken from Wikidata."
       ],
       "page": [
         {
@@ -933,7 +1010,7 @@
       "identifier": "https://github.com/BetaNYC/nyc-council-mcp/blob/HEAD/DATA-SOURCES.json#social",
       "contactPoint": {
         "@type": "Kind",
-        "fn": "BetaNYC (serves this dataset; report errors in this data to BetaNYC: https://github.com/BetaNYC/nyc-council-mcp/issues; errors in the original records to New York City Council: https://council.nyc.gov/)",
+        "fn": "BetaNYC (serves this dataset; report errors in the data to BetaNYC: https://github.com/BetaNYC/nyc-council-mcp/issues; errors in the original records to New York City Council: https://council.nyc.gov/)",
         "hasEmail": "mailto:lab@beta.nyc"
       },
       "publisher": {
@@ -951,8 +1028,8 @@
         {
           "@id": "https://council.nyc.gov/",
           "@type": "Dataset",
-          "title": "council.nyc.gov member pages and the Council's Bluesky starter pack; the account's own profile last",
-          "description": "council.nyc.gov member pages and the Council's Bluesky starter pack; the account's own profile last, published by New York City Council.",
+          "title": "NYC Council member pages and the Council's Bluesky starter pack",
+          "description": "NYC Council member pages and the Council's Bluesky starter pack, published by New York City Council.",
           "identifier": "https://council.nyc.gov/",
           "contactPoint": {
             "@type": "Kind",
@@ -965,7 +1042,7 @@
           },
           "landingPage": {
             "@type": "Document",
-            "title": "council.nyc.gov member pages and the Council's Bluesky starter pack; the account's own profile last",
+            "title": "NYC Council member pages and the Council's Bluesky starter pack",
             "accessURL": "https://council.nyc.gov/"
           },
           "page": [
@@ -983,9 +1060,9 @@
         }
       ],
       "provenance": [
-        "Not an official record: curated by BetaNYC from material published by New York City Council.",
+        "BetaNYC produced this. It is not an official record. Built from: NYC Council member pages and the Council's Bluesky starter pack, https://council.nyc.gov/",
         "Curated by BetaNYC: office accounts only, never campaign or personal. 'verified' means council.nyc.gov links it, or it is in the Council's Bluesky starter pack and is not a personal or campaign account; 'likely' means only the account's own bio says it is the office, and nothing official confirms it. Shipped in data/council-social.json; nothing is looked up at run time.",
-        "Changed by BetaNYC: Hand-collected per member. Every 'likely' account was re-checked independently for an official source naming the handle, and each likely account records the result in second_check."
+        "Modified by BetaNYC: Hand-collected per member. Every 'likely' account was re-checked independently for an official source naming the handle, and each likely account records the result in second_check."
       ],
       "page": [
         {
