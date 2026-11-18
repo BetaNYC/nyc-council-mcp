@@ -30,6 +30,38 @@ import { json } from "./json.js";
 import { withCurated } from "../curated.js";
 import { annotateTools } from "../betanyc-tools.js";
 
+type LocalResult = { content: Array<{ type: string; text: string }>; isError?: boolean };
+
+/** Each list tool's default and hard maximum (#86). get_event_bills pages with a total instead. */
+export const LIST_LIMITS: Readonly<Record<string, { default: number; max: number; how: string }>> = {
+  search_legislation: { default: 25, max: 100, how: "add filters (status, committee) or more words" },
+  search_bills: { default: 25, max: 100, how: "add filters (status, committee) or more words" },
+  search_events: { default: 25, max: 100, how: "add more words" },
+  recent_bills: { default: 50, max: 200, how: "use fewer days" },
+  upcoming_events: { default: 50, max: 200, how: "use fewer days" },
+  get_voting_record: { default: 50, max: 500, how: "ask about one bill with vote_breakdown" },
+  co_sponsors: { default: 20, max: 100, how: "read the top of the list" },
+};
+
+const limitArg = (tool: string) => z.number().int().min(1).max(LIST_LIMITS[tool].max).optional();
+
+/**
+ * A list answer (#86): the query asked for limit + 1 rows, so one more than the limit means more
+ * exist. The JSON stays a plain array, cut at the limit; a second block says more are available
+ * and how to get them.
+ */
+function capped(tool: string, rows: unknown[], limit: number | undefined): LocalResult {
+  const { default: def, max, how } = LIST_LIMITS[tool];
+  const n = limit ?? def;
+  if (rows.length <= n) return json(rows);
+  const next = n < max ? `Raise limit (up to ${max}) or ${how}.` : `${how[0].toUpperCase()}${how.slice(1)}.`;
+  return {
+    content: [json(rows.slice(0, n)).content[0], { type: "text", text: `Showing the first ${n} results; more are available. ${next}` }],
+  };
+}
+
+const plusOne = (tool: string, limit: number | undefined) => (limit ?? LIST_LIMITS[tool].default) + 1;
+
 /** A real calendar date, YYYY-MM-DD (rejects 2026-02-30). */
 const isoDay = z
   .string()
@@ -159,7 +191,7 @@ const DEFS = [
       additionalProperties: false,
       properties: {
         query: { type: "string", description: "Search terms" },
-        limit: { type: "number", description: "Max results (default 25)" },
+        limit: { type: "number", description: "Max results (default 25, max 100)" },
       },
       required: ["query"],
     },
@@ -179,7 +211,7 @@ const DEFS = [
       additionalProperties: false,
       properties: {
         days: { type: "number", description: "Look-back window in days (default 30)" },
-        limit: { type: "number", description: "Max results (default 50)" },
+        limit: { type: "number", description: "Max results (default 50, max 200)" },
       },
     },
   },
@@ -195,7 +227,7 @@ const DEFS = [
       additionalProperties: false,
       properties: {
         days: { type: "number", description: "Days ahead to look (default 14)" },
-        limit: { type: "number", description: "Max results (default 50)" },
+        limit: { type: "number", description: "Max results (default 50, max 200)" },
       },
     },
   },
@@ -238,7 +270,7 @@ const DEFS = [
       additionalProperties: false,
       properties: {
         member_name: { type: "string", description: "Full or partial council member name" },
-        limit: { type: "number", description: "Max results (default 50)" },
+        limit: { type: "number", description: "Max results (default 50, max 500)" },
       },
       required: ["member_name"],
     },
@@ -266,7 +298,7 @@ const DEFS = [
       additionalProperties: false,
       properties: {
         member_name: { type: "string", description: "Full or partial council member name" },
-        limit: { type: "number", description: "Number of top co-sponsors to return (default 20)" },
+        limit: { type: "number", description: "Number of top co-sponsors to return (default 20, max 100)" },
       },
       required: ["member_name"],
     },
@@ -321,22 +353,22 @@ export function handleLocalTool(
         const { query, limit, agency, status, committee } = z
           .object({
             query: z.string(),
-            limit: z.number().max(100).optional(),
+            limit: limitArg(name),
             agency: z.string().optional(),
             status: z.string().optional(),
             committee: z.string().optional(),
           })
           .strict().parse(args);
-        const results = searchBills(db, query, { limit, agency, status, committee });
-        return json(results);
+        const results = searchBills(db, query, { limit: plusOne(name, limit), agency, status, committee });
+        return capped(name, results, limit);
       }
 
       case "search_events": {
         const { query, limit } = z
-          .object({ query: z.string(), limit: z.number().optional() })
+          .object({ query: z.string(), limit: limitArg(name) })
           .strict().parse(args);
-        const results = searchEvents(db, query, { limit });
-        return json(results);
+        const results = searchEvents(db, query, { limit: plusOne(name, limit) });
+        return capped(name, results, limit);
       }
 
       case "list_committees": {
@@ -347,18 +379,18 @@ export function handleLocalTool(
 
       case "recent_bills": {
         const { days, limit } = z
-          .object({ days: z.number().optional(), limit: z.number().optional() })
+          .object({ days: z.number().optional(), limit: limitArg(name) })
           .strict().parse(args ?? {});
-        const results = recentBills(db, { days, limit });
-        return json(results);
+        const results = recentBills(db, { days, limit: plusOne(name, limit) });
+        return capped(name, results, limit);
       }
 
       case "upcoming_events": {
         const { days, limit } = z
-          .object({ days: z.number().optional(), limit: z.number().optional() })
+          .object({ days: z.number().optional(), limit: limitArg(name) })
           .strict().parse(args ?? {});
-        const results = upcomingEvents(db, { days, limit });
-        return json(results);
+        const results = upcomingEvents(db, { days, limit: plusOne(name, limit) });
+        return capped(name, results, limit);
       }
 
       case "aggregate_bills": {
@@ -377,10 +409,10 @@ export function handleLocalTool(
 
       case "get_voting_record": {
         const { member_name, limit } = z
-          .object({ member_name: z.string(), limit: z.number().optional() })
+          .object({ member_name: z.string(), limit: limitArg(name) })
           .strict().parse(args);
-        const results = getVotingRecord(db, member_name, { limit });
-        return json(results);
+        const results = getVotingRecord(db, member_name, { limit: plusOne(name, limit) });
+        return capped(name, results, limit);
       }
 
       case "get_bill_history": {
@@ -391,10 +423,10 @@ export function handleLocalTool(
 
       case "co_sponsors": {
         const { member_name, limit } = z
-          .object({ member_name: z.string(), limit: z.number().optional() })
+          .object({ member_name: z.string(), limit: limitArg(name) })
           .strict().parse(args);
-        const results = coSponsors(db, member_name, { limit });
-        return json(results);
+        const results = coSponsors(db, member_name, { limit: plusOne(name, limit) });
+        return capped(name, results, limit);
       }
 
       case "get_bill_hearings": {

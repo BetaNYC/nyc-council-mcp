@@ -17,12 +17,14 @@ import {
   listRecentLegislation,
   legistarUrl,
   summarizeHearing,
+  UPCOMING_HEARINGS_MAX,
   type LegistarMatter,
 } from "../legistar.js";
 import { failure } from "./errors.js";
 
 import { json } from "./json.js";
-import { annotateTools } from "../betanyc-tools.js";
+import { annotateTools, provenance } from "../betanyc-tools.js";
+import { SOURCE_LINK, LIVE_SOURCE } from "./source-links.js";
 
 // Add a human-openable legistar_url to a matter record (any type — see
 // legistarUrl). get_bill_history returns MatterHistory rows, not matters, so
@@ -166,11 +168,36 @@ const LIVE_TOOL_DEFS = annotateTools([
 
 export { LIVE_TOOL_DEFS };
 
-export async function handleLiveTool(
+type LiveResult = { content: Array<{ type: string; text: string }>; isError?: boolean };
+
+/** Every live data answer ends with its source, a link and the time it was fetched (#84, #85). */
+function withLiveSource(name: string, res: LiveResult): LiveResult {
+  if (res.isError) return res;
+  const p = provenance({ ...LIVE_SOURCE, sourceUrl: SOURCE_LINK[name], kind: "live" });
+  return { ...res, content: [...res.content, { type: "text", text: p.text }] };
+}
+
+/** A list cut at `limit` (#86): the caller fetched limit + 1 rows, so one more means more exist. */
+function capped(rows: unknown[], limit: number, max: number, how: string): LiveResult {
+  if (rows.length <= limit) return json(rows);
+  const raise = limit < max ? `Raise limit (up to ${max}) or ${how}.` : `${how[0].toUpperCase()}${how.slice(1)}.`;
+  return {
+    content: [
+      json(rows.slice(0, limit)).content[0],
+      { type: "text", text: `Showing the first ${limit} results; more are available. ${raise}` },
+    ],
+  };
+}
+
+export async function handleLiveTool(name: string, args: Record<string, unknown>, token: string): Promise<LiveResult> {
+  return withLiveSource(name, await runLiveTool(name, args, token));
+}
+
+async function runLiveTool(
   name: string,
   args: Record<string, unknown>,
   token: string
-): Promise<{ content: Array<{ type: string; text: string }>; isError?: boolean }> {
+): Promise<LiveResult> {
   try {
     switch (name) {
       case "get_bill": {
@@ -226,7 +253,16 @@ export async function handleLiveTool(
         );
         // #22: short shape by default; the raw payload only on request.
         const out = (detail ?? "summary") === "full" ? results : results.map(summarizeHearing);
-        return json(out);
+        if (results.length < UPCOMING_HEARINGS_MAX) return json(out);
+        return {
+          content: [
+            json(out).content[0],
+            {
+              type: "text",
+              text: `Showing the first ${UPCOMING_HEARINGS_MAX} meetings, the most Legistar is asked for; there may be more. Use a smaller days_ahead.`,
+            },
+          ],
+        };
       }
 
       case "get_council_member": {
@@ -249,8 +285,8 @@ export async function handleLiveTool(
 
       case "get_committee": {
         const { name: committeeName } = z.object({ name: z.string() }).strict().parse(args);
-        const results = await getCommittee(token, committeeName);
-        return json(results);
+        const results = await getCommittee(token, committeeName, 11);
+        return capped(results, 10, 10, "use more of the committee's name");
       }
 
       case "get_votes": {
@@ -261,10 +297,10 @@ export async function handleLiveTool(
 
       case "list_recent_legislation": {
         const { limit } = z
-          .object({ limit: z.number().max(50).optional() })
+          .object({ limit: z.number().int().min(1).max(50).optional() })
           .strict().parse(args ?? {});
-        const results = await listRecentLegislation(token, limit ?? 25);
-        return json(results.map(withLegistarUrl));
+        const results = await listRecentLegislation(token, (limit ?? 25) + 1);
+        return capped(results.map(withLegistarUrl), limit ?? 25, 50, "use search_legislation_live or recent_bills");
       }
 
       default:
@@ -299,22 +335,23 @@ export const LIVE_SEARCH_TOOL_DEF = annotateTools([{
   },
 }], true)[0];
 
-export async function handleLiveSearch(
-  args: Record<string, unknown>,
-  token: string
-): Promise<{ content: Array<{ type: string; text: string }>; isError?: boolean }> {
+export async function handleLiveSearch(args: Record<string, unknown>, token: string): Promise<LiveResult> {
+  return withLiveSource(LIVE_SEARCH_TOOL_DEF.name, await runLiveSearch(args, token));
+}
+
+async function runLiveSearch(args: Record<string, unknown>, token: string): Promise<LiveResult> {
   // Every failure is an isError answer, as in handleLiveTool. Re-throwing turned a bad
   // argument or an upstream failure into an MCP protocol error (found on home-hearth, 2026-11-13).
   try {
     const { query, limit, order } = z
       .object({
         query: z.string(),
-        limit: z.number().max(50).optional(),
+        limit: z.number().int().min(1).max(50).optional(),
         order: z.enum(["date_desc", "date_asc"]).optional(),
       })
       .strict().parse(args);
-    const results = await searchLegislation(token, query, limit ?? 20, order ?? "date_desc");
-    return json(results.map(withLegistarUrl));
+    const results = await searchLegislation(token, query, (limit ?? 20) + 1, order ?? "date_desc");
+    return capped(results.map(withLegistarUrl), limit ?? 20, 50, "add words to the query, or set order='date_asc' for the oldest");
   } catch (err) {
     return failure(err, LIVE_SEARCH_TOOL_DEF.name, [LIVE_SEARCH_TOOL_DEF], token);
   }

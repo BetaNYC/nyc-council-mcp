@@ -54,7 +54,9 @@ test("get_council_member with no match says former members are not searched", as
     assert.match(res.content[1].text, /No active/);
     assert.match(res.content[1].text, /former members/i);
     const hit = await handleLiveTool("get_council_member", { name: "Gale Brewer" }, "t");
-    assert.equal(hit.content.length, 1, "no note when someone matches");
+    // Since #84 every live answer ends with its source line; the no-match note is not there.
+    assert.equal(hit.content.length, 2, "no note when someone matches");
+    assert.match(hit.content[1].text, /^Source: /);
   } finally {
     global.fetch = saved;
   }

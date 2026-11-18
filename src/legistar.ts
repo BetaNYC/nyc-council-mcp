@@ -569,6 +569,9 @@ export async function getEventStatuses(
   return legistarFetch(url);
 }
 
+/** The most meetings get_upcoming_hearings asks Legistar for ($top). */
+export const UPCOMING_HEARINGS_MAX = 50;
+
 export async function getUpcomingHearings(
   token: string,
   daysAhead = 14,
@@ -581,7 +584,7 @@ export async function getUpcomingHearings(
   const url = buildUrl("/events", token, {
     $filter: `EventDate ge datetime'${from}' and EventDate le datetime'${to}'`,
     $orderby: "EventDate asc",
-    $top: "50",
+    $top: String(UPCOMING_HEARINGS_MAX),
   });
   const events = await legistarFetch<LegistarEvent[]>(url);
 
@@ -662,11 +665,12 @@ export async function getCouncilMember(
 
 export async function getCommittee(
   token: string,
-  name: string
+  name: string,
+  limit = 10
 ): Promise<LegistarBody[]> {
   const url = buildUrl("/bodies", token, {
     $filter: `substringof('${odataString(name)}',BodyName) and BodyActiveFlag eq 1`,
-    $top: "10",
+    $top: String(limit),
   });
   return legistarFetch<LegistarBody[]>(url);
 }

@@ -23,6 +23,8 @@ The local index holds every matter in the [jehiah/nyc_legislation](https://githu
 ## What's new in 2.9.1 (not yet released)
 
 - **Every tool says it only reads.** Each tool carries MCP annotations: a title, `readOnlyHint: true`, and `openWorldHint` (true when it calls the live Legistar API). An AI app can use them to skip asking before it runs a tool.
+- **Every answer says where it came from.** Each answer ends with a source line: the source, how current it is (when the local index was built, or when a live answer was fetched) and a link to the Council's or the City's page.
+- **Lists say when there is more.** Every list tool has a hard maximum, and when more results exist than the limit, the answer says so and how to get the rest.
 - **Clearer failures.** When Legistar is slow or down, a live tool gives up after 30 seconds, retries briefly when Legistar asks it to wait, and says in a plain sentence what went wrong and what to try. Your Legistar token never appears in an error.
 - **BetaNYC's shared module 1.5.0.** `about_data` gives each source one of three answers on whether it is official.
 
@@ -174,7 +176,7 @@ npx @betanyc/nyc-council-mcp index \
 
 > **Note:** The local index is only as current as your last index run — run the daily cron above and it stays about a day behind live Legistar; leave it for a month and it is a month stale. The upstream archive itself updates most weekdays. For current status and upcoming hearings, use the live API tools (`get_bill`, `get_upcoming_hearings`).
 >
-> Every local answer ends with a **source line**: when the index was built and which `jehiah/nyc_legislation` commit it came from, e.g. `Source: local index built 2026-11-12T11:30:07Z from jehiah/nyc_legislation@9e52935 (archive commit 2026-11-11T23:38:10Z).` It is a second text item, after the JSON. With no `LEGISTAR_TOKEN`, the line also says the answer was not checked live, and that an empty answer means "not in this index", not "does not exist".
+> Every local answer ends with a **source line**: when the index was built and which `jehiah/nyc_legislation` commit it came from, e.g. `Source: local index built 2026-11-12T11:30:07Z from jehiah/nyc_legislation@9e52935 (archive commit 2026-11-11T23:38:10Z). Link: https://legistar.council.nyc.gov/Legislation.aspx` It is the last text item, after the JSON. The link is the Council's page for that kind of data (legislation, calendar, committees) or, for districts, the City's dataset page; `district_member` and `get_member_roles` also give the council terms file's fetch date. Live answers end with the same kind of line: the source, the time it was fetched for this answer, and a link. With no `LEGISTAR_TOKEN`, the line also says the answer was not checked live, and that an empty answer means "not in this index", not "does not exist".
 >
 > **Why upcoming meeting status is checked live:** Legistar can change a meeting's status without updating its last-modified time. Event 22725 went from Final to Deferred with its timestamp still 2026-09-10, so the archive never fetched it again. On 2026-11-12, 10 of 658 meetings in 2026 differed this way, all Final → Deferred.
 
@@ -364,7 +366,7 @@ All votes cast by a council member.
 | Parameter | Type | Required | Default | Description |
 |---|---|---|---|---|
 | `member_name` | string | yes | — | Full or partial name |
-| `limit` | number | no | 50 | Max results |
+| `limit` | number | no | 50 | Max results (max 500) |
 
 #### `co_sponsors`
 
@@ -520,7 +522,8 @@ Why this shape, so nobody re-attempts the obvious-looking fix:
 - **`curated` is BetaNYC's work, not an official record.** The Wikidata/Wikipedia link, party lines and office social accounts in each member's `curated` block were checked by hand on the date shown, against the source given. A blank stays `null`. See [`data/README.md`](data/README.md).
 - **Districts come from a snapshot.** `district_member` and the `district` field read the City's `uvw5-9znb` file as shipped, with its fetch date in every answer. The City updates that file late: on 2026-11-12 it had no term for Carl Wilson, a Council Member since 2026-05-13, so District 3 showed vacant. A vacant answer names such people under `unlisted_council_members`; check council.nyc.gov before saying a seat is empty. District lines are redrawn, so a past member's district number may not match today's map.
 - **`search_bills` is an alias of `search_legislation`.** Both return every matter type, not only bills.
-- **Local answers end with a source line** saying when the index was built and from which archive commit. An empty local answer means "not in this index", not "does not exist".
+- **Every answer ends with a source line**: local answers say when the index was built and from which archive commit, live answers when they were fetched, and both give a link to check. An empty local answer means "not in this index", not "does not exist".
+- **Lists stop at a limit and say so.** Each list tool has a default and a hard maximum, given in its `limit` description. When there are more results than the limit, a second text item after the JSON says "Showing the first N results; more are available" and how to get the rest.
 
 ---
 

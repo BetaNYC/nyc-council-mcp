@@ -234,7 +234,7 @@ See README for full setup instructions.
         );
       }
       // #25: say when the index was built (and, with no token, that it is unchecked).
-      return withSourceNote(res, db, { hasLive: Boolean(mode.hasLive && mode.token) });
+      return withSourceNote(res, db, { hasLive: Boolean(mode.hasLive && mode.token), tool: name });
     }
 
     // Route to live search alias

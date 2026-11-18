@@ -55,6 +55,19 @@ MCP practices (epic #95):
   no error built for a request carries its URL, and anything the network layer or Legistar says
   is scrubbed of the token (#87). Tests send failures that echo the token through every live
   tool.
+- Every data answer ends with a source line with a link (#84) and an as-of (#85). Live answers:
+  `provenance()` from the shared module, naming the Legistar Web API, the time it was fetched,
+  and the Council's Legislation, Calendar, Departments or People page (`src/tools/source-links.ts`).
+  Local answers: the existing source line (index build time and archive commit) now ends with
+  the same kind of link, and `district_member` and `get_member_roles` add the council terms
+  file's fetch date.
+- Lists (#86): `search_events` (max 100), `recent_bills` (200), `upcoming_events` (200),
+  `get_voting_record` (500) and `co_sponsors` (100) get a hard maximum; limits must be whole
+  numbers of at least 1. Every list tool fetches one more row than its limit and, when there
+  are more, adds "Showing the first N results; more are available" and how to get the rest, as
+  a second text item; the JSON stays an array. `get_upcoming_hearings` says so when it hits
+  Legistar's 50-meeting cap, and `get_committee` when more than 10 committees match.
+  `upcoming_events` keeps that note when it checks status live.
 
 ## [2.9.0] - 2026-11-13
 

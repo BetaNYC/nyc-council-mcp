@@ -6,6 +6,7 @@ import type Database from "better-sqlite3";
 import type { EventRow } from "../db/queries.js";
 import type { LegistarEvent } from "../legistar.js";
 import { nyDateString } from "../dates.js";
+import { SOURCE_LINK } from "./source-links.js";
 
 type ToolResult = { content: Array<{ type: string; text: string }>; isError?: boolean };
 
@@ -25,7 +26,7 @@ function state(db: Database.Database): Record<string, string> {
  */
 export function sourceNote(
   db: Database.Database,
-  opts: { hasLive: boolean; empty: boolean }
+  opts: { hasLive: boolean; empty: boolean; tool?: string }
 ): string {
   const s = state(db);
   const built = s.last_indexed_at ? `local index built ${s.last_indexed_at}` : "local index (build time unknown)";
@@ -33,7 +34,15 @@ export function sourceNote(
     ? ` from jehiah/nyc_legislation@${s.archive_commit}` +
       (s.archive_commit_date ? ` (archive commit ${s.archive_commit_date})` : "")
     : "";
-  let note = `Source: ${built}${from}.`;
+  // district_member and get_member_roles also answer from the City's council terms file,
+  // which has its own date (#85).
+  const terms = opts.tool === "district_member" || opts.tool === "get_member_roles"
+    ? `; council terms from NYC Open Data uvw5-9znb, fetched ${s.member_terms_fetched_at ?? "(date unknown)"}`
+    : "";
+  let note = `Source: ${built}${from}${terms}.`;
+  // A page a person can open to check the answer (#84). No period after it: some apps take it
+  // into the link.
+  const link = opts.tool ? SOURCE_LINK[opts.tool] : undefined;
   if (!opts.hasLive) {
     note +=
       " It was not checked against the live Legistar API, because no LEGISTAR_TOKEN is set" +
@@ -42,21 +51,21 @@ export function sourceNote(
       note += " An empty answer means it is not in this index, not that it does not exist.";
     }
   }
-  return note;
+  return link ? `${note} Link: ${link}` : note;
 }
 
 /** Add the source note as a second content item. The JSON in the first item is untouched. */
 export function withSourceNote(
   res: ToolResult,
   db: Database.Database,
-  opts: { hasLive: boolean }
+  opts: { hasLive: boolean; tool?: string }
 ): ToolResult {
   if (res.isError) return res;
   const first = res.content[0]?.text?.trim() ?? "";
   const empty = first === "[]" || /"(items|results|history|roll_calls)":\s*\[\]/.test(first);
   return {
     ...res,
-    content: [...res.content, { type: "text", text: sourceNote(db, { hasLive: opts.hasLive, empty }) }],
+    content: [...res.content, { type: "text", text: sourceNote(db, { hasLive: opts.hasLive, empty, tool: opts.tool }) }],
   };
 }
 
@@ -131,7 +140,8 @@ export async function checkUpcomingLive(
   const checked = overlay.rows;
   const known = inIndex ? inIndex(overlay.missing.map((e) => e.EventId)) : new Set<number>();
   const missing = overlay.missing.filter((e) => !known.has(e.EventId));
-  const content = [{ type: "text", text: JSON.stringify(checked, null, 2) }];
+  // Keep every block after the JSON (such as "more are available", #86).
+  const content = [{ type: "text", text: JSON.stringify(checked, null, 2) }, ...res.content.slice(1)];
   if (missing.length > 0) {
     const list = missing
       .map((e) => `${e.EventId} (${e.EventDate.slice(0, 10)}, ${e.EventBodyName})`)
