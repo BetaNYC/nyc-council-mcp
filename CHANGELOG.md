@@ -44,6 +44,17 @@ MCP practices (epic #95):
   false for the rest) (#82). A test fails if a tool lacks them.
 - A test caps the size of the tool list plus the server instructions at 31,000 characters
   (29,678 today) (#89).
+- Requests to the Legistar Web API have a 30-second timeout, a User-Agent naming the package
+  and version, and up to two retries on 429 or 5xx that honor `Retry-After` (waits over 10
+  seconds are not shortened: the call fails and says so) (#83). `scripts/refresh-member-terms.mjs`
+  gets the same, with a 60-second timeout for its one large request.
+- Every failure is a plain sentence saying what went wrong and what to try: a bad argument no
+  longer returns zod's JSON list of issues, and a Legistar error names the HTTP status, a next
+  step, and up to 500 characters of what Legistar said (`toolError`) (#92).
+- The Legistar token, which Legistar takes only as a URL parameter, is removed from every error:
+  no error built for a request carries its URL, and anything the network layer or Legistar says
+  is scrubbed of the token (#87). Tests send failures that echo the token through every live
+  tool.
 
 ## [2.9.0] - 2026-11-13
 

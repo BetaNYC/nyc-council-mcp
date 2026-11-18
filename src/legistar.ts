@@ -1,5 +1,6 @@
 import { nyDateString } from "./dates.js";
 import { nameMatches } from "./names.js";
+import { USER_AGENT } from "./version.js";
 
 const BASE_URL = "https://webapi.legistar.com/v1/nyc";
 
@@ -331,12 +332,75 @@ function buildUrl(path: string, token: string, params: Record<string, string> = 
   return url.toString();
 }
 
-async function legistarFetch<T>(url: string): Promise<T> {
-  const res = await fetch(url);
-  if (!res.ok) {
-    throw new Error(`Legistar API error ${res.status}: ${res.statusText}`);
+/** How long one Legistar request may take (#83). The slowest calls seen are about 5 seconds. */
+export const LEGISTAR_TIMEOUT_MS = 30_000;
+/** Retries after a 429 or 5xx, and the longest wait this server will make for one (#83). */
+export const LEGISTAR_MAX_RETRIES = 2;
+export const LEGISTAR_MAX_WAIT_MS = 10_000;
+
+/** A failed Legistar request. The message never carries the request URL, which holds the token. */
+export class LegistarError extends Error {
+  constructor(message: string, readonly status: number | null = null, readonly body: string | null = null) {
+    super(message);
+    this.name = "LegistarError";
   }
-  return res.json() as Promise<T>;
+}
+
+/**
+ * Milliseconds to wait before retry `attempt` (1-based). Retry-After is delay-seconds or an
+ * HTTP-date (RFC 9110 section 10.2.3); without it, 1 s then 2 s. Returns null when the server
+ * asks for a longer wait than LEGISTAR_MAX_WAIT_MS: then we stop rather than wait less than asked.
+ */
+export function retryWaitMs(retryAfter: string | null | undefined, attempt: number, now = Date.now()): number | null {
+  const v = retryAfter?.trim();
+  let ms = 1000 * 2 ** (attempt - 1);
+  if (v && /^\d+$/.test(v)) ms = Number(v) * 1000;
+  else if (v && Number.isFinite(Date.parse(v))) ms = Math.max(Date.parse(v) - now, 0);
+  return ms > LEGISTAR_MAX_WAIT_MS ? null : ms;
+}
+
+/**
+ * GET one Legistar Web API URL (#83): a timeout, a User-Agent naming this package, and up to
+ * LEGISTAR_MAX_RETRIES retries on 429 or 5xx honoring Retry-After. Nothing else is retried,
+ * and nothing polls. Legistar takes the token only as a URL parameter
+ * (https://webapi.legistar.com/Home/Examples, "Tokens"), so no error built here includes the
+ * URL, and the token is removed from anything the network layer or Legistar says (#87).
+ */
+export async function legistarFetch<T>(
+  url: string,
+  opts: { timeoutMs?: number; sleep?: (ms: number) => Promise<void> } = {}
+): Promise<T> {
+  const timeoutMs = opts.timeoutMs ?? LEGISTAR_TIMEOUT_MS;
+  const sleep = opts.sleep ?? ((ms: number) => new Promise<void>((r) => setTimeout(r, ms)));
+  const token = new URL(url).searchParams.get("token");
+  const hide = (s: string) =>
+    token ? s.split(token).join("[redacted]").split(encodeURIComponent(token)).join("[redacted]") : s;
+  for (let attempt = 1; ; attempt++) {
+    let res: Response;
+    try {
+      res = await fetch(url, { headers: { "User-Agent": USER_AGENT }, signal: AbortSignal.timeout(timeoutMs) });
+    } catch (err) {
+      const name = err instanceof Error ? err.name : "";
+      if (name === "TimeoutError" || name === "AbortError") {
+        throw new LegistarError(`The Legistar API did not answer within ${timeoutMs / 1000} seconds.`);
+      }
+      throw new LegistarError(`Could not reach the Legistar API (${hide(err instanceof Error ? err.message : String(err))}).`);
+    }
+    if (res.ok) return res.json() as Promise<T>;
+    const retryable = res.status === 429 || res.status >= 500;
+    const wait = retryable && attempt <= LEGISTAR_MAX_RETRIES ? retryWaitMs(res.headers?.get("retry-after"), attempt) : null;
+    if (wait !== null) {
+      await res.body?.cancel().catch(() => {});
+      await sleep(wait);
+      continue;
+    }
+    const body = await res.text?.().catch(() => "") ?? "";
+    throw new LegistarError(
+      `The Legistar API answered HTTP ${res.status}${res.statusText ? ` ${res.statusText}` : ""}.`,
+      res.status,
+      hide(body)
+    );
+  }
 }
 
 /**

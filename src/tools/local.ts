@@ -24,7 +24,7 @@ import {
   committeeRoster,
   districtMember,
 } from "../db/queries.js";
-import { unknownParamMessage } from "./unknown-param.js";
+import { failure } from "./errors.js";
 
 import { json } from "./json.js";
 import { withCurated } from "../curated.js";
@@ -469,9 +469,6 @@ export function handleLocalTool(
         return { content: [{ type: "text", text: `Unknown local tool: ${name}` }], isError: true };
     }
   } catch (err) {
-    const message =
-      unknownParamMessage(err, name, LOCAL_TOOL_DEFS) ??
-      (err instanceof Error ? err.message : String(err));
-    return { content: [{ type: "text", text: `Error: ${message}` }], isError: true };
+    return failure(err, name, LOCAL_TOOL_DEFS);
   }
 }

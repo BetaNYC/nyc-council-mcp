@@ -23,6 +23,7 @@ The local index holds every matter in the [jehiah/nyc_legislation](https://githu
 ## What's new in 2.9.1 (not yet released)
 
 - **Every tool says it only reads.** Each tool carries MCP annotations: a title, `readOnlyHint: true`, and `openWorldHint` (true when it calls the live Legistar API). An AI app can use them to skip asking before it runs a tool.
+- **Clearer failures.** When Legistar is slow or down, a live tool gives up after 30 seconds, retries briefly when Legistar asks it to wait, and says in a plain sentence what went wrong and what to try. Your Legistar token never appears in an error.
 - **BetaNYC's shared module 1.5.0.** `about_data` gives each source one of three answers on whether it is official.
 
 ## What's new in 2.9.0

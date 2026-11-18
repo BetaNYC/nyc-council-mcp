@@ -21,13 +21,7 @@ import { LIVE_TOOL_DEFS, LIVE_SEARCH_TOOL_DEF, handleLiveTool, handleLiveSearch 
 import { LOCAL_TOOL_DEFS, handleLocalTool } from "./tools/local.js";
 import { openDatabase } from "./db/indexer.js";
 
-// Read the version from package.json so the MCP server never drifts from the
-// published package version (it was previously hardcoded and had drifted).
-const PACKAGE_VERSION = (
-  JSON.parse(
-    readFileSync(new URL("../package.json", import.meta.url), "utf-8")
-  ) as { version: string }
-).version;
+import { PACKAGE_VERSION } from "./version.js";
 
 // ---------------------------------------------------------------------------
 // BetaNYC's shared tools: whats_changed, about_betanyc and about_data (#75, #48, #77)

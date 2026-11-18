@@ -94,7 +94,8 @@ test("search_legislation_live answers bad arguments and upstream failures with i
   const saved = global.fetch;
   global.fetch = async () => { throw new Error("network down"); };
   try {
-    const res = await handleLiveSearch({ query: "bicycle" }, "t");
+    // A realistic token: every error is scrubbed of it (#87), so a one-letter one would scrub the message.
+    const res = await handleLiveSearch({ query: "bicycle" }, "a-realistic-legistar-token");
     assert.equal(res.isError, true);
     assert.match(res.content[0].text, /network down/);
   } finally {

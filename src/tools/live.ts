@@ -19,7 +19,7 @@ import {
   summarizeHearing,
   type LegistarMatter,
 } from "../legistar.js";
-import { unknownParamMessage } from "./unknown-param.js";
+import { failure } from "./errors.js";
 
 import { json } from "./json.js";
 import { annotateTools } from "../betanyc-tools.js";
@@ -271,10 +271,7 @@ export async function handleLiveTool(
         return { content: [{ type: "text", text: `Unknown live tool: ${name}` }], isError: true };
     }
   } catch (err) {
-    const message =
-      unknownParamMessage(err, name, LIVE_TOOL_DEFS) ??
-      (err instanceof Error ? err.message : String(err));
-    return { content: [{ type: "text", text: `Error: ${message}` }], isError: true };
+    return failure(err, name, LIVE_TOOL_DEFS, token);
   }
 }
 
@@ -319,9 +316,6 @@ export async function handleLiveSearch(
     const results = await searchLegislation(token, query, limit ?? 20, order ?? "date_desc");
     return json(results.map(withLegistarUrl));
   } catch (err) {
-    const message =
-      unknownParamMessage(err, LIVE_SEARCH_TOOL_DEF.name, [LIVE_SEARCH_TOOL_DEF]) ??
-      (err instanceof Error ? err.message : String(err));
-    return { content: [{ type: "text", text: `Error: ${message}` }], isError: true };
+    return failure(err, LIVE_SEARCH_TOOL_DEF.name, [LIVE_SEARCH_TOOL_DEF], token);
   }
 }
