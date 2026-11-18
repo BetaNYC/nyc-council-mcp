@@ -22,6 +22,7 @@ import {
 import { unknownParamMessage } from "./unknown-param.js";
 
 import { json } from "./json.js";
+import { annotateTools } from "../betanyc-tools.js";
 
 // Add a human-openable legistar_url to a matter record (any type — see
 // legistarUrl). get_bill_history returns MatterHistory rows, not matters, so
@@ -30,7 +31,8 @@ function withLegistarUrl(m: LegistarMatter): LegistarMatter & { legistar_url: st
   return { ...m, legistar_url: legistarUrl(m.MatterId) };
 }
 
-const LIVE_TOOL_DEFS = [
+// Every live tool only reads, from the live Legistar API (openWorldHint true, #82).
+const LIVE_TOOL_DEFS = annotateTools([
   {
     name: "get_bill",
     description:
@@ -160,7 +162,7 @@ const LIVE_TOOL_DEFS = [
       },
     },
   },
-];
+], true);
 
 export { LIVE_TOOL_DEFS };
 
@@ -278,7 +280,7 @@ export async function handleLiveTool(
 
 // Also keep search_legislation as a live-API alias (calls the Legistar search endpoint)
 // This is separate from the SQLite search_bills / search_legislation tools.
-export const LIVE_SEARCH_TOOL_DEF = {
+export const LIVE_SEARCH_TOOL_DEF = annotateTools([{
   name: "search_legislation_live",
   description:
     "Search NYC Council legislation via the live Legistar API. Slower than search_bills but always current — use when the local index may be stale. " +
@@ -298,7 +300,7 @@ export const LIVE_SEARCH_TOOL_DEF = {
     },
     required: ["query"],
   },
-};
+}], true)[0];
 
 export async function handleLiveSearch(
   args: Record<string, unknown>,

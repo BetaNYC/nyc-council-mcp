@@ -115,6 +115,29 @@ export function detectMode(): ServerMode {
   return { hasLive, hasLocal, token, dbPath };
 }
 
+/**
+ * The tools this server lists in one mode. get_bill_history is defined in BOTH the local and
+ * live sets (local is the default, token-free path; the live one remains for live-only mode /
+ * freshness), so dedupe by name: local is listed first, so it wins in hybrid mode. Routing
+ * already prefers local when the corpus exists, and falls through to the live handler in
+ * live-only mode.
+ */
+export function toolList<T extends { name: string }>(
+  mode: Pick<ServerMode, "hasLive" | "hasLocal">,
+  sharedTools: readonly T[]
+) {
+  const seen = new Set<string>();
+  return [
+    ...(mode.hasLocal ? LOCAL_TOOL_DEFS : []),
+    ...(mode.hasLive ? [...LIVE_TOOL_DEFS, LIVE_SEARCH_TOOL_DEF] : []),
+    ...sharedTools,
+  ].filter((t) => {
+    if (seen.has(t.name)) return false;
+    seen.add(t.name);
+    return true;
+  });
+}
+
 // ---------------------------------------------------------------------------
 // Start server
 // ---------------------------------------------------------------------------
@@ -170,21 +193,7 @@ See README for full setup instructions.
   // shared module. Throws here, at startup, if DATA-SOURCES.json does not describe this server.
   const shared = betanycTools({ db, hasLive: Boolean(mode.hasLive && mode.token), version: PACKAGE_VERSION });
 
-  // Build tool list. get_bill_history is defined in BOTH the local and live sets
-  // (local is the default, token-free path; the live one remains for live-only
-  // mode / freshness), so dedupe by name — local listed first, so it wins in
-  // hybrid mode. Routing (below) already prefers local when the corpus exists,
-  // and falls through to the live handler in live-only mode.
-  const seenToolNames = new Set<string>();
-  const toolDefs = [
-    ...(mode.hasLocal ? LOCAL_TOOL_DEFS : []),
-    ...(mode.hasLive ? [...LIVE_TOOL_DEFS, LIVE_SEARCH_TOOL_DEF] : []),
-    ...shared.tools,
-  ].filter((t) => {
-    if (seenToolNames.has(t.name)) return false;
-    seenToolNames.add(t.name);
-    return true;
-  });
+  const toolDefs = toolList(mode, shared.tools);
 
   // Build set of local and live tool names for routing
   const localNames = new Set(LOCAL_TOOL_DEFS.map((t) => t.name));

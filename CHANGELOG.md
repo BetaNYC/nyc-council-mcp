@@ -35,6 +35,16 @@ Moves to BetaNYC's shared module 1.4.0 (BetaNYC/betanyc-ai-workspace#1672).
     checked stays in `how_gathered`.
 - `data.json` rebuilt. 2.9.1 in `package.json`, the lockfile and `server.json`.
 
+MCP practices (epic #95):
+
+- Shared module 1.5.0 (BetaNYC/betanyc-ai-workspace#1702), `scripts/whats_changed.py` and
+  `scripts/mcp_shared/data-sources.schema.json` 1.4.1, copied in unchanged (#81).
+- Every tool declares `annotations`: a title, `readOnlyHint: true`, and `openWorldHint` (true
+  for the live Legistar tools and `upcoming_events`, which checks status live with a token;
+  false for the rest) (#82). A test fails if a tool lacks them.
+- A test caps the size of the tool list plus the server instructions at 31,000 characters
+  (29,678 today) (#89).
+
 ## [2.9.0] - 2026-11-13
 
 ### Added

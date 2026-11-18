@@ -20,6 +20,11 @@ The local index holds every matter in the [jehiah/nyc_legislation](https://githu
 
 ---
 
+## What's new in 2.9.1 (not yet released)
+
+- **Every tool says it only reads.** Each tool carries MCP annotations: a title, `readOnlyHint: true`, and `openWorldHint` (true when it calls the live Legistar API). An AI app can use them to skip asking before it runs a tool.
+- **BetaNYC's shared module 1.5.0.** `about_data` gives each source one of three answers on whether it is official.
+
 ## What's new in 2.9.0
 
 - **"What changed?" and "Who built this?"** Two new tools work in every mode, with no token or index. `whats_changed` answers from [WHATS-CHANGED.md](WHATS-CHANGED.md), the plain-language history of this server back to 1.0.0, including every correction and what to re-check. `about_betanyc` says who built the server, how to report a bug or ask for a feature, and which version of BetaNYC's shared code it runs.

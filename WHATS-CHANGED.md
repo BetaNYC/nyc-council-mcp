@@ -10,7 +10,7 @@ To report a bug in this server or ask for a new feature, [open an issue on GitHu
 ## Unreleased: Answers about the data say plainly whether it is official
 
 - **Tags:** MCP
-- **What changed:** When you ask where the data comes from, each answer now says one of three things: the publisher's own record, which BetaNYC did not modify; a copy BetaNYC modified, which should not be considered the official record; or data BetaNYC produced. Each answer names the dataset, its publisher and a link to it. The live Legistar answers now say BetaNYC modified them, because the server corrects known-bad member profile links and shortens very long hearing titles.
+- **What changed:** When you ask where the data comes from, each answer now says one of three things: the publisher's own record, which BetaNYC did not modify; a copy BetaNYC modified, which should not be considered the official record; or data BetaNYC produced. Each answer names the dataset, its publisher and a link to it. The live Legistar answers now say BetaNYC modified them, because the server corrects known-bad member profile links and shortens very long hearing titles. Every tool now also tells your AI app that it only reads data and never changes anything, so the app does not need to ask you before running it.
 - **MCP version:** [nyc-council-mcp 2.9.1](CHANGELOG.md)
 - **More detail:** [Where the data comes from](DATA-SOURCES.json) · [Release notes](CHANGELOG.md)
 

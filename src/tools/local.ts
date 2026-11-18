@@ -28,6 +28,7 @@ import { unknownParamMessage } from "./unknown-param.js";
 
 import { json } from "./json.js";
 import { withCurated } from "../curated.js";
+import { annotateTools } from "../betanyc-tools.js";
 
 /** A real calendar date, YYYY-MM-DD (rejects 2026-02-30). */
 const isoDay = z
@@ -69,7 +70,7 @@ const SEARCH_LEGISLATION_DEF = {
   },
 };
 
-export const LOCAL_TOOL_DEFS = [
+const DEFS = [
   SEARCH_LEGISLATION_DEF,
   {
     ...SEARCH_LEGISLATION_DEF,
@@ -299,6 +300,14 @@ export const LOCAL_TOOL_DEFS = [
     },
   },
 ];
+
+// Every local tool only reads, and answers from the local index or the files in data/
+// (openWorldHint false), except upcoming_events, which checks each meeting's status against the
+// live Legistar API when LEGISTAR_TOKEN is set (#42), so it may reach outside (#82).
+export const LOCAL_TOOL_DEFS = annotateTools(
+  DEFS,
+  Object.fromEntries(DEFS.map((t) => [t.name, t.name === "upcoming_events"]))
+);
 
 export function handleLocalTool(
   name: string,
