@@ -46,11 +46,4 @@ test("null / undefined / non-positive / non-integer id → null", () => {
   assert.equal(legistarUrl(Number.NaN), null);
 });
 
-// Opt-in live check: LEGISTAR_LIVE_URL_TEST=1 npm test
-test("live: gateway redirects each fixture to its website page", { skip: !process.env.LEGISTAR_LIVE_URL_TEST }, async () => {
-  for (const [file, matterId, websiteId] of FIXTURES) {
-    const res = await fetch(legistarUrl(matterId), { redirect: "manual", headers: { "User-Agent": "Mozilla/5.0" } });
-    assert.equal(res.status, 302, file);
-    assert.match(res.headers.get("location") ?? "", new RegExp(`LegislationDetail\\.aspx\\?ID=${websiteId}&`), file);
-  }
-});
+// The live check that the gateway still redirects these is in test/live/ (npm run test:live, #91).

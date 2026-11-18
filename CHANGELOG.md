@@ -68,6 +68,20 @@ MCP practices (epic #95):
   a second text item; the JSON stays an array. `get_upcoming_hearings` says so when it hits
   Legistar's 50-meeting cap, and `get_committee` when more than 10 committees match.
   `upcoming_events` keeps that note when it checks status live.
+- Server instructions carry the text several tools shared (#94): the `curated` block's contents,
+  that local tools need no `LEGISTAR_TOKEN`, and that every answer ends with a source line.
+  `get_council_member` and `get_member_roles` no longer repeat the curated explanation, and five
+  local tools drop "No token needed." A test fails on any sentence repeated across tools.
+- `data/SHA256SUMS` (#90): a SHA-256 checksum for each shipped data file, written by
+  `scripts/data-checksums.mjs` and by `refresh-member-terms.mjs`. Shipped in the package. The
+  refresh workflow must also `git add data/SHA256SUMS` (a maintainer change: see #90).
+- Live tests moved to `test/live/` (#91), run by `npm run test:live`, never by `npm test` or CI.
+  `LEGISTAR_LIVE_URL_TEST` is gone.
+- Evaluation set (#88): `eval/questions.json`, 12 questions with answers from the primary
+  record, `npm run eval` (`scripts/eval.mjs`), results in `eval/runs/`. CI runs the 5 the
+  shipped data can answer.
+- `test/stdout.test.mjs` (#93): in live-only and local-only mode, every stdout line is a
+  JSON-RPC message and the mode line goes to stderr.
 
 ## [2.9.0] - 2026-11-13
 

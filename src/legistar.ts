@@ -35,8 +35,8 @@ export function odataString(value: string): string {
  *
  * gateway.aspx is NOT in Granicus's published WebAPI docs: it is how the
  * Legistar site itself links to records, observed behavior rather than a
- * documented contract. The live test in test/legistar.url.test.mjs
- * (LEGISTAR_LIVE_URL_TEST=1) re-checks it.
+ * documented contract. The live test in test/live/legistar.live.test.mjs
+ * (npm run test:live) re-checks it.
  *
  * Before #45 this emitted intro.nyc links for Introductions only and null for
  * everything else, because intro.nyc keys on the bare number and assumes type

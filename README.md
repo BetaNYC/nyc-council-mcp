@@ -25,6 +25,7 @@ The local index holds every matter in the [jehiah/nyc_legislation](https://githu
 - **Every tool says it only reads.** Each tool carries MCP annotations: a title, `readOnlyHint: true`, and `openWorldHint` (true when it calls the live Legistar API). An AI app can use them to skip asking before it runs a tool.
 - **Every answer says where it came from.** Each answer ends with a source line: the source, how current it is (when the local index was built, or when a live answer was fetched) and a link to the Council's or the City's page.
 - **Lists say when there is more.** Every list tool has a hard maximum, and when more results exist than the limit, the answer says so and how to get the rest.
+- **Checksums for the shipped data.** `data/SHA256SUMS` lists a SHA-256 checksum for each data file in the package.
 - **Clearer failures.** When Legistar is slow or down, a live tool gives up after 30 seconds, retries briefly when Legistar asks it to wait, and says in a plain sentence what went wrong and what to try. Your Legistar token never appears in an error.
 - **BetaNYC's shared module 1.5.0.** `about_data` gives each source one of three answers on whether it is official.
 
@@ -505,7 +506,7 @@ Why this shape, so nobody re-attempts the obvious-looking fix:
   does not exist shows *"This record is currently unavailable."*
 - **Caveat:** `gateway.aspx` is **not in Granicus's published API docs**. It is how
   the Legistar site links to its own records — observed behavior, not a documented
-  contract. `LEGISTAR_LIVE_URL_TEST=1 npm test` re-checks the fixtures live.
+  contract. `npm run test:live` re-checks the fixtures live.
 - A row with no matter id (a procedural agenda line) gets `null`.
 - Through 2.7.1 the link came from [intro.nyc](https://intro.nyc), which keys on the
   bare number and assumes an Introduction, so every other type got `null`
@@ -531,14 +532,19 @@ Why this shape, so nobody re-attempts the obvious-looking fix:
 
 ```bash
 npm test                                   # builds, then runs every test offline
-LEGISTAR_LIVE_URL_TEST=1 npm test         # with LEGISTAR_TOKEN set: adds the live checks (read-only GETs)
+npm run test:live                          # the live checks in test/live/ (read-only GETs; LEGISTAR_TOKEN for the API ones)
+npm run eval                               # the evaluation set in eval/ (see below)
 ```
 
-Tests use Node's built-in runner (`node --test test/*.test.mjs`) and never need the network unless `LEGISTAR_LIVE_URL_TEST` is set. [CI](.github/workflows/ci.yml) runs them on every pull request to `main`, on Ubuntu (Node 20 and 22) and Windows (Node 22), and a version guard fails any PR that changes shipped code without a version bump.
+Tests use Node's built-in runner (`node --test test/*.test.mjs`) and never need the network. Live checks live in `test/live/`, which `npm test` and CI never run. [CI](.github/workflows/ci.yml) runs them on every pull request to `main`, on Ubuntu (Node 20 and 22) and Windows (Node 22), and a version guard fails any PR that changes shipped code without a version bump.
 
 CI fails if `DATA-SOURCES.json` is invalid or leaves a tool without a source (a test checks this too), or if [`data.json`](data.json), the DCAT-US 3.0 catalog made from it, is out of date or invalid. These checks follow BetaNYC's about-data standard. Rebuild it with `python3 scripts/whats_changed.py about-data catalog DATA-SOURCES.json`. CI also checks [WHATS-CHANGED.md](WHATS-CHANGED.md) on every pull request: its format, that a published entry is only ever added to, and that a version bump comes with an entry naming the new version. `src/betanyc-tools.ts`, `scripts/whats_changed.py`, `scripts/tests/catalog_validate.py` and `scripts/mcp_shared/` are copies of BetaNYC's shared files: do not edit them here.
 
-The council terms snapshot (`data/council-member-terms.json`) is refreshed by `node scripts/refresh-member-terms.mjs`. A [monthly workflow](.github/workflows/refresh-member-terms.yml) runs it and opens a PR when the City's rows change. The snapshot ships in the package, so a refresh needs a version bump like code does.
+**Evaluation set.** [`eval/questions.json`](eval/questions.json) holds 12 realistic questions, written before scoring, each with a known answer taken from the primary record (the jehiah/nyc_legislation archive files or the City's terms file), not from this server. `npm run eval` scores them with the local tools: with `LEGISTAR_DB_PATH` set, all of them against your index; without it, the five the shipped terms file can answer (CI runs these in `test/eval.test.mjs`). `npm run eval -- --save` writes the result to [`eval/runs/`](eval/runs/). On 2026-11-18 all 12 passed against an index of archive commit 895f5bd1.
+
+**Tests that keep the practices true.** Every tool is annotated read-only (`test/annotations.test.mjs`); the tool list plus instructions stays under a size budget (`test/tool-size.test.mjs`); requests to Legistar have a timeout, a User-Agent and a bounded retry (`test/upstream.test.mjs`); errors are plain and never carry the token (`test/errors-and-secrets.test.mjs`); every answer has a source line and lists say when there is more (`test/provenance-lists.test.mjs`); stdout carries only MCP messages (`test/stdout.test.mjs`); shared text lives once in the instructions (`test/instructions.test.mjs`); the data files match their checksums (`test/data-provenance.test.mjs`).
+
+The council terms snapshot (`data/council-member-terms.json`) is refreshed by `node scripts/refresh-member-terms.mjs`. A [monthly workflow](.github/workflows/refresh-member-terms.yml) runs it and opens a PR when the City's rows change. The snapshot ships in the package, so a refresh needs a version bump like code does. The data files' SHA-256 checksums are in [`data/SHA256SUMS`](data/SHA256SUMS); the refresh rewrites it, and after a hand edit to a curated file run `node scripts/data-checksums.mjs`.
 
 ### Contributing
 

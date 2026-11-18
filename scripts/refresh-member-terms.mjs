@@ -9,6 +9,7 @@
 //   node scripts/refresh-member-terms.mjs [out-path]
 
 import { readFileSync, writeFileSync } from "node:fs";
+import { writeSums } from "./data-checksums.mjs";
 
 const DATASET = "uvw5-9znb";
 const BASE = "https://data.cityofnewyork.us";
@@ -54,4 +55,6 @@ const snapshot = {
   rows,
 };
 writeFileSync(out, JSON.stringify(snapshot, null, 1) + "\n");
+// Keep data/SHA256SUMS in step (#90), when writing the shipped file.
+if (!process.argv[2]) writeSums();
 console.error(`Wrote ${rows.length} rows from ${DATASET} to ${out}`);

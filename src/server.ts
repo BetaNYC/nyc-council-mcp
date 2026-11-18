@@ -44,8 +44,14 @@ export const LIVE_UNAVAILABLE_REASON = "the live Legistar API is not set up (no 
 export const SERVER_INSTRUCTIONS =
   "NYC Council legislation, votes, hearings and members, by BetaNYC. " +
   BETANYC_INSTRUCTIONS +
-  " Facts in a 'curated' block were checked by BetaNYC and are not official records: say so when you use them. " +
-  "Nothing is invented: a value with no source is left blank.";
+  " Members in get_council_member and get_member_roles answers carry a 'curated' block: BetaNYC's hand-checked " +
+  "Wikidata/Wikipedia link, party (every ballot line won on, from Board of Elections certified results) and office " +
+  "social accounts, each with its source. " +
+  "Facts in a 'curated' block were checked by BetaNYC and are not official records: say so when you use them. " +
+  "Nothing is invented: a value with no source is left blank. " +
+  "Tools that answer from the local index or the files shipped with the server need no LEGISTAR_TOKEN. " +
+  "Every answer ends with a source line (the source, how current it is, and a link to check it), " +
+  "and a list cut at its limit says so and how to get the rest.";
 
 function indexState(db: Sqlite.Database | null, key: string): string | null {
   if (!db) return null;

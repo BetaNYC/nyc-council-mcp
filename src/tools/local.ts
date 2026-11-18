@@ -116,7 +116,7 @@ const DEFS = [
       "One matter from the local index, by file number (e.g. 'Int 1122-2024') or Local Law number (e.g. '2025/153'). " +
       "Returns its summary, version ('*' = original text, 'A', 'B'… = amended), Local Law number (null unless enacted), " +
       "attachments (committee reports, fiscal impact statements, transcripts; each with a download link; [] when none), " +
-      "legistar_url, and the full text only when include_text is true. No token needed.",
+      "legistar_url, and the full text only when include_text is true.",
     inputSchema: {
       type: "object",
       additionalProperties: false,
@@ -135,9 +135,7 @@ const DEFS = [
       "pass as_of (YYYY-MM-DD) for a past date, or include_past for the whole history with start/end dates. " +
       "Conference and caucus memberships are memberships only: no party is inferred from them. " +
       "Also returns the member's council district on that date and every council term (from the City's " +
-      "uvw5-9znb dataset, shipped as a snapshot). A 'curated' block adds BetaNYC's hand-checked Wikidata/Wikipedia " +
-      "link, party (every ballot line won on, from Board of Elections certified results) and office social accounts, " +
-      "each with its source; these are not official records. No token needed.",
+      "uvw5-9znb dataset, shipped as a snapshot). Adds the member's 'curated' block.",
     inputSchema: {
       type: "object",
       additionalProperties: false,
@@ -154,7 +152,7 @@ const DEFS = [
     description:
       "Who sits on a Council committee, chair first, from Legistar's membership records in the local index. " +
       "Matches any committee whose name contains the words given (e.g. 'technology'). Current as of today by default; " +
-      "as_of (YYYY-MM-DD) for a past date, or include_past for everyone who ever served. No token needed.",
+      "as_of (YYYY-MM-DD) for a past date, or include_past for everyone who ever served.",
     inputSchema: {
       type: "object",
       additionalProperties: false,
@@ -171,7 +169,7 @@ const DEFS = [
     description:
       "Who held a Council district (1-51) on a date, from the City's list of council terms (NYC Open Data " +
       "uvw5-9znb, shipped as a dated snapshot). A seat nobody held on that date is 'vacant': the last member is " +
-      "given as 'previous', never as current. Default date is today. No token needed.",
+      "given as 'previous', never as current. Default date is today.",
     inputSchema: {
       type: "object",
       additionalProperties: false,
@@ -278,7 +276,7 @@ const DEFS = [
   {
     name: "get_bill_history",
     description:
-      "A matter's legislative history — hearings, referrals, committee and Council actions, and outcomes — from the local index, in chronological order. No token required. " +
+      "A matter's legislative history — hearings, referrals, committee and Council actions, and outcomes — from the local index, in chronological order. " +
       "Identified by a type-prefixed file number like every sibling tool (e.g. 'Int 1122-2024', 'Res 0540-2026'). A bare 'NNNN-YYYY' that matches more than one matter type is rejected with an error naming each match.",
     inputSchema: {
       type: "object",
