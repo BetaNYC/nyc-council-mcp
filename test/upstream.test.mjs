@@ -41,11 +41,17 @@ test("every request names the package and version, and has a timeout signal", as
 
 test("a request that runs past the timeout fails with a plain sentence", async () => {
   globalThis.fetch = (_url, init) => new Promise((_, reject) => init.signal.addEventListener("abort", () => reject(init.signal.reason)));
-  await assert.rejects(legistarFetch(URL_, { timeoutMs: 20, sleep }), (e) => {
-    assert.ok(e instanceof LegistarError);
-    assert.match(e.message, /did not answer within 0\.02 seconds/);
-    return true;
-  });
+  // AbortSignal.timeout's timer does not keep the process alive, and nothing else would here.
+  const keepAlive = setTimeout(() => {}, 5000);
+  try {
+    await assert.rejects(legistarFetch(URL_, { timeoutMs: 20, sleep }), (e) => {
+      assert.ok(e instanceof LegistarError);
+      assert.match(e.message, /did not answer within 0\.02 seconds/);
+      return true;
+    });
+  } finally {
+    clearTimeout(keepAlive);
+  }
 });
 
 test("429 with Retry-After is retried after the wait it asks for", async () => {
