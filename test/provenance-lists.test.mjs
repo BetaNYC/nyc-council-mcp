@@ -47,7 +47,9 @@ test("every live answer ends with its source, a link and the time it was fetched
     assert.ok(!res.isError, name);
     assert.match(
       last(res),
-      /^Source: NYC Council Legistar Web API \(Granicus\), a copy BetaNYC modified \(it fixes known-bad member profile links and shortens long hearing titles\); Legistar is the official record\. Fetched from the source for this answer at \d{4}-\d{2}-\d{2} \d{2}:\d{2} E[SD]T \(New York time\)\. Link: https:\/\/legistar\.council\.nyc\.gov\/\S+$/,
+      name === "get_upcoming_hearings"
+        ? /^Source: NYC Council Legistar Web API \(Granicus\), a copy BetaNYC modified \(it fixes known-bad member profile links, shortens long hearing titles, and puts meetings on the same day in time order, because Legistar's meeting date carries no time\); Legistar is the official record\. Fetched from the source for this answer at \d{4}-\d{2}-\d{2} \d{2}:\d{2} E[SD]T \(New York time\)\. Link: https:\/\/legistar\.council\.nyc\.gov\/\S+$/
+        : /^Source: NYC Council Legistar Web API \(Granicus\), a copy BetaNYC modified \(it fixes known-bad member profile links and shortens long hearing titles\); Legistar is the official record\. Fetched from the source for this answer at \d{4}-\d{2}-\d{2} \d{2}:\d{2} E[SD]T \(New York time\)\. Link: https:\/\/legistar\.council\.nyc\.gov\/\S+$/,
       name
     );
     assert.ok(last(res).endsWith(SOURCE_LINK[name]), name);

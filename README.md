@@ -20,7 +20,7 @@ The local index holds every matter in the [jehiah/nyc_legislation](https://githu
 
 ---
 
-## What's new in 2.9.1 (not yet released)
+## What's new in 2.10.0
 
 - **Every tool says it only reads.** Each tool carries MCP annotations: a title, `readOnlyHint: true`, and `openWorldHint` (true when it calls the live Legistar API). An AI app can use them to skip asking before it runs a tool.
 - **Every answer says where it came from.** Each answer ends with a source line: the source, how current it is (when the local index was built, or when a live answer was fetched) and a link to the Council's or the City's page.
@@ -28,6 +28,7 @@ The local index holds every matter in the [jehiah/nyc_legislation](https://githu
 - **Checksums for the shipped data.** `data/SHA256SUMS` lists a SHA-256 checksum for each data file in the package.
 - **Clearer failures.** When Legistar is slow or down, a live tool gives up after 30 seconds, retries briefly when Legistar asks it to wait, and says in a plain sentence what went wrong and what to try. Your Legistar token never appears in an error.
 - **BetaNYC's shared module 1.5.2.** `about_data` gives each source one of three answers on whether it is official. Local answers now say BetaNYC modified the data, in `about_data`'s own words.
+- **If your code reads the answers.** A meeting whose agenda could not be fetched now has `EventItems: null`, not `[]`. A `limit` must be a whole number, 1 or more. Notes and the source line come after the JSON as more text items; the JSON is still the first. See [CHANGELOG.md](CHANGELOG.md#2100---2026-11-19) for the full list.
 
 ## What's new in 2.9.0
 
@@ -266,10 +267,10 @@ These require `LEGISTAR_TOKEN`.
 | `get_bill` | Current status and record for a bill. A bare `NNNN-YYYY` number is ambiguous (it can be both an `Int` and a `Res`); an ambiguous match is rejected with an error naming every candidate, so re-call with the exact type-prefixed number |
 | `get_bill_history` | *Local by default* (served from the index, no token; takes a file number). In **live-only** mode this live variant answers instead — authoritative action trail by numeric matter id |
 | `get_bill_attachments` | Files attached to a matter (committee reports, resolution text, charts, transcripts), each with a direct download link. Takes the numeric matter id |
-| `get_upcoming_hearings` | Real-time upcoming committee hearings and Stated meetings, each with its agenda items (bills/matters) in `EventItems`. Short shape by default (`detail: "summary"`: no null fields, titles cut at 300 characters, `legistar_url` per item); `detail: "full"` returns every Legistar field. Agendas are fetched one request per meeting, at most 5 at a time, within 20 seconds in all. An agenda request is never retried; after the first one fails (429, 5xx or any other error), no more are sent, and when the 20 seconds run out the rest are "out of time". The answer keeps the agendas already fetched, gives `EventItems: null` (unknown, not empty) for the others, and says which meetings' agendas are missing and why |
+| `get_upcoming_hearings` | Real-time upcoming committee hearings and Stated meetings, in date and time order, each with its agenda items (bills/matters) in `EventItems`. Short shape by default (`detail: "summary"`: no null fields, titles cut at 300 characters, `legistar_url` per item); `detail: "full"` returns every Legistar field. Agendas are fetched one request per meeting, at most 5 at a time, within 20 seconds in all. An agenda request is never retried; after the first one fails (429, 5xx or any other error), no more are sent, and when the 20 seconds run out the rest are "out of time". The answer keeps the agendas already fetched, gives `EventItems: null` (unknown, not empty) for the others, and says which meetings' agendas are missing and why |
 | `get_council_member` | Current contact info and active status for a council member, plus a `curated` block (Wikidata/Wikipedia, party as every ballot line won on, office social accounts; BetaNYC's, not official) and, with a local index, district and terms. The name matches word by word, ignoring case, accents and middle initials ("Amanda Farias" finds "Amanda C. Farías"); `get_voting_record` and `co_sponsors` match names the same way. `PersonWWW2` (the Legistar profile page) is checked: a known-bad upstream link is corrected from a small dated override list (`PERSON_WWW2_OVERRIDES` in `src/legistar.ts`, with the original kept in `PersonWWW2_upstream`), and a link shared by two people in one result gets a `PersonWWW2_warning`. Returns up to 10 members; when more match, it says "Showing 10 of M" |
 | `get_committee` | Current membership count and details for a committee |
-| `get_votes` | Per-item vote breakdown by event item ID |
+| `get_votes` | Per-item vote breakdown by event item ID. An empty answer says that the item may not have been voted on yet or was not a roll call |
 | `list_recent_legislation` | Most recently introduced legislation (catches bills since last index) |
 | `search_legislation_live` | Live Legistar search (slower than local, always current). Multi-word queries match all words in any order; quote a `"phrase"` for adjacency. No relevance ranking upstream — results are ordered by intro date (`order='date_asc'` for oldest-first). |
 

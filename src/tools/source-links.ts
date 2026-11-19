@@ -35,3 +35,10 @@ export const LIVE_SOURCE = { sourceName: "NYC Council Legistar Web API (Granicus
 export const LIVE_MODIFIED =
   "a copy BetaNYC modified (it fixes known-bad member profile links and shortens long hearing titles); " +
   "Legistar is the official record";
+
+/** get_upcoming_hearings also puts a day's meetings in time order (sortByDateAndTime), which
+ * DATA-SOURCES.json says (topic "live"), so its line says so too. */
+export const LIVE_MODIFIED_HEARINGS =
+  "a copy BetaNYC modified (it fixes known-bad member profile links, shortens long hearing titles, and puts " +
+  "meetings on the same day in time order, because Legistar's meeting date carries no time); " +
+  "Legistar is the official record";

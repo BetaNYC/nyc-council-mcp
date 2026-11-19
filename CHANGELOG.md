@@ -10,11 +10,39 @@ Dates are npm publish dates (`npm view @betanyc/nyc-council-mcp time`).
 For a plain-language list of the changes a reader would notice, including every correction,
 see [WHATS-CHANGED.md](WHATS-CHANGED.md).
 
-## [2.9.1] - Unreleased
+## [2.10.0] - 2026-11-19
 
-Moves to BetaNYC's shared module 1.4.0 (BetaNYC/betanyc-ai-workspace#1672).
+This release was called 2.9.1 while it was built. It adds features (source lines, list notes,
+tool annotations, an eval set), so it is a minor release, 2.10.0. There is no 2.9.1 release.
+Moves to BetaNYC's shared module 1.4.0 (BetaNYC/betanyc-ai-workspace#1672), then 1.5.2
+(epic #95, below).
 
 ### Changed
+
+What an existing caller gets back differently from 2.9.0 (#96 to #100). No tool was removed
+or renamed, no argument was removed or made required, and each answer's first content item is
+the same JSON as before, apart from the first point and the meeting order (see Fixed):
+
+- `get_upcoming_hearings`: a meeting whose agenda could not be fetched has `EventItems: null`.
+  In 2.9.0 it had `EventItems: []`, which read as an empty agenda. Code that reads
+  `EventItems.length` must allow for `null`. With `include_agenda: false`, `EventItems` is
+  still `[]`.
+- Every list tool's `limit` must be a whole number, 1 or more; anything else is refused with a
+  plain error. In 2.9.0 the local list tools other than `get_event_bills` passed it to SQLite:
+  `limit: 0` gave an empty list and a negative `limit` gave every row.
+- A `limit` over a tool's maximum is lowered to the maximum, with a note. In 2.9.0,
+  `search_legislation`, `search_bills`, `get_event_bills`, `list_recent_legislation` and
+  `search_legislation_live` refused it, and the other local lists had no maximum.
+- Answers have more content items after the JSON: notes (a lowered `limit`, "more are
+  available", missing agendas, a status not checked live, the search order) and a source line,
+  always last. In 2.9.0 most live answers were one item; local answers had one source line,
+  whose wording changed.
+- Errors are one plain sentence with a next step. A bad argument no longer returns zod's JSON
+  list of issues.
+- `about_data`: `figures_official` is now `false` for `live` and `events` (it was `true`),
+  because BetaNYC changes that data (see `DATA-SOURCES.json`). Its fields are the same.
+
+The details:
 
 - `src/betanyc-tools.ts`, `scripts/whats_changed.py`, `scripts/mcp_shared/data-sources.schema.json`
   and `scripts/tests/catalog_validate.py` are BetaNYC's shared module 1.4.0, copied in
@@ -33,7 +61,7 @@ Moves to BetaNYC's shared module 1.4.0 (BetaNYC/betanyc-ai-workspace#1672).
   - `districts`: the source is named by the dataset's own title, without its id.
   - `social`: the source name no longer has ";" (1.4.0 rejects it); how the account is
     checked stays in `how_gathered`.
-- `data.json` rebuilt. 2.9.1 in `package.json`, the lockfile and `server.json`.
+- `data.json` rebuilt. 2.10.0 in `package.json`, the lockfile and `server.json`.
 
 MCP practices (epic #95):
 
@@ -149,6 +177,24 @@ MCP practices (epic #95):
     line, `get_council_member`'s curated block, terms and sources) now run inside the same
     guard, so a throw there is a plain error answer, not a protocol error.
   - Tool list plus instructions: 30,244 characters (cap 31,000).
+
+### Fixed
+
+Found in a live check against the Council's Legistar API on 2026-11-19, before release:
+
+- `get_upcoming_hearings` lists meetings on the same day in time order. Legistar's `EventDate`
+  has no time, so `$orderby=EventDate` left a day's meetings in no useful order: on 2026-11-19
+  the 1:30 PM Stated Meeting came before the 10:00 AM hearings. The server now sorts by date,
+  then `EventTime`; a meeting with no readable time goes last on its day. Agendas are fetched in
+  the same order. Reordering the publisher's rows is a change, so `DATA-SOURCES.json` (topic
+  `live`, and so `about_data`) and `get_upcoming_hearings`' source line say that BetaNYC puts
+  meetings on the same day in time order because Legistar's meeting date has no time. The
+  `events` topic now says how the local index orders its meeting lists (`search_events` and
+  `get_bill_hearings` newest day first, `upcoming_events` soonest day first, `get_event_bills`
+  by agenda item ID; no set order within a day). `data.json` rebuilt.
+- `get_votes` with no votes adds a note: the item may not have been voted on yet, or it was not
+  a roll call. Before, the answer was only `[]`, which could read as "nobody voted". The JSON is
+  still the first item and still an array.
 
 ## [2.9.0] - 2026-11-13
 

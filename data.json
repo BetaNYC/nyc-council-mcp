@@ -343,7 +343,7 @@
       "provenance": [
         "BetaNYC modified this data: cleaned it and reshaped it. This copy should not be considered the official record. Official record: NYC Council Legistar Web API (Granicus), https://council.nyc.gov/legislation/api/",
         "Read-only requests to the Council's own API at the moment you ask. Needs LEGISTAR_TOKEN; a server without one has no live tools.",
-        "Modified by BetaNYC: Member profile links the Council's record gets wrong are corrected from a checked list (the list is empty since 2026-11-12), and a profile link two members share is flagged. Upcoming-hearing summaries leave out empty fields and cut item titles longer than 300 characters; detail \"full\" returns the hearing record as the API sends it."
+        "Modified by BetaNYC: Member profile links the Council's record gets wrong are corrected from a checked list (the list is empty since 2026-11-12), and a profile link two members share is flagged. Upcoming-hearing summaries leave out empty fields and cut item titles longer than 300 characters; detail \"full\" returns the hearing record as the API sends it. get_upcoming_hearings puts meetings on the same day in time order (by EventTime), because Legistar's meeting date (EventDate) carries no time; a meeting with no readable time goes last on its day."
       ],
       "page": [
         {
@@ -632,7 +632,7 @@
       "provenance": [
         "BetaNYC modified this data: cleaned it, left some records out, and reshaped it. This copy should not be considered the official record. Official record: NYC Council Legistar: Calendar, https://legistar.council.nyc.gov/Calendar.aspx",
         "This server answers from a local SQLite index, with no network call. The index is built from a clone of jehiah/nyc_legislation (https://github.com/jehiah/nyc_legislation), an unofficial mirror that copies the Council's Legistar records through the Legistar API. Every local answer ends with a line naming when the index was built and the archive commit it was built from.",
-        "Modified by BetaNYC: The index build changes some values (src/db/indexer.ts): meeting dates are cut to the day (the time is kept separately), and meetings and agenda items with no ID are left out."
+        "Modified by BetaNYC: The index build changes some values (src/db/indexer.ts): meeting dates are cut to the day (the time is kept separately), and meetings and agenda items with no ID are left out. Lists come in BetaNYC's own order from the index: search_events and get_bill_hearings newest day first, upcoming_events soonest day first, and get_event_bills by agenda item ID; meetings on the same day are in no set order, because the index sorts by day only."
       ],
       "page": [
         {

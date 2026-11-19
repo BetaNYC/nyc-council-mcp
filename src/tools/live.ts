@@ -25,7 +25,7 @@ import { failure } from "./errors.js";
 
 import { json } from "./json.js";
 import { annotateTools, provenance } from "../betanyc-tools.js";
-import { SOURCE_LINK, LIVE_SOURCE, LIVE_MODIFIED } from "./source-links.js";
+import { SOURCE_LINK, LIVE_SOURCE, LIVE_MODIFIED, LIVE_MODIFIED_HEARINGS } from "./source-links.js";
 
 // Add a human-openable legistar_url to a matter record (any type — see
 // legistarUrl). get_bill_history returns MatterHistory rows, not matters, so
@@ -175,7 +175,7 @@ type LiveResult = { content: Array<{ type: string; text: string }>; isError?: bo
  * source (DATA-SOURCES.json, changes.changed), and that Legistar is the official record. */
 export function liveSourceLine(name: string, now: Date = new Date()): string {
   return provenance(
-    { sourceName: `${LIVE_SOURCE.sourceName}, ${LIVE_MODIFIED}`, publisher: LIVE_SOURCE.publisher, sourceUrl: SOURCE_LINK[name], kind: "live" },
+    { sourceName: `${LIVE_SOURCE.sourceName}, ${name === "get_upcoming_hearings" ? LIVE_MODIFIED_HEARINGS : LIVE_MODIFIED}`, publisher: LIVE_SOURCE.publisher, sourceUrl: SOURCE_LINK[name], kind: "live" },
     now
   ).text;
 }
@@ -328,7 +328,19 @@ async function runLiveTool(
       case "get_votes": {
         const { event_item_id } = z.object({ event_item_id: z.number() }).strict().parse(args);
         const results = await getVotes(token, event_item_id);
-        return json(results);
+        if (results.length > 0) return json(results);
+        // An empty list is not "nobody voted": say what it can mean (found in the live check, 2026-11-19).
+        return {
+          content: [
+            json(results).content[0],
+            {
+              type: "text",
+              text:
+                `Legistar has no votes recorded for agenda item ${event_item_id}. The item may not have been voted on yet, ` +
+                `or it was not a roll call (hearings and oversight items have none). Check the meeting's page on the Council's calendar.`,
+            },
+          ],
+        };
       }
 
       case "list_recent_legislation": {

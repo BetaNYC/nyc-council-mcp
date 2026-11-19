@@ -638,7 +638,7 @@ export async function getUpcomingHearingsReport(
     $orderby: "EventDate asc",
     $top: String(UPCOMING_HEARINGS_MAX),
   });
-  const events = await legistarFetch<LegistarEvent[]>(url);
+  const events = sortByDateAndTime(await legistarFetch<LegistarEvent[]>(url));
   if (!includeAgenda) return { events, missingAgendas: [] };
 
   const clock = opts.clock ?? Date.now;
@@ -684,6 +684,28 @@ export async function getUpcomingHearingsReport(
     .filter((e) => why.has(e.EventId))
     .map((e) => ({ EventId: e.EventId, EventDate: e.EventDate, EventBodyName: e.EventBodyName, reason: why.get(e.EventId)! }));
   return { events, missingAgendas };
+}
+
+/** Minutes after midnight for a Legistar EventTime such as "1:30 PM"; null when it is not a time. */
+export function minutesOfDay(time: string | null | undefined): number | null {
+  const m = /^\s*(\d{1,2}):(\d{2})\s*([AP])\.?M\.?\s*$/i.exec(time ?? "");
+  if (!m) return null;
+  const h = Number(m[1]) % 12 + (m[3].toUpperCase() === "P" ? 12 : 0);
+  return h * 60 + Number(m[2]);
+}
+
+/**
+ * Meetings in date and time order. Legistar's EventDate carries no time (it is midnight), so
+ * $orderby=EventDate leaves meetings on the same day in no useful order: on 2026-11-19 the
+ * 1:30 PM Stated Meeting came before the 10:00 AM hearings. A meeting with no readable time
+ * goes last on its day; otherwise the order Legistar gave is kept.
+ */
+export function sortByDateAndTime<T extends { EventDate: string; EventTime: string | null }>(events: T[]): T[] {
+  const key = (e: T) => minutesOfDay(e.EventTime) ?? 24 * 60;
+  return events
+    .map((e, i) => ({ e, i }))
+    .sort((a, b) => a.e.EventDate.slice(0, 10).localeCompare(b.e.EventDate.slice(0, 10)) || key(a.e) - key(b.e) || a.i - b.i)
+    .map(({ e }) => e);
 }
 
 /** Longest EventItemTitle kept in the summary shape (Land Use titles are unbounded). */
