@@ -20,7 +20,7 @@ The local index holds every matter in the [jehiah/nyc_legislation](https://githu
 
 ---
 
-## What's new in 2.9.1 (not yet released)
+## What's new in 2.10.0
 
 - **Every tool says it only reads.** Each tool carries MCP annotations: a title, `readOnlyHint: true`, and `openWorldHint` (true when it calls the live Legistar API). An AI app can use them to skip asking before it runs a tool.
 - **Every answer says where it came from.** Each answer ends with a source line: the source, how current it is (when the local index was built, or when a live answer was fetched) and a link to the Council's or the City's page.
@@ -28,6 +28,7 @@ The local index holds every matter in the [jehiah/nyc_legislation](https://githu
 - **Checksums for the shipped data.** `data/SHA256SUMS` lists a SHA-256 checksum for each data file in the package.
 - **Clearer failures.** When Legistar is slow or down, a live tool gives up after 30 seconds, retries briefly when Legistar asks it to wait, and says in a plain sentence what went wrong and what to try. Your Legistar token never appears in an error.
 - **BetaNYC's shared module 1.5.2.** `about_data` gives each source one of three answers on whether it is official. Local answers now say BetaNYC modified the data, in `about_data`'s own words.
+- **If your code reads the answers.** A meeting whose agenda could not be fetched now has `EventItems: null`, not `[]`. A `limit` must be a whole number, 1 or more. Notes and the source line come after the JSON as more text items; the JSON is still the first. See [CHANGELOG.md](CHANGELOG.md#2100---2026-11-19) for the full list.
 
 ## What's new in 2.9.0
 
