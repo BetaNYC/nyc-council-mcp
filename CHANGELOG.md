@@ -21,7 +21,7 @@ Moves to BetaNYC's shared module 1.4.0 (BetaNYC/betanyc-ai-workspace#1672), then
 
 What an existing caller gets back differently from 2.9.0 (#96 to #100). No tool was removed
 or renamed, no argument was removed or made required, and each answer's first content item is
-the same JSON as before, apart from the first point:
+the same JSON as before, apart from the first point and the meeting order (see Fixed):
 
 - `get_upcoming_hearings`: a meeting whose agenda could not be fetched has `EventItems: null`.
   In 2.9.0 it had `EventItems: []`, which read as an empty agenda. Code that reads
@@ -177,6 +177,19 @@ MCP practices (epic #95):
     line, `get_council_member`'s curated block, terms and sources) now run inside the same
     guard, so a throw there is a plain error answer, not a protocol error.
   - Tool list plus instructions: 30,244 characters (cap 31,000).
+
+### Fixed
+
+Found in a live check against the Council's Legistar API on 2026-11-19, before release:
+
+- `get_upcoming_hearings` lists meetings on the same day in time order. Legistar's `EventDate`
+  has no time, so `$orderby=EventDate` left a day's meetings in no useful order: on 2026-11-19
+  the 1:30 PM Stated Meeting came before the 10:00 AM hearings. The server now sorts by date,
+  then `EventTime`; a meeting with no readable time goes last on its day. Agendas are fetched in
+  the same order.
+- `get_votes` with no votes adds a note: the item may not have been voted on yet, or it was not
+  a roll call. Before, the answer was only `[]`, which could read as "nobody voted". The JSON is
+  still the first item and still an array.
 
 ## [2.9.0] - 2026-11-13
 

@@ -328,7 +328,19 @@ async function runLiveTool(
       case "get_votes": {
         const { event_item_id } = z.object({ event_item_id: z.number() }).strict().parse(args);
         const results = await getVotes(token, event_item_id);
-        return json(results);
+        if (results.length > 0) return json(results);
+        // An empty list is not "nobody voted": say what it can mean (found in the live check, 2026-11-19).
+        return {
+          content: [
+            json(results).content[0],
+            {
+              type: "text",
+              text:
+                `Legistar has no votes recorded for agenda item ${event_item_id}. The item may not have been voted on yet, ` +
+                `or it was not a roll call (hearings and oversight items have none). Check the meeting's page on the Council's calendar.`,
+            },
+          ],
+        };
       }
 
       case "list_recent_legislation": {
