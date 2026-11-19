@@ -21,7 +21,8 @@ Four files. Each one is a single kind of fact from a single kind of source, so w
 ## Refreshing
 
 - `council-member-terms.json`: `node scripts/refresh-member-terms.mjs`. A monthly workflow runs it and opens a PR.
-- The curated files are refreshed by hand after an election or a change in who holds a seat. Re-check every changed row against its source, then update `checked_at`.
+- The curated files are refreshed by hand after an election or a change in who holds a seat. Re-check every changed row against its source, then update `checked_at`, then run `node scripts/data-checksums.mjs`.
+- `SHA256SUMS` holds a SHA-256 checksum of each file (with LF line endings, as committed). The refresh script rewrites it; `test/data-provenance.test.mjs` fails when a file and its checksum disagree, or a file has no fetch or check date.
 
 ## History
 

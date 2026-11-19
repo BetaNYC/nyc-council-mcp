@@ -49,7 +49,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout -b "$branch"
-          git add data/council-member-terms.json
+          git add data/council-member-terms.json data/SHA256SUMS
           git commit -m "data: refresh council terms from NYC Open Data uvw5-9znb (#28)"
           git push -u origin "$branch"
           gh pr create --base main --head "$branch" \

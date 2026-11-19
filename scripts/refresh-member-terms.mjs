@@ -8,16 +8,35 @@
 //
 //   node scripts/refresh-member-terms.mjs [out-path]
 
-import { writeFileSync } from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
+import { writeSums } from "./data-checksums.mjs";
 
 const DATASET = "uvw5-9znb";
 const BASE = "https://data.cityofnewyork.us";
 const out = process.argv[2] ?? new URL("../data/council-member-terms.json", import.meta.url);
 
+const VERSION = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8")).version;
+const USER_AGENT = `@betanyc/nyc-council-mcp/${VERSION} (+https://github.com/BetaNYC/nyc-council-mcp)`;
+// 60 s, not the server's 30 s: the rows request returns every council term since 1999 in one
+// response, and this runs unattended once a month, where waiting longer costs nothing (#83).
+const TIMEOUT_MS = 60_000;
+
+// One GET with a timeout and a User-Agent, retried at most twice on 429 or 5xx, waiting what
+// Retry-After says (delay-seconds) or 5 s, at most 60 s (#83). No key is sent.
 async function get(url) {
-  const res = await fetch(url, { headers: { Accept: "application/json" } });
-  if (!res.ok) throw new Error(`${url}: HTTP ${res.status}`);
-  return res.json();
+  for (let attempt = 1; ; attempt++) {
+    const res = await fetch(url, {
+      headers: { Accept: "application/json", "User-Agent": USER_AGENT },
+      signal: AbortSignal.timeout(TIMEOUT_MS),
+    });
+    if (res.ok) return res.json();
+    const retryAfter = Number(res.headers.get("retry-after"));
+    if ((res.status === 429 || res.status >= 500) && attempt <= 2) {
+      await new Promise((r) => setTimeout(r, Math.min(Number.isFinite(retryAfter) && retryAfter > 0 ? retryAfter * 1000 : 5000, 60_000)));
+      continue;
+    }
+    throw new Error(`${url}: HTTP ${res.status}`);
+  }
 }
 
 const meta = await get(`${BASE}/api/views/${DATASET}.json`);
@@ -36,4 +55,6 @@ const snapshot = {
   rows,
 };
 writeFileSync(out, JSON.stringify(snapshot, null, 1) + "\n");
+// Keep data/SHA256SUMS in step (#90), when writing the shipped file.
+if (!process.argv[2]) writeSums();
 console.error(`Wrote ${rows.length} rows from ${DATASET} to ${out}`);

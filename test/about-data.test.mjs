@@ -150,7 +150,8 @@ test("the archive sources name the Council as publisher and jehiah/nyc_legislati
     assert.doesNotMatch(s.source_url, /jehiah/, topic);
     assert.match(s.how_gathered, /unofficial mirror/, topic);
   }
-  assert.deepEqual(one(ask({ topic: "events" }).body, "events").changed_by_betanyc.steps, ["reshaped"]);
+  // The index build cleans values and leaves rows with no ID out (src/db/indexer.ts): about_data says so.
+  assert.deepEqual(one(ask({ topic: "events" }).body, "events").changed_by_betanyc.steps, ["cleaned", "filtered", "reshaped"]);
 });
 
 test("an unreadable DATA-SOURCES.json: the answer says so, with no error flag", () => {

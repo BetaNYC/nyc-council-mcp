@@ -23,11 +23,71 @@ import {
   memberRoles,
   committeeRoster,
   districtMember,
+  hasMatterAttributes,
 } from "../db/queries.js";
-import { unknownParamMessage } from "./unknown-param.js";
+import { failure } from "./errors.js";
 
 import { json } from "./json.js";
 import { withCurated } from "../curated.js";
+import { annotateTools } from "../betanyc-tools.js";
+
+type LocalResult = { content: Array<{ type: string; text: string }>; isError?: boolean };
+
+/** Each list tool's default and maximum (#86). A whole-number limit above the maximum is lowered
+ * to it, and the answer says so. get_event_bills pages with a total instead, and lowers a limit
+ * over EVENT_BILLS_MAX the same way. */
+export const LIST_LIMITS: Readonly<Record<string, { default: number; max: number; how: string }>> = {
+  search_legislation: { default: 25, max: 100, how: "add filters (status, committee) or more words" },
+  search_bills: { default: 25, max: 100, how: "add filters (status, committee) or more words" },
+  search_events: { default: 25, max: 100, how: "add more words" },
+  recent_bills: { default: 50, max: 200, how: "use fewer days" },
+  upcoming_events: { default: 50, max: 200, how: "use fewer days" },
+  get_voting_record: { default: 50, max: 500, how: "ask about one bill with vote_breakdown" },
+  co_sponsors: { default: 20, max: 100, how: "read the top of the list" },
+};
+
+/** A limit must be a whole number of at least 1; one above the tool's maximum is allowed here
+ * and lowered by effectiveLimit. */
+const limitArg = () =>
+  z.number().int("limit must be a whole number").min(1, "limit must be 1 or more").optional();
+
+/** The limit a list tool uses: the caller's, lowered to the tool's maximum. */
+const effectiveLimit = (tool: string, limit: number | undefined) => Math.min(limit ?? LIST_LIMITS[tool].default, LIST_LIMITS[tool].max);
+
+/**
+ * A list answer (#86): the query asked for limit + 1 rows, so one more than the limit means more
+ * exist. The JSON stays a plain array, cut at the limit. A second block, when needed, says the
+ * limit was lowered to the maximum, and that more are available and how to get them.
+ */
+function capped(tool: string, rows: unknown[], limit: number | undefined): LocalResult {
+  const { max, how } = LIST_LIMITS[tool];
+  const n = effectiveLimit(tool, limit);
+  const notes: string[] = [];
+  if (limit !== undefined && limit > max) notes.push(`limit ${limit} is over this tool's maximum of ${max}, so ${max} was used.`);
+  if (rows.length > n) {
+    const next = n < max ? `Raise limit (up to ${max}) or ${how}.` : `${how[0].toUpperCase()}${how.slice(1)}.`;
+    notes.push(`Showing the first ${n} results; more are available. ${next}`);
+  }
+  const body = json(rows.slice(0, n)).content[0];
+  return notes.length ? { content: [body, { type: "text", text: notes.join(" ") }] } : { content: [body] };
+}
+
+const plusOne = (tool: string, limit: number | undefined) => effectiveLimit(tool, limit) + 1;
+
+/** search_legislation's order, and its agency filter, are BetaNYC's choices, not Legistar's: say so
+ * on every answer, in one line (DATA-SOURCES.json, topic "bills", says the same). */
+export function searchMethodNote(agency: string | undefined, weighted: boolean): string {
+  // An index built before the weights (schema v5) is ranked by SQLite's own full-text rank.
+  const order = weighted
+    ? "Order: BetaNYC's own ranking weights (file number and title count most, then sponsors, summary, full text), not Legistar's."
+    : "Order: SQLite's full-text rank, not Legistar's.";
+  return agency
+    ? `${order} Agency filter: BetaNYC's own phrase list for each agency (src/agencies.ts), matched in the title or sponsors; it is not an official classification.`
+    : order;
+}
+
+/** The most items get_event_bills returns in one page. */
+export const EVENT_BILLS_MAX = 500;
 
 /** A real calendar date, YYYY-MM-DD (rejects 2026-02-30). */
 const isoDay = z
@@ -55,7 +115,7 @@ const SEARCH_LEGISLATION_DEF = {
     additionalProperties: false,
     properties: {
       query: { type: "string", description: "Search terms (full-text)" },
-      limit: { type: "number", description: "Max results (default 25, max 100)" },
+      limit: { type: "number", description: "Max results (default 25, max 100; a larger limit is lowered to 100)" },
       agency: {
         type: "string",
         description:
@@ -69,7 +129,7 @@ const SEARCH_LEGISLATION_DEF = {
   },
 };
 
-export const LOCAL_TOOL_DEFS = [
+const DEFS = [
   SEARCH_LEGISLATION_DEF,
   {
     ...SEARCH_LEGISLATION_DEF,
@@ -83,7 +143,7 @@ export const LOCAL_TOOL_DEFS = [
       "One matter from the local index, by file number (e.g. 'Int 1122-2024') or Local Law number (e.g. '2025/153'). " +
       "Returns its summary, version ('*' = original text, 'A', 'B'… = amended), Local Law number (null unless enacted), " +
       "attachments (committee reports, fiscal impact statements, transcripts; each with a download link; [] when none), " +
-      "legistar_url, and the full text only when include_text is true. No token needed.",
+      "legistar_url, and the full text only when include_text is true.",
     inputSchema: {
       type: "object",
       additionalProperties: false,
@@ -102,9 +162,7 @@ export const LOCAL_TOOL_DEFS = [
       "pass as_of (YYYY-MM-DD) for a past date, or include_past for the whole history with start/end dates. " +
       "Conference and caucus memberships are memberships only: no party is inferred from them. " +
       "Also returns the member's council district on that date and every council term (from the City's " +
-      "uvw5-9znb dataset, shipped as a snapshot). A 'curated' block adds BetaNYC's hand-checked Wikidata/Wikipedia " +
-      "link, party (every ballot line won on, from Board of Elections certified results) and office social accounts, " +
-      "each with its source; these are not official records. No token needed.",
+      "uvw5-9znb dataset, shipped as a snapshot). Adds the member's 'curated' block (BetaNYC's checked facts, not official records).",
     inputSchema: {
       type: "object",
       additionalProperties: false,
@@ -121,7 +179,7 @@ export const LOCAL_TOOL_DEFS = [
     description:
       "Who sits on a Council committee, chair first, from Legistar's membership records in the local index. " +
       "Matches any committee whose name contains the words given (e.g. 'technology'). Current as of today by default; " +
-      "as_of (YYYY-MM-DD) for a past date, or include_past for everyone who ever served. No token needed.",
+      "as_of (YYYY-MM-DD) for a past date, or include_past for everyone who ever served.",
     inputSchema: {
       type: "object",
       additionalProperties: false,
@@ -138,7 +196,7 @@ export const LOCAL_TOOL_DEFS = [
     description:
       "Who held a Council district (1-51) on a date, from the City's list of council terms (NYC Open Data " +
       "uvw5-9znb, shipped as a dated snapshot). A seat nobody held on that date is 'vacant': the last member is " +
-      "given as 'previous', never as current. Default date is today. No token needed.",
+      "given as 'previous', never as current. Default date is today.",
     inputSchema: {
       type: "object",
       additionalProperties: false,
@@ -158,7 +216,7 @@ export const LOCAL_TOOL_DEFS = [
       additionalProperties: false,
       properties: {
         query: { type: "string", description: "Search terms" },
-        limit: { type: "number", description: "Max results (default 25)" },
+        limit: { type: "number", description: "Max results (default 25, max 100; a larger limit is lowered to 100)" },
       },
       required: ["query"],
     },
@@ -178,7 +236,7 @@ export const LOCAL_TOOL_DEFS = [
       additionalProperties: false,
       properties: {
         days: { type: "number", description: "Look-back window in days (default 30)" },
-        limit: { type: "number", description: "Max results (default 50)" },
+        limit: { type: "number", description: "Max results (default 50, max 200; a larger limit is lowered to 200)" },
       },
     },
   },
@@ -194,7 +252,7 @@ export const LOCAL_TOOL_DEFS = [
       additionalProperties: false,
       properties: {
         days: { type: "number", description: "Days ahead to look (default 14)" },
-        limit: { type: "number", description: "Max results (default 50)" },
+        limit: { type: "number", description: "Max results (default 50, max 200; a larger limit is lowered to 200)" },
       },
     },
   },
@@ -237,7 +295,7 @@ export const LOCAL_TOOL_DEFS = [
       additionalProperties: false,
       properties: {
         member_name: { type: "string", description: "Full or partial council member name" },
-        limit: { type: "number", description: "Max results (default 50)" },
+        limit: { type: "number", description: "Max results (default 50, max 500; a larger limit is lowered to 500)" },
       },
       required: ["member_name"],
     },
@@ -245,7 +303,7 @@ export const LOCAL_TOOL_DEFS = [
   {
     name: "get_bill_history",
     description:
-      "A matter's legislative history — hearings, referrals, committee and Council actions, and outcomes — from the local index, in chronological order. No token required. " +
+      "A matter's legislative history — hearings, referrals, committee and Council actions, and outcomes — from the local index, in chronological order. " +
       "Identified by a type-prefixed file number like every sibling tool (e.g. 'Int 1122-2024', 'Res 0540-2026'). A bare 'NNNN-YYYY' that matches more than one matter type is rejected with an error naming each match.",
     inputSchema: {
       type: "object",
@@ -265,7 +323,7 @@ export const LOCAL_TOOL_DEFS = [
       additionalProperties: false,
       properties: {
         member_name: { type: "string", description: "Full or partial council member name" },
-        limit: { type: "number", description: "Number of top co-sponsors to return (default 20)" },
+        limit: { type: "number", description: "Number of top co-sponsors to return (default 20, max 100; a larger limit is lowered to 100)" },
       },
       required: ["member_name"],
     },
@@ -292,13 +350,21 @@ export const LOCAL_TOOL_DEFS = [
       additionalProperties: false,
       properties: {
         event_id: { type: "number", description: "Legistar event ID" },
-        limit: { type: "number", description: "Items per page (default 50, max 500)" },
+        limit: { type: "number", description: "Items per page (default 50, max 500; a larger limit is lowered to 500)" },
         offset: { type: "number", description: "Items to skip (default 0)" },
       },
       required: ["event_id"],
     },
   },
 ];
+
+// Every local tool only reads, and answers from the local index or the files in data/
+// (openWorldHint false), except upcoming_events, which checks each meeting's status against the
+// live Legistar API when LEGISTAR_TOKEN is set (#42), so it may reach outside (#82).
+export const LOCAL_TOOL_DEFS = annotateTools(
+  DEFS,
+  Object.fromEntries(DEFS.map((t) => [t.name, t.name === "upcoming_events"]))
+);
 
 export function handleLocalTool(
   name: string,
@@ -312,22 +378,23 @@ export function handleLocalTool(
         const { query, limit, agency, status, committee } = z
           .object({
             query: z.string(),
-            limit: z.number().max(100).optional(),
+            limit: limitArg(),
             agency: z.string().optional(),
             status: z.string().optional(),
             committee: z.string().optional(),
           })
           .strict().parse(args);
-        const results = searchBills(db, query, { limit, agency, status, committee });
-        return json(results);
+        const results = searchBills(db, query, { limit: plusOne(name, limit), agency, status, committee });
+        const res = capped(name, results, limit);
+        return { ...res, content: [...res.content, { type: "text", text: searchMethodNote(agency, hasMatterAttributes(db)) }] };
       }
 
       case "search_events": {
         const { query, limit } = z
-          .object({ query: z.string(), limit: z.number().optional() })
+          .object({ query: z.string(), limit: limitArg() })
           .strict().parse(args);
-        const results = searchEvents(db, query, { limit });
-        return json(results);
+        const results = searchEvents(db, query, { limit: plusOne(name, limit) });
+        return capped(name, results, limit);
       }
 
       case "list_committees": {
@@ -338,18 +405,18 @@ export function handleLocalTool(
 
       case "recent_bills": {
         const { days, limit } = z
-          .object({ days: z.number().optional(), limit: z.number().optional() })
+          .object({ days: z.number().optional(), limit: limitArg() })
           .strict().parse(args ?? {});
-        const results = recentBills(db, { days, limit });
-        return json(results);
+        const results = recentBills(db, { days, limit: plusOne(name, limit) });
+        return capped(name, results, limit);
       }
 
       case "upcoming_events": {
         const { days, limit } = z
-          .object({ days: z.number().optional(), limit: z.number().optional() })
+          .object({ days: z.number().optional(), limit: limitArg() })
           .strict().parse(args ?? {});
-        const results = upcomingEvents(db, { days, limit });
-        return json(results);
+        const results = upcomingEvents(db, { days, limit: plusOne(name, limit) });
+        return capped(name, results, limit);
       }
 
       case "aggregate_bills": {
@@ -368,10 +435,10 @@ export function handleLocalTool(
 
       case "get_voting_record": {
         const { member_name, limit } = z
-          .object({ member_name: z.string(), limit: z.number().optional() })
+          .object({ member_name: z.string(), limit: limitArg() })
           .strict().parse(args);
-        const results = getVotingRecord(db, member_name, { limit });
-        return json(results);
+        const results = getVotingRecord(db, member_name, { limit: plusOne(name, limit) });
+        return capped(name, results, limit);
       }
 
       case "get_bill_history": {
@@ -382,10 +449,10 @@ export function handleLocalTool(
 
       case "co_sponsors": {
         const { member_name, limit } = z
-          .object({ member_name: z.string(), limit: z.number().optional() })
+          .object({ member_name: z.string(), limit: limitArg() })
           .strict().parse(args);
-        const results = coSponsors(db, member_name, { limit });
-        return json(results);
+        const results = coSponsors(db, member_name, { limit: plusOne(name, limit) });
+        return capped(name, results, limit);
       }
 
       case "get_bill_hearings": {
@@ -447,22 +514,26 @@ export function handleLocalTool(
         const { event_id, limit, offset } = z
           .object({
             event_id: z.number(),
-            limit: z.number().int().min(1).max(500).optional(),
+            limit: limitArg(),
             offset: z.number().int().min(0).optional(),
           })
           .strict()
           .parse(args);
-        const results = getEventBills(db, event_id, { limit, offset });
-        return json(results);
+        const used = limit === undefined ? undefined : Math.min(limit, EVENT_BILLS_MAX);
+        const results = getEventBills(db, event_id, { limit: used, offset });
+        if (limit === undefined || limit <= EVENT_BILLS_MAX) return json(results);
+        return {
+          content: [
+            json(results).content[0],
+            { type: "text", text: `limit ${limit} is over this tool's maximum of ${EVENT_BILLS_MAX}, so ${EVENT_BILLS_MAX} was used.` },
+          ],
+        };
       }
 
       default:
         return { content: [{ type: "text", text: `Unknown local tool: ${name}` }], isError: true };
     }
   } catch (err) {
-    const message =
-      unknownParamMessage(err, name, LOCAL_TOOL_DEFS) ??
-      (err instanceof Error ? err.message : String(err));
-    return { content: [{ type: "text", text: `Error: ${message}` }], isError: true };
+    return failure(err, name, LOCAL_TOOL_DEFS);
   }
 }

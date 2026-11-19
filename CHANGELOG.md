@@ -35,6 +35,121 @@ Moves to BetaNYC's shared module 1.4.0 (BetaNYC/betanyc-ai-workspace#1672).
     checked stays in `how_gathered`.
 - `data.json` rebuilt. 2.9.1 in `package.json`, the lockfile and `server.json`.
 
+MCP practices (epic #95):
+
+- Shared module 1.5.2 (BetaNYC/betanyc-ai-workspace, commit bbc1671; raw file SHA-256
+  `bcc117e77c16479cca3f5cc96cf66984e821f12599cb6f4533d05dbcd18b2b33`, 125,208 bytes; stamp hash on
+  its line 2 `eb29cbfb9f6cf4198f84e558e07c7b70cd19b243f292799c8912a39f9479c9aa`), `scripts/whats_changed.py` and
+  `scripts/mcp_shared/data-sources.schema.json` 1.4.1, copied in unchanged (#81). It replaces 1.5.1
+  (commit 17938f2, raw file SHA-256 `567838e0…`, stamp hash `e1e15642…`), which this branch
+  first took. Since 1.5.0: `assertEveryToolAnnotated` also requires `readOnlyHint: true` and a
+  title; `provenance()` gives a live answer's fetch time in New York time to the minute, and
+  takes `changedByBetanyc` to say, in `about_data`'s own sentences, that BetaNYC modified or
+  produced the data; `toolError` drops stack-frame lines from the message and caps it at 1,000
+  characters; the new `errorSummary()` gives the first plain line of an unknown error, which this
+  server now uses wherever it passes on an error it did not write.
+- Every tool declares `annotations`: a title, `readOnlyHint: true`, and `openWorldHint` (true
+  for the live Legistar tools and `upcoming_events`, which checks status live with a token;
+  false for the rest) (#82). A test fails if a tool lacks them.
+- A test caps the size of the tool list plus the server instructions at 31,000 characters
+  (29,678 today) (#89).
+- Requests to the Legistar Web API have a 30-second timeout, a User-Agent naming the package
+  and version, and up to two retries on 429 or 5xx that honor `Retry-After` (waits over 10
+  seconds are not shortened: the call fails and says so) (#83). `scripts/refresh-member-terms.mjs`
+  gets the same, with a 60-second timeout for its one large request.
+- Every failure is a plain sentence saying what went wrong and what to try: a bad argument no
+  longer returns zod's JSON list of issues, and a Legistar error names the HTTP status, a next
+  step, and up to 500 characters of what Legistar said (`toolError`) (#92).
+- The Legistar token, which Legistar takes only as a URL parameter, is removed from every error:
+  no error built for a request carries its URL, and anything the network layer or Legistar says
+  is scrubbed of the token (#87). Tests send failures that echo the token through every live
+  tool.
+- Every data answer ends with a source line with a link (#84) and an as-of (#85). Live answers:
+  `provenance()` from the shared module, naming the Legistar Web API, the time it was fetched,
+  and the Council's Legislation, Calendar, Departments or People page (`src/tools/source-links.ts`).
+  Local answers: the existing source line (index build time and archive commit) now ends with
+  the same kind of link, and `district_member` and `get_member_roles` add the council terms
+  file's fetch date.
+- Lists (#86): `search_events` (max 100), `recent_bills` (200), `upcoming_events` (200),
+  `get_voting_record` (500) and `co_sponsors` (100) get a maximum, as `search_legislation` and
+  `search_bills` (100) had. A whole-number `limit` above it is lowered to it, and the answer
+  says so ("limit 150 is over this tool's maximum of 100, so 100 was used."); a `limit` under 1
+  or not a whole number is refused with a plain message. `get_event_bills` (500) and the live
+  `list_recent_legislation` and `search_legislation_live` (50) lower a too-big `limit` the same
+  way; before, they refused it. Every list tool fetches one more row than its limit and, when there
+  are more, adds "Showing the first N results; more are available" and how to get the rest, as
+  a second text item; the JSON stays an array. `get_upcoming_hearings` says so when it hits
+  Legistar's 50-meeting cap, and `get_committee` when more than 10 committees match.
+  `upcoming_events` keeps that note when it checks status live.
+- Server instructions carry the text several tools shared (#94): the `curated` block's contents,
+  that local tools need no `LEGISTAR_TOKEN`, and that every answer ends with a source line.
+  `get_council_member` and `get_member_roles` no longer repeat the curated explanation, and five
+  local tools drop "No token needed." A test fails on any sentence repeated across tools.
+- `data/SHA256SUMS` (#90): a SHA-256 checksum for each shipped data file, written by
+  `scripts/data-checksums.mjs` and by `refresh-member-terms.mjs`. Shipped in the package. The
+  refresh workflow must also `git add data/SHA256SUMS` (a maintainer change: see #90).
+- Live tests moved to `test/live/` (#91), run by `npm run test:live`, never by `npm test` or CI.
+  `LEGISTAR_LIVE_URL_TEST` is gone.
+- Evaluation set (#88): `eval/questions.json`, 12 questions with answers from the primary
+  record, `npm run eval` (`scripts/eval.mjs`), results in `eval/runs/`. CI runs the 5 the
+  shipped data can answer.
+- `test/stdout.test.mjs` (#93): in live-only and local-only mode, every stdout line is a
+  JSON-RPC message and the mode line goes to stderr.
+- Review fixes (epic #95):
+  - Live answers' source line says the answer is a copy BetaNYC modified (it fixes known-bad
+    member profile links and shortens long hearing titles) and that Legistar is the official
+    record, as `about_data` says for the live source.
+  - A live `get_council_member` answer's source block names every source in it: Legistar; with
+    an index, the council terms file (NYC Open Data uvw5-9znb) with its fetch date and link; and
+    that the `curated` block is BetaNYC's and not an official record. `get_member_roles`' source
+    line says the same about its `curated` block.
+  - `get_council_member` and `get_member_roles` say again, in a few words, that the `curated`
+    block is not official records. Tool list plus instructions: 30,068 characters (cap 31,000).
+  - `get_upcoming_hearings` fetches agendas at most 5 at a time. Inside that fan-out a 429 is
+    not retried: no more agenda requests are sent, and the answer keeps the agendas it has and
+    names each meeting whose agenda is missing, and why. Before, up to 50 requests went at once,
+    each retrying a 429 twice, and a failed agenda was left empty with no note.
+  - A timeout or a bad body while reading Legistar's reply is now a plain error, like a failed
+    request.
+  - `get_council_member` says "Showing 10 of M" when more than 10 members match.
+  - Content blocks come in a fixed order: the JSON, then any notes (a lowered `limit`, "more are
+    available", a status not checked live, missing agendas), then the source line, always last.
+  - Tests: the open-world tools are an explicit list per mode, and every local tool must answer
+    in the source-line test, with no silent skips.
+  - `package.json`'s description has its em dash back as the character itself.
+- Review fixes, round 2 (epic #95):
+  - `get_upcoming_hearings` no longer gets slow when Legistar is down. Inside the agenda fan-out
+    no request is retried (429 or 5xx); after the first one fails, for any reason, no more are
+    sent; and all agendas share a 20-second budget, after which the rest are listed as "out of
+    time". With 50 meetings all answering 503, a review measured 150 requests and 30 seconds
+    (it could reach about 200 seconds); now it is at most 5 requests, at once.
+  - A meeting whose agenda could not be fetched has `EventItems: null` (unknown), not `[]`,
+    which read as "nothing on the agenda". The note still names it and says why.
+  - `get_event_bills`, `list_recent_legislation` and `search_legislation_live` lower a too-big
+    `limit` to their maximum and say so, like every other list (above).
+  - Every local answer's source line says, in `about_data`'s own words (`provenance()` with
+    `changedByBetanyc`), that BetaNYC modified the data and how, that this copy is not the
+    official record, and the official record (the Council's Legistar page, or the City's terms
+    dataset for `district_member`) with a link. It still names `jehiah/nyc_legislation` and the
+    commit the index was built from, and when it was built.
+  - `DATA-SOURCES.json` says exactly what the index build changes, where it said "values
+    unchanged": history dates lose their trailing Z; committee names, role titles and member
+    types are trimmed; rows with no ID are left out (sponsors, votes, attachments, meetings and
+    agenda items, office records, terms); dates are cut to the day; a bill with no title takes
+    its name; a district that is not a number becomes null. The steps now include `cleaned` and
+    `filtered`, and the districts credit line no longer says "used as published". `data.json`
+    rebuilt.
+  - In hybrid mode `upcoming_events`' source block also names the live Legistar API, with the
+    time it was fetched, because `agenda_status` comes from it.
+  - `search_legislation` ends with one line saying its order is BetaNYC's own ranking weights
+    and, with `agency`, that the agency filter is BetaNYC's own phrase list
+    (`src/agencies.ts`), not an official classification. `DATA-SOURCES.json` says the same.
+  - Errors: the failed live check in `upcoming_events` gives one plain line with the token
+    removed. The steps that run after a tool (the live status check and its SQL, the source
+    line, `get_council_member`'s curated block, terms and sources) now run inside the same
+    guard, so a throw there is a plain error answer, not a protocol error.
+  - Tool list plus instructions: 30,244 characters (cap 31,000).
+
 ## [2.9.0] - 2026-11-13
 
 ### Added

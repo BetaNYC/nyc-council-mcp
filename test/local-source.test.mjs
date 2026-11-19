@@ -41,7 +41,7 @@ const BUILT = {
 
 test("sourceNote names the build time and archive commit", () => {
   const note = sourceNote(stateDb(BUILT), { hasLive: true, empty: false });
-  assert.match(note, /local index built 2026-11-12T11:30:07\.125Z/);
+  assert.match(note, /As of 2026-11-12T11:30:07\.125Z \(the date of the copy this server answers from\)/);
   assert.match(note, /jehiah\/nyc_legislation@9e52935/);
   assert.match(note, /2026-11-11T23:38:10Z/);
   assert.doesNotMatch(note, /LEGISTAR_TOKEN/);
@@ -59,7 +59,9 @@ test("an empty local-only answer says 'not in this index', not 'does not exist'"
 });
 
 test("an index with no recorded build time says so", () => {
-  assert.match(sourceNote(stateDb({}), { hasLive: true, empty: false }), /build time unknown/);
+  const note = sourceNote(stateDb({}), { hasLive: true, empty: false });
+  assert.match(note, /As of: unknown/);
+  assert.match(note, /a clone of jehiah\/nyc_legislation \(commit unknown\)/);
 });
 
 test("withSourceNote adds a second content item and leaves the JSON alone", () => {
@@ -67,7 +69,7 @@ test("withSourceNote adds a second content item and leaves the JSON alone", () =
   const out = withSourceNote(res, stateDb(BUILT), { hasLive: true });
   assert.equal(out.content.length, 2);
   assert.equal(out.content[0].text, "[1,2]");
-  assert.match(out.content[1].text, /local index built/);
+  assert.match(out.content[1].text, /^BetaNYC modified this data: it built this local index from jehiah\/nyc_legislation@9e52935/);
 });
 
 test("withSourceNote leaves errors alone", () => {

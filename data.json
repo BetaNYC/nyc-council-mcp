@@ -432,9 +432,9 @@
         }
       ],
       "provenance": [
-        "BetaNYC modified this data: reshaped it and counted or added up records. This copy should not be considered the official record. Official record: NYC Council Legistar: Legislation, https://legistar.council.nyc.gov/Legislation.aspx",
+        "BetaNYC modified this data: cleaned it, left some records out, reshaped it, and counted or added up records. This copy should not be considered the official record. Official record: NYC Council Legistar: Legislation, https://legistar.council.nyc.gov/Legislation.aspx",
         "This server answers from a local SQLite index, with no network call. The index is built from a clone of jehiah/nyc_legislation (https://github.com/jehiah/nyc_legislation), an unofficial mirror that copies the Council's Legistar records through the Legistar API. Every local answer ends with a line naming when the index was built and the archive commit it was built from.",
-        "Modified by BetaNYC: Records are restructured into database tables with their values unchanged. aggregate_bills counts bills by a field, and co_sponsors counts the bills each pair of members sponsored together."
+        "Modified by BetaNYC: The index build changes some values (src/db/indexer.ts): introduction, passed and enactment dates are cut to the day; history dates lose their trailing Z (they are New York time); a bill with no title takes its name; matters, sponsors and attachments with no ID are left out. aggregate_bills counts bills by a field, and co_sponsors counts the bills each pair of members sponsored together. search_legislation ranks results by BetaNYC's own weights (file number and title count most, then sponsors, summary and full text), and its agency filter keeps rows whose title or sponsors contain a phrase from BetaNYC's own list for that agency (src/agencies.ts, adapted from WillHsiaoNYC/legistar-mcp); neither is an official classification."
       ],
       "page": [
         {
@@ -448,6 +448,14 @@
         "prefLabel": "New York City Council"
       },
       "wasGeneratedBy": [
+        {
+          "@type": "Activity",
+          "label": "cleaned"
+        },
+        {
+          "@type": "Activity",
+          "label": "filtered"
+        },
         {
           "@type": "Activity",
           "label": "reshaped"
@@ -523,9 +531,9 @@
         }
       ],
       "provenance": [
-        "BetaNYC modified this data: reshaped it and counted or added up records. This copy should not be considered the official record. Official record: NYC Council Legistar: Legislation, https://legistar.council.nyc.gov/Legislation.aspx",
+        "BetaNYC modified this data: cleaned it, left some records out, reshaped it, and counted or added up records. This copy should not be considered the official record. Official record: NYC Council Legistar: Legislation, https://legistar.council.nyc.gov/Legislation.aspx",
         "This server answers from a local SQLite index, with no network call. The index is built from a clone of jehiah/nyc_legislation (https://github.com/jehiah/nyc_legislation), an unofficial mirror that copies the Council's Legistar records through the Legistar API. Every local answer ends with a line naming when the index was built and the archive commit it was built from.",
-        "Modified by BetaNYC: Records are restructured into database tables with their values unchanged. vote_breakdown tallies each roll call's positions (affirmative, negative, abstain), never counting an absence as a vote."
+        "Modified by BetaNYC: The index build changes some values (src/db/indexer.ts): history dates lose their trailing Z (they are New York time), and a roll call with no event item ID or a vote with no person ID is left out. vote_breakdown tallies each roll call's positions (affirmative, negative, abstain), never counting an absence as a vote."
       ],
       "page": [
         {
@@ -539,6 +547,14 @@
         "prefLabel": "New York City Council"
       },
       "wasGeneratedBy": [
+        {
+          "@type": "Activity",
+          "label": "cleaned"
+        },
+        {
+          "@type": "Activity",
+          "label": "filtered"
+        },
         {
           "@type": "Activity",
           "label": "reshaped"
@@ -614,9 +630,9 @@
         }
       ],
       "provenance": [
-        "BetaNYC modified this data: reshaped it. This copy should not be considered the official record. Official record: NYC Council Legistar: Calendar, https://legistar.council.nyc.gov/Calendar.aspx",
+        "BetaNYC modified this data: cleaned it, left some records out, and reshaped it. This copy should not be considered the official record. Official record: NYC Council Legistar: Calendar, https://legistar.council.nyc.gov/Calendar.aspx",
         "This server answers from a local SQLite index, with no network call. The index is built from a clone of jehiah/nyc_legislation (https://github.com/jehiah/nyc_legislation), an unofficial mirror that copies the Council's Legistar records through the Legistar API. Every local answer ends with a line naming when the index was built and the archive commit it was built from.",
-        "Modified by BetaNYC: Records are restructured into database tables with their values unchanged."
+        "Modified by BetaNYC: The index build changes some values (src/db/indexer.ts): meeting dates are cut to the day (the time is kept separately), and meetings and agenda items with no ID are left out."
       ],
       "page": [
         {
@@ -630,6 +646,14 @@
         "prefLabel": "New York City Council"
       },
       "wasGeneratedBy": [
+        {
+          "@type": "Activity",
+          "label": "cleaned"
+        },
+        {
+          "@type": "Activity",
+          "label": "filtered"
+        },
         {
           "@type": "Activity",
           "label": "reshaped"
@@ -701,9 +725,9 @@
         }
       ],
       "provenance": [
-        "BetaNYC modified this data: reshaped it and counted or added up records. This copy should not be considered the official record. Official record: NYC Council Legistar: Committees, https://legistar.council.nyc.gov/Departments.aspx",
+        "BetaNYC modified this data: cleaned it, left some records out, reshaped it, and counted or added up records. This copy should not be considered the official record. Official record: NYC Council Legistar: Committees, https://legistar.council.nyc.gov/Departments.aspx",
         "This server answers from a local SQLite index, with no network call. The index is built from a clone of jehiah/nyc_legislation (https://github.com/jehiah/nyc_legislation), an unofficial mirror that copies the Council's Legistar records through the Legistar API. Every local answer ends with a line naming when the index was built and the archive commit it was built from.",
-        "Modified by BetaNYC: Records are restructured into database tables with their values unchanged. list_committees counts the bills and meetings recorded for each body."
+        "Modified by BetaNYC: The index build changes some values (src/db/indexer.ts): committee names, role titles and member types are trimmed; start and end dates are cut to the day; people with no ID, and office records with no ID or no committee name, are left out. list_committees counts the bills and meetings recorded for each body."
       ],
       "page": [
         {
@@ -717,6 +741,14 @@
         "prefLabel": "New York City Council"
       },
       "wasGeneratedBy": [
+        {
+          "@type": "Activity",
+          "label": "cleaned"
+        },
+        {
+          "@type": "Activity",
+          "label": "filtered"
+        },
         {
           "@type": "Activity",
           "label": "reshaped"
@@ -792,9 +824,9 @@
         }
       ],
       "provenance": [
-        "BetaNYC modified this data: reshaped it and joined it with other data. This copy should not be considered the official record. Official record: City Council Members (1999 to Present) (New York City Council), https://data.cityofnewyork.us/d/uvw5-9znb",
+        "BetaNYC modified this data: cleaned it, left some records out, reshaped it, and joined it with other data. This copy should not be considered the official record. Official record: City Council Members (1999 to Present) (New York City Council), https://data.cityofnewyork.us/d/uvw5-9znb",
         "The Council publishes this dataset on NYC Open Data, the City's open data portal. A copy ships with this server (data/council-member-terms.json) and is loaded into the local index. A monthly job re-fetches it and opens a pull request when the rows change.",
-        "Modified by BetaNYC: The rows are used as published, loaded into the index and joined to Legistar people on person ID, never on names. district_member works out who held a district on a date from them."
+        "Modified by BetaNYC: The rows are loaded into the index (src/db/indexer.ts) with these changes: names are trimmed, a district that is not a number is left blank (null), term start and end dates are cut to the day, and a row with no office or person ID is left out. They are joined to Legistar people on person ID, never on names. district_member works out who held a district on a date from them."
       ],
       "page": [
         {
@@ -810,6 +842,14 @@
       "wasGeneratedBy": [
         {
           "@type": "Activity",
+          "label": "cleaned"
+        },
+        {
+          "@type": "Activity",
+          "label": "filtered"
+        },
+        {
+          "@type": "Activity",
           "label": "reshaped"
         },
         {
@@ -820,7 +860,7 @@
       "accrualPeriodicity": "irregular",
       "rights": [
         "License: No restrictions on use: NYC Administrative Code § 23-502(d) (the Open Data Law, Local Law 11 of 2012)",
-        "Credit: Source: New York City Council, City Council Members (1999 to Present), NYC Open Data uvw5-9znb; used as published.",
+        "Credit: Source: New York City Council, City Council Members (1999 to Present), NYC Open Data uvw5-9znb; cleaned and joined to Legistar members by BetaNYC.",
         "Terms of use: https://codelibrary.amlegal.com/codes/newyorkcity/latest/NYCadmin/0-0-0-216807"
       ],
       "scopeNote": "Known gap: The City updates this file late. A seat that looks vacant may have a new member; the answer then names anyone Legistar lists who is missing from the file. Caveat: How current is when this server's copy was fetched from NYC Open Data. Caveat: District lines are redrawn, so a past district number may not match today's map."

@@ -1,0 +1,227 @@
+// Every data answer names its source with a link (#84) and says how current it is (#85), and
+// every list says when more results exist and how to get them (#86). Offline: fetch is mocked
+// for the live tools; the local tools run through the built server over stdio against a
+// fixture index, the way an AI app calls them.
+
+import { test, afterEach } from "node:test";
+import assert from "node:assert/strict";
+import { mkdtempSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { fileURLToPath } from "node:url";
+import Database from "better-sqlite3";
+import { Client } from "@modelcontextprotocol/sdk/client/index.js";
+import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
+
+import { handleLiveTool, handleLiveSearch, LIVE_TOOL_DEFS, LIVE_SEARCH_TOOL_DEF } from "../dist/tools/live.js";
+import { handleLocalTool, LOCAL_TOOL_DEFS, LIST_LIMITS } from "../dist/tools/local.js";
+import { SOURCE_LINK } from "../dist/tools/source-links.js";
+import { CREATE_TABLES } from "../dist/db/schema.js";
+import { nyDateString } from "../dist/dates.js";
+
+const ROOT = fileURLToPath(new URL("..", import.meta.url));
+const realFetch = globalThis.fetch;
+afterEach(() => { globalThis.fetch = realFetch; });
+const last = (res) => res.content.at(-1).text;
+
+test("every tool has a link a person can open", () => {
+  for (const t of [...LOCAL_TOOL_DEFS, ...LIVE_TOOL_DEFS, LIVE_SEARCH_TOOL_DEF]) {
+    assert.match(SOURCE_LINK[t.name] ?? "", /^https:\/\//, t.name);
+  }
+});
+
+// ------------------------------------------------------------------ live
+
+const LIVE_ARGS = {
+  get_bill: { file_number: "Int 0001-2024" }, get_bill_history: { matter_id: 1 }, get_bill_attachments: { matter_id: 1 },
+  get_upcoming_hearings: { include_agenda: false }, get_council_member: { name: "Brewer" }, get_committee: { name: "Health" },
+  get_votes: { event_item_id: 1 }, list_recent_legislation: {},
+};
+
+test("every live answer ends with its source, a link and the time it was fetched", async () => {
+  globalThis.fetch = async () => new Response("[]", { status: 200 });
+  const answers = [];
+  for (const t of LIVE_TOOL_DEFS) answers.push([t.name, await handleLiveTool(t.name, LIVE_ARGS[t.name], "tok")]);
+  answers.push(["search_legislation_live", await handleLiveSearch({ query: "x" }, "tok")]);
+  for (const [name, res] of answers) {
+    assert.ok(!res.isError, name);
+    assert.match(
+      last(res),
+      /^Source: NYC Council Legistar Web API \(Granicus\), a copy BetaNYC modified \(it fixes known-bad member profile links and shortens long hearing titles\); Legistar is the official record\. Fetched from the source for this answer at \d{4}-\d{2}-\d{2} \d{2}:\d{2} E[SD]T \(New York time\)\. Link: https:\/\/legistar\.council\.nyc\.gov\/\S+$/,
+      name
+    );
+    assert.ok(last(res).endsWith(SOURCE_LINK[name]), name);
+  }
+});
+
+test("a live list cut at its limit says more are available", async () => {
+  const urls = [];
+  const rows = Array.from({ length: 30 }, (_, i) => ({ MatterId: i + 1, MatterFile: `Int ${i}` }));
+  globalThis.fetch = async (url) => {
+    urls.push(String(url));
+    const top = Number(new URL(url).searchParams.get("$top"));
+    return new Response(JSON.stringify(rows.slice(0, top)), { status: 200 });
+  };
+  const res = await handleLiveTool("list_recent_legislation", { limit: 25 }, "tok");
+  assert.equal(new URL(urls[0]).searchParams.get("$top"), "26", "asks for one more than the limit");
+  assert.equal(JSON.parse(res.content[0].text).length, 25);
+  assert.match(res.content[1].text, /^Showing the first 25 results; more are available\. Raise limit \(up to 50\)/);
+  const all = await handleLiveTool("list_recent_legislation", { limit: 50 }, "tok");
+  assert.equal(JSON.parse(all.content[0].text).length, 30);
+  assert.equal(all.content.length, 2, "no 'more' note when everything fit; only the source line");
+  const search = await handleLiveSearch({ query: "x", limit: 5 }, "tok");
+  assert.match(search.content[1].text, /Showing the first 5 results; more are available/);
+  // Over the maximum: lowered to 50, and the answer says so, like the local lists (round 2, fix 3).
+  urls.length = 0;
+  const big = await handleLiveTool("list_recent_legislation", { limit: 51 }, "tok");
+  assert.ok(!big.isError, big.content[0].text);
+  assert.equal(new URL(urls[0]).searchParams.get("$top"), "51", "asks for 50 + 1");
+  assert.equal(big.content[1].text, "limit 51 is over this tool's maximum of 50, so 50 was used.");
+});
+
+// ------------------------------------------------------------------ local lists
+
+function bigDb(n) {
+  const db = new Database(":memory:");
+  db.exec(CREATE_TABLES);
+  const today = nyDateString();
+  const bill = db.prepare("INSERT INTO bills (matter_id, file_number, title, intro_date, source_json) VALUES (?,?,?,?,?)");
+  const ev = db.prepare("INSERT INTO events (event_id, date, body_name, source_json) VALUES (?,?,?,?)");
+  db.prepare("INSERT INTO people (person_id, full_name) VALUES (1, 'Pat Member')").run();
+  const sp = db.prepare("INSERT INTO sponsors (matter_id, person_id) VALUES (?,?)");
+  const vote = db.prepare("INSERT INTO votes (event_item_id, person_id, person_name, vote_value, matter_id) VALUES (?,?,?,?,?)");
+  for (let i = 1; i <= n; i++) {
+    bill.run(i, `Int ${String(i).padStart(4, "0")}-2026`, `A Local Law about bicycles ${i}`, today, "{}");
+    ev.run(i, today, "Committee on Transportation", "{}");
+    db.prepare("INSERT OR IGNORE INTO people (person_id, full_name) VALUES (?, ?)").run(i + 1, `Other Member ${i}`);
+    sp.run(i, 1);
+    sp.run(i, i + 1);
+    vote.run(i, 1, "Pat Member", "Affirmative", i);
+  }
+  return db;
+}
+
+/** search_legislation and search_bills end with one line on their order and agency filter. */
+const SEARCHES = new Set(["search_legislation", "search_bills"]);
+
+const LIST_ARGS = {
+  search_legislation: { query: "bicycles" }, search_bills: { query: "bicycles" }, search_events: { query: "transportation" },
+  recent_bills: {}, upcoming_events: {}, get_voting_record: { member_name: "Pat Member" }, co_sponsors: { member_name: "Pat Member" },
+};
+
+test("every local list tool stops at its default and says more are available, with a large fixture", () => {
+  const db = bigDb(250);
+  for (const [tool, args] of Object.entries(LIST_ARGS)) {
+    const { default: def, max } = LIST_LIMITS[tool];
+    const res = handleLocalTool(tool, args, db);
+    assert.ok(!res.isError, `${tool}: ${res.content[0].text}`);
+    assert.equal(JSON.parse(res.content[0].text).length, def, tool);
+    assert.match(res.content[1].text, new RegExp(`^Showing the first ${def} results; more are available\\. Raise limit \\(up to ${max}\\)`), tool);
+  }
+});
+
+test("every local list tool lowers a limit over its maximum to the maximum, and says so", () => {
+  const db = bigDb(1);
+  for (const [tool, args] of Object.entries(LIST_ARGS)) {
+    const { max } = LIST_LIMITS[tool];
+    const extra = SEARCHES.has(tool) ? 1 : 0;
+    const res = handleLocalTool(tool, { ...args, limit: max + 1 }, db);
+    assert.ok(!res.isError, `${tool}: ${res.content[0].text}`);
+    assert.equal(res.content.length, 2 + extra, tool);
+    assert.equal(res.content[1].text, `limit ${max + 1} is over this tool's maximum of ${max}, so ${max} was used.`, tool);
+    const ok = handleLocalTool(tool, { ...args, limit: max }, db);
+    assert.ok(!ok.isError, tool);
+    assert.equal(ok.content.length, 1 + extra, `${tool}: everything fit, so no 'more' note`);
+    for (const bad of [0, -3, 1.5]) assert.equal(handleLocalTool(tool, { ...args, limit: bad }, db).isError, true, `${tool} limit ${bad}`);
+  }
+});
+
+test("a lowered limit uses the maximum: at most max rows, and the 'more' note when there are more", () => {
+  const db = bigDb(250);
+  const res = handleLocalTool("search_events", { query: "transportation", limit: 1000 }, db);
+  assert.ok(!res.isError);
+  assert.equal(JSON.parse(res.content[0].text).length, 100);
+  assert.equal(
+    res.content[1].text,
+    "limit 1000 is over this tool's maximum of 100, so 100 was used. Showing the first 100 results; more are available. Add more words."
+  );
+});
+
+// ------------------------------------------------------------------ local answers, over stdio
+
+const LOCAL_ARGS = {
+  search_legislation: { query: "bicycles" }, search_bills: { query: "bicycles" }, get_matter: { file_number: "Int 0001-2026" },
+  get_member_roles: { member_name: "Pat Member" }, committee_roster: { committee: "Transportation" }, district_member: { district: 1 },
+  search_events: { query: "transportation" }, list_committees: {}, recent_bills: {}, upcoming_events: {},
+  aggregate_bills: { group_by: "status" }, vote_breakdown: { file_number: "Int 0001-2026" },
+  get_voting_record: { member_name: "Pat Member" }, get_bill_history: { file_number: "Int 0001-2026" },
+  co_sponsors: { member_name: "Pat Member" }, get_bill_hearings: { file_number: "Int 0001-2026" }, get_event_bills: { event_id: 1 },
+};
+
+test("every local answer ends with its source, the index date and a link (over MCP stdio)", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "council-prov-"));
+  const dbPath = join(dir, "legistar.db");
+  const db = bigDb(3);
+  await db.backup(dbPath);
+  db.close();
+  const file = new Database(dbPath);
+  // Membership and council-term rows, so get_member_roles, committee_roster and district_member answer too.
+  file.prepare("INSERT INTO office_records (record_id, person_id, body_name, body_kind, role, start) VALUES (1, 1, 'Committee on Transportation', 'committee', 'member', '2026-01-01')").run();
+  file.prepare("INSERT INTO member_terms (office_id, person_id, name, district, term_start, term_end) VALUES (1, 1, 'Pat Member', 1, '2026-01-01', '2029-12-31')").run();
+  const put = file.prepare("INSERT OR REPLACE INTO index_state (key, value) VALUES (?, ?)");
+  put.run("last_indexed_at", "2026-11-12T11:30:07.125Z");
+  put.run("archive_commit", "9e52935");
+  put.run("member_terms_fetched_at", "2026-11-13T02:13:52Z");
+  file.close();
+  const env = { ...process.env, LEGISTAR_DB_PATH: dbPath };
+  delete env.LEGISTAR_TOKEN;
+  const client = new Client({ name: "provenance-test", version: "0" });
+  await client.connect(new StdioClientTransport({ command: process.execPath, args: [join(ROOT, "dist/index.js")], env, stderr: "ignore" }));
+  try {
+    // Every local tool must answer in this fixture, so none goes unchecked. A tool that cannot
+    // answer here goes in this list with its reason; today there are none.
+    const EXCEPTIONS = {};
+    let answered = 0;
+    for (const t of LOCAL_TOOL_DEFS) {
+      const res = await client.callTool({ name: t.name, arguments: LOCAL_ARGS[t.name] });
+      if (t.name in EXCEPTIONS) continue;
+      assert.ok(!res.isError, `${t.name} gave an error, so its source line goes unchecked: ${res.content[0].text}`);
+      answered++;
+      // Round 2, fix 4: the first line says BetaNYC modified the data, names the mirror and its
+      // commit, says this copy is not the official record, and ends with the official record's link.
+      const lines = last(res).split("\n");
+      assert.match(
+        lines[0],
+        /^BetaNYC modified this data: it built this local index from jehiah\/nyc_legislation@9e52935, an unofficial mirror of the Council's Legistar records; .*\. This copy should not be considered the official record\. As of 2026-11-12T11:30:07\.125Z \(the date of the copy this server answers from\)\. Official record: .+, https:\/\/\S+$/,
+        t.name
+      );
+      assert.ok(lines[0].endsWith(`, ${SOURCE_LINK[t.name]}`), `${t.name}: ${lines[0]}`);
+      assert.match(lines.at(-1), /^It was not checked against the live Legistar API, because no LEGISTAR_TOKEN is set \(register at https:\/\/council\.nyc\.gov\/legislation\/api\/\)\./, t.name);
+      const terms = lines.filter((l) => l.startsWith("District and terms: "));
+      const curated = lines.filter((l) => l.startsWith("Each member's 'curated' block is BetaNYC's own"));
+      if (t.name === "district_member" || t.name === "get_member_roles") {
+        assert.equal(terms.length, 1, t.name);
+        assert.match(terms[0], /NYC Open Data uvw5-9znb; a copy shipped with this server \(fetched 2026-11-13T02:13:52Z\)/, t.name);
+      } else assert.equal(terms.length, 0, t.name);
+      // Fix 9 of round 2: the curated sentence is on get_member_roles' answer itself, not only its description.
+      assert.equal(curated.length, t.name === "get_member_roles" ? 1 : 0, t.name);
+      assert.equal(lines.length, 2 + terms.length + curated.length, `${t.name}: ${last(res)}`);
+    }
+    assert.equal(answered + Object.keys(EXCEPTIONS).length, LOCAL_TOOL_DEFS.length);
+    // The source line is the LAST block, also when a list adds a note before it: blocks are the
+    // JSON, then any notes ("limit lowered", "more are available"), then the source line.
+    for (const [tool, args] of Object.entries(LIST_ARGS)) {
+      for (const limit of [1, LIST_LIMITS[tool].max + 1]) {
+        const res = await client.callTool({ name: tool, arguments: { ...args, limit } });
+        assert.ok(!res.isError, tool);
+        const extra = SEARCHES.has(tool) ? 1 : 0;
+        assert.equal(res.content.length, 3 + extra, `${tool} limit ${limit}: JSON, note, (search: order line,) source line`);
+        assert.match(res.content[1].text, limit === 1 ? /^Showing the first 1 results; more are available/ : /^limit \d+ is over/, tool);
+        if (extra) assert.match(res.content[2].text, /^Order: /, tool);
+        assert.match(last(res), /^BetaNYC modified this data: /, `${tool}: the source line is last`);
+      }
+    }
+  } finally {
+    await client.close();
+  }
+});

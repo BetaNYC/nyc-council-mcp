@@ -10,18 +10,22 @@ import {
   getBill,
   getBillHistory,
   getMatterAttachments,
-  getUpcomingHearings,
-  getCouncilMember,
+  getUpcomingHearingsReport,
+  getCouncilMemberMatches,
+  COUNCIL_MEMBER_MAX,
   getCommittee,
   getVotes,
   listRecentLegislation,
   legistarUrl,
   summarizeHearing,
+  UPCOMING_HEARINGS_MAX,
   type LegistarMatter,
 } from "../legistar.js";
-import { unknownParamMessage } from "./unknown-param.js";
+import { failure } from "./errors.js";
 
 import { json } from "./json.js";
+import { annotateTools, provenance } from "../betanyc-tools.js";
+import { SOURCE_LINK, LIVE_SOURCE, LIVE_MODIFIED } from "./source-links.js";
 
 // Add a human-openable legistar_url to a matter record (any type — see
 // legistarUrl). get_bill_history returns MatterHistory rows, not matters, so
@@ -30,7 +34,8 @@ function withLegistarUrl(m: LegistarMatter): LegistarMatter & { legistar_url: st
   return { ...m, legistar_url: legistarUrl(m.MatterId) };
 }
 
-const LIVE_TOOL_DEFS = [
+// Every live tool only reads, from the live Legistar API (openWorldHint true, #82).
+const LIVE_TOOL_DEFS = annotateTools([
   {
     name: "get_bill",
     description:
@@ -79,7 +84,7 @@ const LIVE_TOOL_DEFS = [
   {
     name: "get_upcoming_hearings",
     description:
-      "List upcoming NYC Council committee hearings and Stated meetings. Real-time data — use this for scheduling, not the local index. Each event's EventItems array is populated with its agenda items (the bills/matters on the agenda) via a follow-up call per event; pass include_agenda=false to skip that and return events faster with EventItems empty. Returns a short shape by default (detail='summary'); detail='full' returns every Legistar field. A stated meeting can carry 100+ agenda items: for those, use include_agenda=false and page the agenda with get_event_bills.",
+      "List upcoming NYC Council committee hearings and Stated meetings. Real-time data — use this for scheduling, not the local index. Each event's EventItems array is populated with its agenda items (the bills/matters on the agenda) via a follow-up call per event; EventItems is null when that agenda could not be fetched (a note says why). Pass include_agenda=false to skip that and return events faster with EventItems empty. Returns a short shape by default (detail='summary'); detail='full' returns every Legistar field. A stated meeting can carry 100+ agenda items: for those, use include_agenda=false and page the agenda with get_event_bills.",
     inputSchema: {
       type: "object",
       additionalProperties: false,
@@ -107,8 +112,7 @@ const LIVE_TOOL_DEFS = [
     description:
       "Look up an NYC Council member by name. Returns current contact info and active status. " +
       "PersonWWW2 may carry a PersonWWW2_warning (and the original value in PersonWWW2_upstream) when the upstream link is known or suspected wrong. " +
-      "Each member also gets a 'curated' block: BetaNYC's hand-checked Wikidata/Wikipedia link, party (every ballot line won on, " +
-      "from Board of Elections certified results) and office social accounts, each with its source. These are not official records. " +
+      "Adds the 'curated' block (BetaNYC's checked facts, not official records). " +
       "With a local index, district and council terms are added too.",
     inputSchema: {
       type: "object",
@@ -156,19 +160,64 @@ const LIVE_TOOL_DEFS = [
       type: "object",
       additionalProperties: false,
       properties: {
-        limit: { type: "number", description: "Number of items to return (default 25, max 50)" },
+        limit: { type: "number", description: "Number of items to return (default 25, max 50; a larger limit is lowered to 50)" },
       },
     },
   },
-];
+], true);
 
 export { LIVE_TOOL_DEFS };
 
-export async function handleLiveTool(
+type LiveResult = { content: Array<{ type: string; text: string }>; isError?: boolean };
+
+/** Every live data answer ends with its source, a link and the time it was fetched (#84, #85).
+ * The source line says the answer is a copy BetaNYC modified, as about_data does for the live
+ * source (DATA-SOURCES.json, changes.changed), and that Legistar is the official record. */
+export function liveSourceLine(name: string, now: Date = new Date()): string {
+  return provenance(
+    { sourceName: `${LIVE_SOURCE.sourceName}, ${LIVE_MODIFIED}`, publisher: LIVE_SOURCE.publisher, sourceUrl: SOURCE_LINK[name], kind: "live" },
+    now
+  ).text;
+}
+
+function withLiveSource(name: string, res: LiveResult): LiveResult {
+  if (res.isError) return res;
+  return { ...res, content: [...res.content, { type: "text", text: liveSourceLine(name) }] };
+}
+
+/** A limit must be a whole number of at least 1; one above the tool's maximum is allowed here
+ * and lowered to it (as the local list tools do). */
+const limitArg = () =>
+  z.number().int("limit must be a whole number").min(1, "limit must be 1 or more").optional();
+
+/** The most rows list_recent_legislation and search_legislation_live return. */
+export const LIVE_LIST_MAX = 50;
+
+/**
+ * A list cut at the limit (#86): the caller fetched limit + 1 rows, so one more means more exist.
+ * `asked` is the caller's limit: when it is over `max`, `max` was used and a note says so.
+ */
+function capped(rows: unknown[], asked: number | undefined, fallback: number, max: number, how: string): LiveResult {
+  const limit = Math.min(asked ?? fallback, max);
+  const notes: string[] = [];
+  if (asked !== undefined && asked > max) notes.push(`limit ${asked} is over this tool's maximum of ${max}, so ${max} was used.`);
+  if (rows.length > limit) {
+    const raise = limit < max ? `Raise limit (up to ${max}) or ${how}.` : `${how[0].toUpperCase()}${how.slice(1)}.`;
+    notes.push(`Showing the first ${limit} results; more are available. ${raise}`);
+  }
+  const body = json(rows.slice(0, limit)).content[0];
+  return notes.length ? { content: [body, { type: "text", text: notes.join(" ") }] } : { content: [body] };
+}
+
+export async function handleLiveTool(name: string, args: Record<string, unknown>, token: string): Promise<LiveResult> {
+  return withLiveSource(name, await runLiveTool(name, args, token));
+}
+
+async function runLiveTool(
   name: string,
   args: Record<string, unknown>,
   token: string
-): Promise<{ content: Array<{ type: string; text: string }>; isError?: boolean }> {
+): Promise<LiveResult> {
   try {
     switch (name) {
       case "get_bill": {
@@ -217,19 +266,44 @@ export async function handleLiveTool(
             detail: z.enum(["summary", "full"]).optional(),
           })
           .strict().parse(args ?? {});
-        const results = await getUpcomingHearings(
+        const { events: results, missingAgendas } = await getUpcomingHearingsReport(
           token,
           days_ahead ?? 14,
           include_agenda ?? true
         );
         // #22: short shape by default; the raw payload only on request.
         const out = (detail ?? "summary") === "full" ? results : results.map(summarizeHearing);
-        return json(out);
+        const notes: string[] = [];
+        if (results.length >= UPCOMING_HEARINGS_MAX) {
+          notes.push(`Showing the first ${UPCOMING_HEARINGS_MAX} meetings, the most Legistar is asked for; there may be more. Use a smaller days_ahead.`);
+        }
+        if (missingAgendas.length > 0) {
+          const list = missingAgendas
+            .map((m) => `${m.EventId} (${String(m.EventDate ?? "").slice(0, 10)}, ${m.EventBodyName}): ${m.reason}`)
+            .join("; ");
+          notes.push(
+            `The agenda is missing for ${missingAgendas.length} of ${results.length} meetings, so their EventItems are null (not fetched; this does not mean the agenda is empty): ${list}. ` +
+              `Try again in a minute, or call with include_agenda=false and read one meeting's agenda with get_event_bills (needs the local index).`
+          );
+        }
+        if (notes.length === 0) return json(out);
+        return { content: [json(out).content[0], ...notes.map((text) => ({ type: "text", text }))] };
       }
 
       case "get_council_member": {
         const { name: memberName } = z.object({ name: z.string() }).strict().parse(args);
-        const results = await getCouncilMember(token, memberName);
+        const { people: results, total } = await getCouncilMemberMatches(token, memberName);
+        if (total > COUNCIL_MEMBER_MAX) {
+          return {
+            content: [
+              json(results).content[0],
+              {
+                type: "text",
+                text: `Showing ${results.length} of ${total} active members whose name matches "${memberName}"; more are available. Use more of the name.`,
+              },
+            ],
+          };
+        }
         if (results.length > 0) return json(results);
         // Keep the answer a JSON list, and say why it is empty (found on home-hearth, 2026-11-13).
         return {
@@ -247,8 +321,8 @@ export async function handleLiveTool(
 
       case "get_committee": {
         const { name: committeeName } = z.object({ name: z.string() }).strict().parse(args);
-        const results = await getCommittee(token, committeeName);
-        return json(results);
+        const results = await getCommittee(token, committeeName, 11);
+        return capped(results, 10, 10, 10, "use more of the committee's name");
       }
 
       case "get_votes": {
@@ -259,26 +333,23 @@ export async function handleLiveTool(
 
       case "list_recent_legislation": {
         const { limit } = z
-          .object({ limit: z.number().max(50).optional() })
+          .object({ limit: limitArg() })
           .strict().parse(args ?? {});
-        const results = await listRecentLegislation(token, limit ?? 25);
-        return json(results.map(withLegistarUrl));
+        const results = await listRecentLegislation(token, Math.min(limit ?? 25, LIVE_LIST_MAX) + 1);
+        return capped(results.map(withLegistarUrl), limit, 25, LIVE_LIST_MAX, "use search_legislation_live or recent_bills");
       }
 
       default:
         return { content: [{ type: "text", text: `Unknown live tool: ${name}` }], isError: true };
     }
   } catch (err) {
-    const message =
-      unknownParamMessage(err, name, LIVE_TOOL_DEFS) ??
-      (err instanceof Error ? err.message : String(err));
-    return { content: [{ type: "text", text: `Error: ${message}` }], isError: true };
+    return failure(err, name, LIVE_TOOL_DEFS, token);
   }
 }
 
 // Also keep search_legislation as a live-API alias (calls the Legistar search endpoint)
 // This is separate from the SQLite search_bills / search_legislation tools.
-export const LIVE_SEARCH_TOOL_DEF = {
+export const LIVE_SEARCH_TOOL_DEF = annotateTools([{
   name: "search_legislation_live",
   description:
     "Search NYC Council legislation via the live Legistar API. Slower than search_bills but always current — use when the local index may be stale. " +
@@ -289,7 +360,7 @@ export const LIVE_SEARCH_TOOL_DEF = {
     additionalProperties: false,
     properties: {
       query: { type: "string", description: "Search terms. Multiple words are AND-ed (all must appear in the title/name); quote a \"phrase\" to require adjacency." },
-      limit: { type: "number", description: "Max results to return (default 20, max 50)" },
+      limit: { type: "number", description: "Max results to return (default 20, max 50; a larger limit is lowered to 50)" },
       order: {
         type: "string",
         enum: ["date_desc", "date_asc"],
@@ -298,28 +369,26 @@ export const LIVE_SEARCH_TOOL_DEF = {
     },
     required: ["query"],
   },
-};
+}], true)[0];
 
-export async function handleLiveSearch(
-  args: Record<string, unknown>,
-  token: string
-): Promise<{ content: Array<{ type: string; text: string }>; isError?: boolean }> {
+export async function handleLiveSearch(args: Record<string, unknown>, token: string): Promise<LiveResult> {
+  return withLiveSource(LIVE_SEARCH_TOOL_DEF.name, await runLiveSearch(args, token));
+}
+
+async function runLiveSearch(args: Record<string, unknown>, token: string): Promise<LiveResult> {
   // Every failure is an isError answer, as in handleLiveTool. Re-throwing turned a bad
   // argument or an upstream failure into an MCP protocol error (found on home-hearth, 2026-11-13).
   try {
     const { query, limit, order } = z
       .object({
         query: z.string(),
-        limit: z.number().max(50).optional(),
+        limit: limitArg(),
         order: z.enum(["date_desc", "date_asc"]).optional(),
       })
       .strict().parse(args);
-    const results = await searchLegislation(token, query, limit ?? 20, order ?? "date_desc");
-    return json(results.map(withLegistarUrl));
+    const results = await searchLegislation(token, query, Math.min(limit ?? 20, LIVE_LIST_MAX) + 1, order ?? "date_desc");
+    return capped(results.map(withLegistarUrl), limit, 20, LIVE_LIST_MAX, "add words to the query, or set order='date_asc' for the oldest");
   } catch (err) {
-    const message =
-      unknownParamMessage(err, LIVE_SEARCH_TOOL_DEF.name, [LIVE_SEARCH_TOOL_DEF]) ??
-      (err instanceof Error ? err.message : String(err));
-    return { content: [{ type: "text", text: `Error: ${message}` }], isError: true };
+    return failure(err, LIVE_SEARCH_TOOL_DEF.name, [LIVE_SEARCH_TOOL_DEF], token);
   }
 }

@@ -54,7 +54,9 @@ test("get_council_member with no match says former members are not searched", as
     assert.match(res.content[1].text, /No active/);
     assert.match(res.content[1].text, /former members/i);
     const hit = await handleLiveTool("get_council_member", { name: "Gale Brewer" }, "t");
-    assert.equal(hit.content.length, 1, "no note when someone matches");
+    // Since #84 every live answer ends with its source line; the no-match note is not there.
+    assert.equal(hit.content.length, 2, "no note when someone matches");
+    assert.match(hit.content[1].text, /^Source: /);
   } finally {
     global.fetch = saved;
   }
@@ -94,7 +96,8 @@ test("search_legislation_live answers bad arguments and upstream failures with i
   const saved = global.fetch;
   global.fetch = async () => { throw new Error("network down"); };
   try {
-    const res = await handleLiveSearch({ query: "bicycle" }, "t");
+    // A realistic token: every error is scrubbed of it (#87), so a one-letter one would scrub the message.
+    const res = await handleLiveSearch({ query: "bicycle" }, "a-realistic-legistar-token");
     assert.equal(res.isError, true);
     assert.match(res.content[0].text, /network down/);
   } finally {

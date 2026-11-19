@@ -45,6 +45,7 @@
     "data/council-wikidata.json",
     "data/council-party.json",
     "data/council-social.json",
+    "data/SHA256SUMS",
     "data/README.md"
   ],
   "scripts": {
@@ -52,7 +53,9 @@
     "dev": "tsc --watch",
     "start": "node dist/index.js",
     "test": "npm run build && node --test test/*.test.mjs",
-    "prepare": "npm run build"
+    "prepare": "npm run build",
+    "test:live": "npm run build && node --test test/live/*.test.mjs",
+    "eval": "npm run build && node scripts/eval.mjs"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.32.2",

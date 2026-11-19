@@ -137,7 +137,7 @@ test("include_agenda=false skips the follow-up calls and leaves EventItems empty
   assert.ok(!calls.some((p) => p.includes("/eventitems")), "no /eventitems calls should be made when opted out");
 });
 
-test("degrades gracefully: one event's /eventitems failure leaves that event empty, others populated", async () => {
+test("degrades gracefully: one event's /eventitems failure leaves that event's agenda null (unknown), others populated", async () => {
   const events = [makeEvent(22566, "A"), makeEvent(22525, "B")];
   const itemsByEvent = {
     22566: [makeItem(22566, "LU 0100-2026", "ok")],
@@ -150,7 +150,7 @@ test("degrades gracefully: one event's /eventitems failure leaves that event emp
   const e66 = result.find((e) => e.EventId === 22566);
   const e25 = result.find((e) => e.EventId === 22525);
   assert.equal(e66.EventItems.length, 1, "healthy event still populated");
-  assert.equal(e25.EventItems.length, 0, "failed event degrades to empty, does not throw");
+  assert.equal(e25.EventItems, null, "failed event's agenda is unknown (null), not empty, and nothing throws");
 });
 
 test("getEventItems hits the correct endpoint and returns the items", async () => {

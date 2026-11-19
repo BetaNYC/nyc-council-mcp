@@ -12,8 +12,9 @@ import {
 import { existsSync, readFileSync } from "fs";
 import Sqlite from "better-sqlite3";
 
-import { withSourceNote, checkUpcomingLive } from "./tools/local-source.js";
-import { withMemberTerms } from "./tools/member-terms.js";
+import { withSourceNote, checkUpcomingLiveReport } from "./tools/local-source.js";
+import { failure } from "./tools/errors.js";
+import { withMemberTerms, withMemberSources } from "./tools/member-terms.js";
 import { withCurated } from "./curated.js";
 import { BETANYC_INSTRUCTIONS, createBetanycTools } from "./betanyc-tools.js";
 import { getEventStatuses } from "./legistar.js";
@@ -21,13 +22,7 @@ import { LIVE_TOOL_DEFS, LIVE_SEARCH_TOOL_DEF, handleLiveTool, handleLiveSearch 
 import { LOCAL_TOOL_DEFS, handleLocalTool } from "./tools/local.js";
 import { openDatabase } from "./db/indexer.js";
 
-// Read the version from package.json so the MCP server never drifts from the
-// published package version (it was previously hardcoded and had drifted).
-const PACKAGE_VERSION = (
-  JSON.parse(
-    readFileSync(new URL("../package.json", import.meta.url), "utf-8")
-  ) as { version: string }
-).version;
+import { PACKAGE_VERSION } from "./version.js";
 
 // ---------------------------------------------------------------------------
 // BetaNYC's shared tools: whats_changed, about_betanyc and about_data (#75, #48, #77)
@@ -50,8 +45,14 @@ export const LIVE_UNAVAILABLE_REASON = "the live Legistar API is not set up (no 
 export const SERVER_INSTRUCTIONS =
   "NYC Council legislation, votes, hearings and members, by BetaNYC. " +
   BETANYC_INSTRUCTIONS +
-  " Facts in a 'curated' block were checked by BetaNYC and are not official records: say so when you use them. " +
-  "Nothing is invented: a value with no source is left blank.";
+  " Members in get_council_member and get_member_roles answers carry a 'curated' block: BetaNYC's hand-checked " +
+  "Wikidata/Wikipedia link, party (every ballot line won on, from Board of Elections certified results) and office " +
+  "social accounts, each with its source. " +
+  "Facts in a 'curated' block were checked by BetaNYC and are not official records: say so when you use them. " +
+  "Nothing is invented: a value with no source is left blank. " +
+  "Tools that answer from the local index or the files shipped with the server need no LEGISTAR_TOKEN. " +
+  "Every answer ends with a source line (the source, how current it is, and a link to check it), " +
+  "and a list cut at its limit says so and how to get the rest.";
 
 function indexState(db: Sqlite.Database | null, key: string): string | null {
   if (!db) return null;
@@ -94,6 +95,77 @@ export function betanycTools(ctx: { db: Sqlite.Database | null; hasLive: boolean
   });
 }
 
+/** A live get_council_member answer, finished: BetaNYC's curated facts (labeled as such), then
+ * districts and terms if indexed (#28/#37), then a source line that names all three sources. */
+export function councilMemberAnswer<T extends { content: { type: string; text: string }[]; isError?: boolean }>(
+  res: T,
+  db: Sqlite.Database | null
+) {
+  const curated = withCurated(res);
+  return withMemberSources(db ? withMemberTerms(curated, db) : curated, db);
+}
+
+type Answer = { content: { type: string; text: string }[]; isError?: boolean };
+
+/**
+ * One local tool's whole answer: the tool, then (upcoming_events with a token) the live status
+ * check and its SQL (#42), then the source line. All of it runs inside one guard, so a throw in
+ * any step, not only in the tool, becomes a plain isError answer (failure()), never a protocol
+ * error or a stack trace.
+ */
+export async function localToolAnswer(
+  name: string,
+  args: Record<string, unknown>,
+  db: Sqlite.Database,
+  token: string | null
+): Promise<Answer> {
+  try {
+    let res: Answer = handleLocalTool(name, args, db);
+    let liveCheckedAt: Date | null = null;
+    // #42: the archive can keep a stale meeting status, so in hybrid mode the
+    // upcoming meetings' status is checked live (one request).
+    if (name === "upcoming_events" && token && !res.isError) {
+      const days = typeof args.days === "number" ? args.days : 14;
+      const checked = await checkUpcomingLiveReport(
+        res,
+        days,
+        (from, to) => getEventStatuses(token, from, to),
+        (ids) =>
+          new Set(
+            (db
+              .prepare("SELECT event_id FROM events WHERE event_id IN (SELECT value FROM json_each(?))")
+              .all(JSON.stringify(ids)) as { event_id: number }[]).map((r) => r.event_id)
+          ),
+        token
+      );
+      res = checked.res;
+      liveCheckedAt = checked.checkedAt;
+    }
+    // #25: say when the index was built (and, with no token, that it is unchecked).
+    return withSourceNote(res, db, { hasLive: Boolean(token), tool: name, liveCheckedAt });
+  } catch (err) {
+    return failure(err, name, LOCAL_TOOL_DEFS, token);
+  }
+}
+
+/** One live tool's whole answer, guarded the same way: the tool, then for get_council_member the
+ * curated block, districts and terms, and their source lines (councilMemberAnswer). */
+export async function liveToolAnswer(
+  name: string,
+  args: Record<string, unknown>,
+  token: string,
+  db: Sqlite.Database | null
+): Promise<Answer> {
+  try {
+    if (name === LIVE_SEARCH_TOOL_DEF.name) return await handleLiveSearch(args, token);
+    const res = await handleLiveTool(name, args, token);
+    // #28: Legistar's person records have no district; the index does.
+    return name === "get_council_member" ? councilMemberAnswer(res, db) : res;
+  } catch (err) {
+    return failure(err, name, [...LIVE_TOOL_DEFS, LIVE_SEARCH_TOOL_DEF], token);
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Mode detection
 // ---------------------------------------------------------------------------
@@ -113,6 +185,29 @@ export function detectMode(): ServerMode {
   const hasLocal = !!dbPath && existsSync(dbPath);
 
   return { hasLive, hasLocal, token, dbPath };
+}
+
+/**
+ * The tools this server lists in one mode. get_bill_history is defined in BOTH the local and
+ * live sets (local is the default, token-free path; the live one remains for live-only mode /
+ * freshness), so dedupe by name: local is listed first, so it wins in hybrid mode. Routing
+ * already prefers local when the corpus exists, and falls through to the live handler in
+ * live-only mode.
+ */
+export function toolList<T extends { name: string }>(
+  mode: Pick<ServerMode, "hasLive" | "hasLocal">,
+  sharedTools: readonly T[]
+) {
+  const seen = new Set<string>();
+  return [
+    ...(mode.hasLocal ? LOCAL_TOOL_DEFS : []),
+    ...(mode.hasLive ? [...LIVE_TOOL_DEFS, LIVE_SEARCH_TOOL_DEF] : []),
+    ...sharedTools,
+  ].filter((t) => {
+    if (seen.has(t.name)) return false;
+    seen.add(t.name);
+    return true;
+  });
 }
 
 // ---------------------------------------------------------------------------
@@ -170,21 +265,7 @@ See README for full setup instructions.
   // shared module. Throws here, at startup, if DATA-SOURCES.json does not describe this server.
   const shared = betanycTools({ db, hasLive: Boolean(mode.hasLive && mode.token), version: PACKAGE_VERSION });
 
-  // Build tool list. get_bill_history is defined in BOTH the local and live sets
-  // (local is the default, token-free path; the live one remains for live-only
-  // mode / freshness), so dedupe by name — local listed first, so it wins in
-  // hybrid mode. Routing (below) already prefers local when the corpus exists,
-  // and falls through to the live handler in live-only mode.
-  const seenToolNames = new Set<string>();
-  const toolDefs = [
-    ...(mode.hasLocal ? LOCAL_TOOL_DEFS : []),
-    ...(mode.hasLive ? [...LIVE_TOOL_DEFS, LIVE_SEARCH_TOOL_DEF] : []),
-    ...shared.tools,
-  ].filter((t) => {
-    if (seenToolNames.has(t.name)) return false;
-    seenToolNames.add(t.name);
-    return true;
-  });
+  const toolDefs = toolList(mode, shared.tools);
 
   // Build set of local and live tool names for routing
   const localNames = new Set(LOCAL_TOOL_DEFS.map((t) => t.name));
@@ -211,44 +292,12 @@ See README for full setup instructions.
 
     // Route to local (SQLite) handler
     if (mode.hasLocal && db && localNames.has(name)) {
-      let res = handleLocalTool(name, safeArgs, db);
-      // #42: the archive can keep a stale meeting status, so in hybrid mode the
-      // upcoming meetings' status is checked live (one request).
-      if (name === "upcoming_events" && mode.hasLive && mode.token && !res.isError) {
-        const token = mode.token;
-        const days = typeof safeArgs.days === "number" ? safeArgs.days : 14;
-        const local = db;
-        res = await checkUpcomingLive(
-          res,
-          days,
-          (from, to) => getEventStatuses(token, from, to),
-          (ids) =>
-            new Set(
-              (local
-                .prepare("SELECT event_id FROM events WHERE event_id IN (SELECT value FROM json_each(?))")
-                .all(JSON.stringify(ids)) as { event_id: number }[]).map((r) => r.event_id)
-            )
-        );
-      }
-      // #25: say when the index was built (and, with no token, that it is unchecked).
-      return withSourceNote(res, db, { hasLive: Boolean(mode.hasLive && mode.token) });
+      return localToolAnswer(name, safeArgs, db, mode.hasLive && mode.token ? mode.token : null);
     }
 
-    // Route to live search alias
-    if (mode.hasLive && mode.token && name === LIVE_SEARCH_TOOL_DEF.name) {
-      return handleLiveSearch(safeArgs, mode.token);
-    }
-
-    // Route to live API handler
+    // Route to the live API handlers (search_legislation_live included)
     if (mode.hasLive && mode.token && liveNames.has(name)) {
-      const res = await handleLiveTool(name, safeArgs, mode.token);
-      // #28: Legistar's person records have no district; the index does.
-      if (name === "get_council_member") {
-        // #28/#37: BetaNYC's curated facts (labeled as such), then districts if indexed.
-        const curated = withCurated(res);
-        return db ? withMemberTerms(curated, db) : curated;
-      }
-      return res;
+      return liveToolAnswer(name, safeArgs, mode.token, db);
     }
 
     // Tool known but its data source is not available

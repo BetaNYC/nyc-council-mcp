@@ -15,7 +15,6 @@ import { getMatterAttachments } from "../dist/legistar.js";
 import { LIVE_TOOL_DEFS, handleLiveTool } from "../dist/tools/live.js";
 
 const TOKEN = "test-token";
-const realFetch = global.fetch;
 
 // Trimmed from the live 79177 response (field names exactly as returned).
 const CHARTS = {
@@ -82,14 +81,4 @@ test("a matter with no attachments returns []", async () => {
   assert.deepEqual(JSON.parse(res.content[0].text), []);
 });
 
-// Opt-in live check: LEGISTAR_LIVE_URL_TEST=1 LEGISTAR_TOKEN=… npm test
-test(
-  "live: Res 0551-2026 returns its 7 files incl. Charts for Resolution",
-  { skip: !(process.env.LEGISTAR_LIVE_URL_TEST && process.env.LEGISTAR_TOKEN) },
-  async () => {
-    global.fetch = realFetch; // earlier tests in this file mock it
-    const rows = await getMatterAttachments(process.env.LEGISTAR_TOKEN, 79177);
-    assert.equal(rows.length, 7);
-    assert.ok(rows.some((r) => r.MatterAttachmentHyperlink === CHARTS.MatterAttachmentHyperlink));
-  }
-);
+// The live check against Res 0551-2026 is in test/live/ (npm run test:live, #91).

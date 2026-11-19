@@ -1,0 +1,222 @@
+{
+  "_readme": [
+    "Fixed question set, written 2026-11-18 before scoring (#88). Each question has a known answer taken from the primary record named in `answer_source`, not from this server's output.",
+    "`needs`: `bundled` questions answer from the council terms file that ships in data/, so they run anywhere, CI included, against an index built from that file alone. `index` questions need a local index built from the jehiah/nyc_legislation archive (LEGISTAR_DB_PATH); without one they are skipped, not passed.",
+    "Checks, all on the answer's first (JSON) block unless named: `field` [dotted path, value] equals; `some` {path, where} an array element has every where-value (dotted keys allowed); `text` a regular expression over every block of the answer; `not_field` [dotted path, value] does not equal.",
+    "Run: npm run eval (add -- --save to write eval/runs/YYYY-MM-DD-<mode>.md).",
+    "2026-11-18, after the first bundled run and before any index run: Q01 to Q05 checked `member.name`, a field district_member does not have; corrected to `member.full_name`. No expected answer changed."
+  ],
+  "questions": [
+    {
+      "id": "Q01",
+      "needs": "bundled",
+      "q": "Who represents Council District 1 today?",
+      "tool": "district_member",
+      "args": {
+        "district": 1,
+        "as_of": "2026-11-18"
+      },
+      "check": {
+        "field": [
+          "member.full_name",
+          "Christopher Marte"
+        ]
+      },
+      "answer_source": "data/council-member-terms.json (NYC Open Data uvw5-9znb, fetched 2026-11-13): term 2026-01-01 to 2029-12-31, council_member_id 7801"
+    },
+    {
+      "id": "Q02",
+      "needs": "bundled",
+      "q": "Who was the Council Member for District 3 in June 2020?",
+      "tool": "district_member",
+      "args": {
+        "district": 3,
+        "as_of": "2020-06-01"
+      },
+      "check": {
+        "field": [
+          "member.full_name",
+          "Corey D. Johnson"
+        ]
+      },
+      "answer_source": "data/council-member-terms.json: Corey D. Johnson, District 3, 2018-01-01 to 2021-12-31"
+    },
+    {
+      "id": "Q03",
+      "needs": "bundled",
+      "q": "Who held District 33 at the start of 2015?",
+      "tool": "district_member",
+      "args": {
+        "district": 33,
+        "as_of": "2015-01-01"
+      },
+      "check": {
+        "field": [
+          "member.full_name",
+          "Stephen T. Levin"
+        ]
+      },
+      "answer_source": "data/council-member-terms.json: Stephen T. Levin, District 33, 2014-01-01 to 2017-12-31"
+    },
+    {
+      "id": "Q04",
+      "needs": "bundled",
+      "q": "Who represented District 51 (Staten Island) in 2010?",
+      "tool": "district_member",
+      "args": {
+        "district": 51,
+        "as_of": "2010-01-01"
+      },
+      "check": {
+        "field": [
+          "member.full_name",
+          "Vincent Ignizio"
+        ]
+      },
+      "answer_source": "data/council-member-terms.json: Vincent Ignizio, District 51, 2010-01-01 to 2013-12-31"
+    },
+    {
+      "id": "Q05",
+      "needs": "bundled",
+      "q": "Who represented District 36 in March 2023?",
+      "tool": "district_member",
+      "args": {
+        "district": 36,
+        "as_of": "2023-03-01"
+      },
+      "check": {
+        "field": [
+          "member.full_name",
+          "Chi A. Ossé"
+        ]
+      },
+      "answer_source": "data/council-member-terms.json: Chi A. Ossé, District 36, 2022-01-01 to 2023-12-31"
+    },
+    {
+      "id": "Q06",
+      "needs": "index",
+      "q": "Who represents District 3 today? (The City's terms file has no current term for it.)",
+      "tool": "district_member",
+      "args": {
+        "district": 3,
+        "as_of": "2026-11-18"
+      },
+      "check": {
+        "not_field": [
+          "status",
+          "filled"
+        ],
+        "text": "Carl Wilson"
+      },
+      "answer_source": "The City's file (data/council-member-terms.json, rows updated 2026-04-10) lists no District 3 term after Erik Bottcher; Carl Wilson has held the seat since 2026-05-13 (WHATS-CHANGED.md 2026-11-13 entry, data/README.md history). The right answer does not call the seat filled from the file, and names him."
+    },
+    {
+      "id": "Q07",
+      "needs": "index",
+      "q": "Which bill became Local Law 59 of 2024?",
+      "tool": "get_matter",
+      "args": {
+        "local_law": "2024/059"
+      },
+      "check": {
+        "field": [
+          "file_number",
+          "Int 0349-2024"
+        ]
+      },
+      "answer_source": "jehiah/nyc_legislation introduction/2024/0349.json: File 'Int 0349-2024', LocalLaw '2024/059'"
+    },
+    {
+      "id": "Q08",
+      "needs": "index",
+      "q": "What is the status of Int 0349-2024, and which committee had it?",
+      "tool": "get_matter",
+      "args": {
+        "file_number": "Int 0349-2024"
+      },
+      "check": {
+        "field": [
+          "status_name",
+          "Enacted"
+        ],
+        "text": "\"body_name\": \"Committee on General Welfare\""
+      },
+      "answer_source": "jehiah/nyc_legislation introduction/2024/0349.json: StatusName 'Enacted', BodyName 'Committee on General Welfare'"
+    },
+    {
+      "id": "Q09",
+      "needs": "index",
+      "q": "Find the bill requiring quarterly reports on removals of people experiencing homelessness.",
+      "tool": "search_legislation",
+      "args": {
+        "query": "quarterly reports removals homelessness",
+        "limit": 3
+      },
+      "check": {
+        "some": {
+          "path": "",
+          "where": {
+            "file_number": "Int 0349-2024"
+          }
+        }
+      },
+      "answer_source": "jehiah/nyc_legislation introduction/2024/0349.json Name: 'Requiring quarterly reports on removals involving individuals experiencing homelessness and the outcomes for those individuals.'"
+    },
+    {
+      "id": "Q10",
+      "needs": "index",
+      "q": "How did the full Council vote on Int 0349-2024?",
+      "tool": "vote_breakdown",
+      "args": {
+        "file_number": "Int 0349-2024"
+      },
+      "check": {
+        "some": {
+          "path": "roll_calls",
+          "where": {
+            "body_name": "City Council",
+            "tally.affirmative": 50,
+            "tally.negative": 0
+          }
+        }
+      },
+      "answer_source": "jehiah/nyc_legislation introduction/2024/0349.json History, City Council roll call 2024-03-19: 50 Affirmative, 1 Parental (a non-position), no Negative"
+    },
+    {
+      "id": "Q11",
+      "needs": "index",
+      "q": "How did the Finance Committee vote on Res 0551-2026?",
+      "tool": "vote_breakdown",
+      "args": {
+        "file_number": "Res 0551-2026"
+      },
+      "check": {
+        "some": {
+          "path": "roll_calls",
+          "where": {
+            "body_name": "Committee on Finance",
+            "tally.affirmative": 15
+          }
+        }
+      },
+      "answer_source": "jehiah/nyc_legislation resolution/2026/0551.json History, Committee on Finance roll call 2026-07-16: 15 Affirmative, 2 Absent"
+    },
+    {
+      "id": "Q12",
+      "needs": "index",
+      "q": "Which committee is Int 0976-2026 in, and has it passed?",
+      "tool": "get_matter",
+      "args": {
+        "file_number": "Int 0976-2026"
+      },
+      "check": {
+        "field": [
+          "local_law",
+          null
+        ],
+        "text": "\"body_name\": \"Committee on Parks and Recreation\""
+      },
+      "answer_source": "jehiah/nyc_legislation introduction/2026/0976.json (archive commit 895f5bd1, 2026-11-17): BodyName 'Committee on Parks and Recreation', StatusName 'Committee', no LocalLaw"
+    }
+  ]
+}
