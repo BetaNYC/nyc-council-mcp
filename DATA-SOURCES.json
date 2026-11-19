@@ -41,7 +41,7 @@
           "cleaned",
           "reshaped"
         ],
-        "detail": "Member profile links the Council's record gets wrong are corrected from a checked list (the list is empty since 2026-11-12), and a profile link two members share is flagged. Upcoming-hearing summaries leave out empty fields and cut item titles longer than 300 characters; detail \"full\" returns the hearing record as the API sends it."
+        "detail": "Member profile links the Council's record gets wrong are corrected from a checked list (the list is empty since 2026-11-12), and a profile link two members share is flagged. Upcoming-hearing summaries leave out empty fields and cut item titles longer than 300 characters; detail \"full\" returns the hearing record as the API sends it. get_upcoming_hearings puts meetings on the same day in time order (by EventTime), because Legistar's meeting date (EventDate) carries no time; a meeting with no readable time goes last on its day."
       },
       "verify_at": "https://legistar.council.nyc.gov/",
       "freshness": {
@@ -208,7 +208,7 @@
           "filtered",
           "reshaped"
         ],
-        "detail": "The index build changes some values (src/db/indexer.ts): meeting dates are cut to the day (the time is kept separately), and meetings and agenda items with no ID are left out."
+        "detail": "The index build changes some values (src/db/indexer.ts): meeting dates are cut to the day (the time is kept separately), and meetings and agenda items with no ID are left out. Lists come in BetaNYC's own order from the index: search_events and get_bill_hearings newest day first, upcoming_events soonest day first, and get_event_bills by agenda item ID; meetings on the same day are in no set order, because the index sorts by day only."
       },
       "verify_at": "https://legistar.council.nyc.gov/",
       "freshness": {

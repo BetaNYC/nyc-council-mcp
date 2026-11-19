@@ -87,3 +87,43 @@ test("get_votes with votes is unchanged: the JSON, then the source line", async 
   assert.equal(res.content.length, 2);
   assert.match(res.content[1].text, /^Source: /);
 });
+
+// ------------------------------------------------------------- the ordering is said where BetaNYC does it
+
+import { readFileSync, readdirSync } from "node:fs";
+import { liveSourceLine } from "../dist/tools/live.js";
+
+const DS = JSON.parse(readFileSync(new URL("../DATA-SOURCES.json", import.meta.url), "utf8"));
+const entry = (id) => DS.sources.find((s) => s.id === id);
+
+test("DATA-SOURCES: the live entry says BetaNYC puts a day's meetings in time order, and why", () => {
+  const live = entry("live");
+  assert.ok(live.tools.includes("get_upcoming_hearings"));
+  assert.equal(live.changes.changed, true);
+  assert.match(live.changes.detail, /get_upcoming_hearings puts meetings on the same day in time order \(by EventTime\), because Legistar's meeting date \(EventDate\) carries no time/);
+});
+
+test("DATA-SOURCES: the events entry says how the index's meeting lists are ordered", () => {
+  const detail = entry("events").changes.detail;
+  assert.match(detail, /search_events and get_bill_hearings newest day first, upcoming_events soonest day first, and get_event_bills by agenda item ID/);
+  assert.match(detail, /meetings on the same day are in no set order/);
+});
+
+test("get_upcoming_hearings' source line says it reorders a day's meetings; other live lines do not", () => {
+  assert.match(liveSourceLine("get_upcoming_hearings"), /puts meetings on the same day in time order, because Legistar's meeting date carries no time\); Legistar is the official record\./);
+  for (const name of ["get_bill", "get_votes", "get_committee", "list_recent_legislation"]) {
+    assert.doesNotMatch(liveSourceLine(name), /time order/, name);
+  }
+});
+
+test("sortByDateAndTime has one caller, getUpcomingHearingsReport (a new caller must be added to DATA-SOURCES.json)", () => {
+  const dist = new URL("../dist/", import.meta.url);
+  const files = readdirSync(dist, { recursive: true }).filter((f) => f.endsWith(".js"));
+  const calls = files.flatMap((f) =>
+    [...readFileSync(new URL(f, dist), "utf8").matchAll(/(?<!function )sortByDateAndTime\(/g)].map(() => f)
+  );
+  assert.deepEqual(calls, ["legistar.js"]);
+  const src = readFileSync(new URL("legistar.js", dist), "utf8");
+  const body = src.slice(src.indexOf("export async function getUpcomingHearingsReport"), src.indexOf("export const SUMMARY_TITLE_MAX"));
+  assert.match(body, /sortByDateAndTime\(await legistarFetch/);
+});

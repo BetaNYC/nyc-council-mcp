@@ -186,7 +186,12 @@ Found in a live check against the Council's Legistar API on 2026-11-19, before r
   has no time, so `$orderby=EventDate` left a day's meetings in no useful order: on 2026-11-19
   the 1:30 PM Stated Meeting came before the 10:00 AM hearings. The server now sorts by date,
   then `EventTime`; a meeting with no readable time goes last on its day. Agendas are fetched in
-  the same order.
+  the same order. Reordering the publisher's rows is a change, so `DATA-SOURCES.json` (topic
+  `live`, and so `about_data`) and `get_upcoming_hearings`' source line say that BetaNYC puts
+  meetings on the same day in time order because Legistar's meeting date has no time. The
+  `events` topic now says how the local index orders its meeting lists (`search_events` and
+  `get_bill_hearings` newest day first, `upcoming_events` soonest day first, `get_event_bills`
+  by agenda item ID; no set order within a day). `data.json` rebuilt.
 - `get_votes` with no votes adds a note: the item may not have been voted on yet, or it was not
   a roll call. Before, the answer was only `[]`, which could read as "nobody voted". The JSON is
   still the first item and still an array.

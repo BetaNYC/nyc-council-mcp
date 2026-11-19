@@ -25,7 +25,7 @@ import { failure } from "./errors.js";
 
 import { json } from "./json.js";
 import { annotateTools, provenance } from "../betanyc-tools.js";
-import { SOURCE_LINK, LIVE_SOURCE, LIVE_MODIFIED } from "./source-links.js";
+import { SOURCE_LINK, LIVE_SOURCE, LIVE_MODIFIED, LIVE_MODIFIED_HEARINGS } from "./source-links.js";
 
 // Add a human-openable legistar_url to a matter record (any type — see
 // legistarUrl). get_bill_history returns MatterHistory rows, not matters, so
@@ -175,7 +175,7 @@ type LiveResult = { content: Array<{ type: string; text: string }>; isError?: bo
  * source (DATA-SOURCES.json, changes.changed), and that Legistar is the official record. */
 export function liveSourceLine(name: string, now: Date = new Date()): string {
   return provenance(
-    { sourceName: `${LIVE_SOURCE.sourceName}, ${LIVE_MODIFIED}`, publisher: LIVE_SOURCE.publisher, sourceUrl: SOURCE_LINK[name], kind: "live" },
+    { sourceName: `${LIVE_SOURCE.sourceName}, ${name === "get_upcoming_hearings" ? LIVE_MODIFIED_HEARINGS : LIVE_MODIFIED}`, publisher: LIVE_SOURCE.publisher, sourceUrl: SOURCE_LINK[name], kind: "live" },
     now
   ).text;
 }
