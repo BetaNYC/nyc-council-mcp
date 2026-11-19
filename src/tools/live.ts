@@ -10,8 +10,9 @@ import {
   getBill,
   getBillHistory,
   getMatterAttachments,
-  getUpcomingHearings,
-  getCouncilMember,
+  getUpcomingHearingsReport,
+  getCouncilMemberMatches,
+  COUNCIL_MEMBER_MAX,
   getCommittee,
   getVotes,
   listRecentLegislation,
@@ -24,7 +25,7 @@ import { failure } from "./errors.js";
 
 import { json } from "./json.js";
 import { annotateTools, provenance } from "../betanyc-tools.js";
-import { SOURCE_LINK, LIVE_SOURCE } from "./source-links.js";
+import { SOURCE_LINK, LIVE_SOURCE, LIVE_MODIFIED } from "./source-links.js";
 
 // Add a human-openable legistar_url to a matter record (any type — see
 // legistarUrl). get_bill_history returns MatterHistory rows, not matters, so
@@ -111,7 +112,7 @@ const LIVE_TOOL_DEFS = annotateTools([
     description:
       "Look up an NYC Council member by name. Returns current contact info and active status. " +
       "PersonWWW2 may carry a PersonWWW2_warning (and the original value in PersonWWW2_upstream) when the upstream link is known or suspected wrong. " +
-      "Adds the 'curated' block. " +
+      "Adds the 'curated' block (BetaNYC's checked facts, not official records). " +
       "With a local index, district and council terms are added too.",
     inputSchema: {
       type: "object",
@@ -169,11 +170,19 @@ export { LIVE_TOOL_DEFS };
 
 type LiveResult = { content: Array<{ type: string; text: string }>; isError?: boolean };
 
-/** Every live data answer ends with its source, a link and the time it was fetched (#84, #85). */
+/** Every live data answer ends with its source, a link and the time it was fetched (#84, #85).
+ * The source line says the answer is a copy BetaNYC modified, as about_data does for the live
+ * source (DATA-SOURCES.json, changes.changed), and that Legistar is the official record. */
+export function liveSourceLine(name: string, now: Date = new Date()): string {
+  return provenance(
+    { sourceName: `${LIVE_SOURCE.sourceName}, ${LIVE_MODIFIED}`, publisher: LIVE_SOURCE.publisher, sourceUrl: SOURCE_LINK[name], kind: "live" },
+    now
+  ).text;
+}
+
 function withLiveSource(name: string, res: LiveResult): LiveResult {
   if (res.isError) return res;
-  const p = provenance({ ...LIVE_SOURCE, sourceUrl: SOURCE_LINK[name], kind: "live" });
-  return { ...res, content: [...res.content, { type: "text", text: p.text }] };
+  return { ...res, content: [...res.content, { type: "text", text: liveSourceLine(name) }] };
 }
 
 /** A list cut at `limit` (#86): the caller fetched limit + 1 rows, so one more means more exist. */
@@ -245,28 +254,44 @@ async function runLiveTool(
             detail: z.enum(["summary", "full"]).optional(),
           })
           .strict().parse(args ?? {});
-        const results = await getUpcomingHearings(
+        const { events: results, missingAgendas } = await getUpcomingHearingsReport(
           token,
           days_ahead ?? 14,
           include_agenda ?? true
         );
         // #22: short shape by default; the raw payload only on request.
         const out = (detail ?? "summary") === "full" ? results : results.map(summarizeHearing);
-        if (results.length < UPCOMING_HEARINGS_MAX) return json(out);
-        return {
-          content: [
-            json(out).content[0],
-            {
-              type: "text",
-              text: `Showing the first ${UPCOMING_HEARINGS_MAX} meetings, the most Legistar is asked for; there may be more. Use a smaller days_ahead.`,
-            },
-          ],
-        };
+        const notes: string[] = [];
+        if (results.length >= UPCOMING_HEARINGS_MAX) {
+          notes.push(`Showing the first ${UPCOMING_HEARINGS_MAX} meetings, the most Legistar is asked for; there may be more. Use a smaller days_ahead.`);
+        }
+        if (missingAgendas.length > 0) {
+          const list = missingAgendas
+            .map((m) => `${m.EventId} (${String(m.EventDate ?? "").slice(0, 10)}, ${m.EventBodyName}): ${m.reason}`)
+            .join("; ");
+          notes.push(
+            `The agenda is missing for ${missingAgendas.length} of ${results.length} meetings, so their EventItems are empty: ${list}. ` +
+              `Try again in a minute, or call with include_agenda=false and read one meeting's agenda with get_event_bills (needs the local index).`
+          );
+        }
+        if (notes.length === 0) return json(out);
+        return { content: [json(out).content[0], ...notes.map((text) => ({ type: "text", text }))] };
       }
 
       case "get_council_member": {
         const { name: memberName } = z.object({ name: z.string() }).strict().parse(args);
-        const results = await getCouncilMember(token, memberName);
+        const { people: results, total } = await getCouncilMemberMatches(token, memberName);
+        if (total > COUNCIL_MEMBER_MAX) {
+          return {
+            content: [
+              json(results).content[0],
+              {
+                type: "text",
+                text: `Showing ${results.length} of ${total} active members whose name matches "${memberName}"; more are available. Use more of the name.`,
+              },
+            ],
+          };
+        }
         if (results.length > 0) return json(results);
         // Keep the answer a JSON list, and say why it is empty (found on home-hearth, 2026-11-13).
         return {

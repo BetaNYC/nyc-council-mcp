@@ -37,8 +37,13 @@ Moves to BetaNYC's shared module 1.4.0 (BetaNYC/betanyc-ai-workspace#1672).
 
 MCP practices (epic #95):
 
-- Shared module 1.5.0 (BetaNYC/betanyc-ai-workspace#1702), `scripts/whats_changed.py` and
-  `scripts/mcp_shared/data-sources.schema.json` 1.4.1, copied in unchanged (#81).
+- Shared module 1.5.1 (BetaNYC/betanyc-ai-workspace#1702, commit 17938f2; raw file SHA-256
+  `567838e0cf659690f3e07885fdfedefa461274e1f51477084f3b48f4e683a72d`, stamp hash on its line 2
+  `e1e15642c1a34141ecc37f2347ac3e352b5305a7ff703b82df38f3f482a13e96`), `scripts/whats_changed.py` and
+  `scripts/mcp_shared/data-sources.schema.json` 1.4.1, copied in unchanged (#81). 1.5.1's
+  `assertEveryToolAnnotated` also requires `readOnlyHint: true` and a title; its `provenance()`
+  gives a live answer's fetch time in New York time to the minute; its `toolError` passes the
+  caller's message on as written, so this server now passes only an error's first line.
 - Every tool declares `annotations`: a title, `readOnlyHint: true`, and `openWorldHint` (true
   for the live Legistar tools and `upcoming_events`, which checks status live with a token;
   false for the rest) (#82). A test fails if a tool lacks them.
@@ -62,8 +67,10 @@ MCP practices (epic #95):
   the same kind of link, and `district_member` and `get_member_roles` add the council terms
   file's fetch date.
 - Lists (#86): `search_events` (max 100), `recent_bills` (200), `upcoming_events` (200),
-  `get_voting_record` (500) and `co_sponsors` (100) get a hard maximum; limits must be whole
-  numbers of at least 1. Every list tool fetches one more row than its limit and, when there
+  `get_voting_record` (500) and `co_sponsors` (100) get a maximum, as `search_legislation` and
+  `search_bills` (100) had. A whole-number `limit` above it is lowered to it, and the answer
+  says so ("limit 150 is over this tool's maximum of 100, so 100 was used."); a `limit` under 1
+  or not a whole number is refused with a plain message. Every list tool fetches one more row than its limit and, when there
   are more, adds "Showing the first N results; more are available" and how to get the rest, as
   a second text item; the JSON stays an array. `get_upcoming_hearings` says so when it hits
   Legistar's 50-meeting cap, and `get_committee` when more than 10 committees match.
@@ -82,6 +89,28 @@ MCP practices (epic #95):
   shipped data can answer.
 - `test/stdout.test.mjs` (#93): in live-only and local-only mode, every stdout line is a
   JSON-RPC message and the mode line goes to stderr.
+- Review fixes (epic #95):
+  - Live answers' source line says the answer is a copy BetaNYC modified (it fixes known-bad
+    member profile links and shortens long hearing titles) and that Legistar is the official
+    record, as `about_data` says for the live source.
+  - A live `get_council_member` answer's source block names every source in it: Legistar; with
+    an index, the council terms file (NYC Open Data uvw5-9znb) with its fetch date and link; and
+    that the `curated` block is BetaNYC's and not an official record. `get_member_roles`' source
+    line says the same about its `curated` block.
+  - `get_council_member` and `get_member_roles` say again, in a few words, that the `curated`
+    block is not official records. Tool list plus instructions: 30,068 characters (cap 31,000).
+  - `get_upcoming_hearings` fetches agendas at most 5 at a time. Inside that fan-out a 429 is
+    not retried: no more agenda requests are sent, and the answer keeps the agendas it has and
+    names each meeting whose agenda is missing, and why. Before, up to 50 requests went at once,
+    each retrying a 429 twice, and a failed agenda was left empty with no note.
+  - A timeout or a bad body while reading Legistar's reply is now a plain error, like a failed
+    request.
+  - `get_council_member` says "Showing 10 of M" when more than 10 members match.
+  - Content blocks come in a fixed order: the JSON, then any notes (a lowered `limit`, "more are
+    available", a status not checked live, missing agendas), then the source line, always last.
+  - Tests: the open-world tools are an explicit list per mode, and every local tool must answer
+    in the source-line test, with no silent skips.
+  - `package.json`'s description has its em dash back as the character itself.
 
 ## [2.9.0] - 2026-11-13
 

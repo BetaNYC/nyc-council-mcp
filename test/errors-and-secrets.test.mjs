@@ -61,10 +61,11 @@ test("a server error says to try again and names the tools that still work", asy
 test("a bad argument is a plain sentence, not a JSON dump of schema issues", () => {
   const db = new Database(":memory:");
   db.exec(CREATE_TABLES);
-  const res = handleLocalTool("search_legislation", { query: "x", limit: 1000 }, db);
-  assert.equal(res.isError, true);
-  assert.match(text(res), /^Error: search_legislation got arguments it cannot use \(limit: .*\)\. Check the arguments and try again\.$/);
-  assert.ok(!text(res).includes("["), text(res));
+  for (const [limit, why] of [[0, "limit must be 1 or more"], [2.5, "limit must be a whole number"]]) {
+    const res = handleLocalTool("search_legislation", { query: "x", limit }, db);
+    assert.equal(res.isError, true);
+    assert.equal(text(res), `Error: search_legislation got arguments it cannot use (limit: ${why}). Check the arguments and try again.`);
+  }
 });
 
 test("no answer carries a stack trace", async () => {

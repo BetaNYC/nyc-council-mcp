@@ -28,3 +28,10 @@ export const SOURCE_LINK: Readonly<Record<string, string>> = {
 
 /** The live source, named as in DATA-SOURCES.json (topic "live"). */
 export const LIVE_SOURCE = { sourceName: "NYC Council Legistar Web API (Granicus)", publisher: "New York City Council" };
+
+/** What the live source line adds after the source's name. DATA-SOURCES.json says BetaNYC
+ * modified the live data (topic "live", changes.changed), so the line must not read like the
+ * untouched record: it says what was changed and that Legistar is the official record. */
+export const LIVE_MODIFIED =
+  "a copy BetaNYC modified (it fixes known-bad member profile links and shortens long hearing titles); " +
+  "Legistar is the official record";

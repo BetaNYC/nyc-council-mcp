@@ -39,7 +39,9 @@ export function sourceNote(
   const terms = opts.tool === "district_member" || opts.tool === "get_member_roles"
     ? `; council terms from NYC Open Data uvw5-9znb, fetched ${s.member_terms_fetched_at ?? "(date unknown)"}`
     : "";
-  let note = `Source: ${built}${from}${terms}.`;
+  // get_member_roles adds BetaNYC's curated block, which is not an official record.
+  const curated = opts.tool === "get_member_roles" ? " Each member's 'curated' block is BetaNYC's, not an official record." : "";
+  let note = `Source: ${built}${from}${terms}.${curated}`;
   // A page a person can open to check the answer (#84). No period after it: some apps take it
   // into the link.
   const link = opts.tool ? SOURCE_LINK[opts.tool] : undefined;

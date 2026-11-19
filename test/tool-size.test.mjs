@@ -4,7 +4,8 @@
 // hybrid mode, all 28 tools.
 //
 // 2026-11-18: measured 29,678 characters (with annotations, shared module 1.5.0); the budget
-// is that plus about 5%. If a change needs more, raise it on purpose with a dated line here
+// is that plus about 5%. Later the same day, review fixes (epic #95, shared module 1.5.1, a short
+// "not official records" note back on the two tools with a curated block): 30,068; budget unchanged. If a change needs more, raise it on purpose with a dated line here
 // saying why, and put text several tools share in the server instructions instead of
 // repeating it in each description.
 

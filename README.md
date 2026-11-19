@@ -24,10 +24,10 @@ The local index holds every matter in the [jehiah/nyc_legislation](https://githu
 
 - **Every tool says it only reads.** Each tool carries MCP annotations: a title, `readOnlyHint: true`, and `openWorldHint` (true when it calls the live Legistar API). An AI app can use them to skip asking before it runs a tool.
 - **Every answer says where it came from.** Each answer ends with a source line: the source, how current it is (when the local index was built, or when a live answer was fetched) and a link to the Council's or the City's page.
-- **Lists say when there is more.** Every list tool has a hard maximum, and when more results exist than the limit, the answer says so and how to get the rest.
+- **Lists say when there is more.** Every list tool has a maximum: a larger `limit` is lowered to it, and the answer says so. When more results exist than the limit, the answer says so and how to get the rest.
 - **Checksums for the shipped data.** `data/SHA256SUMS` lists a SHA-256 checksum for each data file in the package.
 - **Clearer failures.** When Legistar is slow or down, a live tool gives up after 30 seconds, retries briefly when Legistar asks it to wait, and says in a plain sentence what went wrong and what to try. Your Legistar token never appears in an error.
-- **BetaNYC's shared module 1.5.0.** `about_data` gives each source one of three answers on whether it is official.
+- **BetaNYC's shared module 1.5.1.** `about_data` gives each source one of three answers on whether it is official.
 
 ## What's new in 2.9.0
 
@@ -177,7 +177,7 @@ npx @betanyc/nyc-council-mcp index \
 
 > **Note:** The local index is only as current as your last index run — run the daily cron above and it stays about a day behind live Legistar; leave it for a month and it is a month stale. The upstream archive itself updates most weekdays. For current status and upcoming hearings, use the live API tools (`get_bill`, `get_upcoming_hearings`).
 >
-> Every local answer ends with a **source line**: when the index was built and which `jehiah/nyc_legislation` commit it came from, e.g. `Source: local index built 2026-11-12T11:30:07Z from jehiah/nyc_legislation@9e52935 (archive commit 2026-11-11T23:38:10Z). Link: https://legistar.council.nyc.gov/Legislation.aspx` It is the last text item, after the JSON. The link is the Council's page for that kind of data (legislation, calendar, committees) or, for districts, the City's dataset page; `district_member` and `get_member_roles` also give the council terms file's fetch date. Live answers end with the same kind of line: the source, the time it was fetched for this answer, and a link. With no `LEGISTAR_TOKEN`, the line also says the answer was not checked live, and that an empty answer means "not in this index", not "does not exist".
+> Every local answer ends with a **source line**: when the index was built and which `jehiah/nyc_legislation` commit it came from, e.g. `Source: local index built 2026-11-12T11:30:07Z from jehiah/nyc_legislation@9e52935 (archive commit 2026-11-11T23:38:10Z). Link: https://legistar.council.nyc.gov/Legislation.aspx` It is always the last text item. The blocks come in this order: the JSON first, then any notes (a `limit` lowered to the maximum, "more are available", a meeting status not checked live, missing agendas), then the source line. The link is the Council's page for that kind of data (legislation, calendar, committees) or, for districts, the City's dataset page; `district_member` and `get_member_roles` also give the council terms file's fetch date. Live answers end with the same kind of line: the source, that it is a copy BetaNYC modified (it fixes known-bad member profile links and shortens long hearing titles) and that Legistar is the official record, the time it was fetched for this answer (New York time, to the minute), and a link. A live `get_council_member` answer's source block has a line for each source in it: Legistar; with an index, the council terms file with its fetch date and link; and that the `curated` block is BetaNYC's and not an official record. With no `LEGISTAR_TOKEN`, the line also says the answer was not checked live, and that an empty answer means "not in this index", not "does not exist".
 >
 > **Why upcoming meeting status is checked live:** Legistar can change a meeting's status without updating its last-modified time. Event 22725 went from Final to Deferred with its timestamp still 2026-09-10, so the archive never fetched it again. On 2026-11-12, 10 of 658 meetings in 2026 differed this way, all Final → Deferred.
 
@@ -266,8 +266,8 @@ These require `LEGISTAR_TOKEN`.
 | `get_bill` | Current status and record for a bill. A bare `NNNN-YYYY` number is ambiguous (it can be both an `Int` and a `Res`); an ambiguous match is rejected with an error naming every candidate, so re-call with the exact type-prefixed number |
 | `get_bill_history` | *Local by default* (served from the index, no token; takes a file number). In **live-only** mode this live variant answers instead — authoritative action trail by numeric matter id |
 | `get_bill_attachments` | Files attached to a matter (committee reports, resolution text, charts, transcripts), each with a direct download link. Takes the numeric matter id |
-| `get_upcoming_hearings` | Real-time upcoming committee hearings and Stated meetings, each with its agenda items (bills/matters) in `EventItems`. Short shape by default (`detail: "summary"`: no null fields, titles cut at 300 characters, `legistar_url` per item); `detail: "full"` returns every Legistar field |
-| `get_council_member` | Current contact info and active status for a council member, plus a `curated` block (Wikidata/Wikipedia, party as every ballot line won on, office social accounts; BetaNYC's, not official) and, with a local index, district and terms. The name matches word by word, ignoring case, accents and middle initials ("Amanda Farias" finds "Amanda C. Farías"); `get_voting_record` and `co_sponsors` match names the same way. `PersonWWW2` (the Legistar profile page) is checked: a known-bad upstream link is corrected from a small dated override list (`PERSON_WWW2_OVERRIDES` in `src/legistar.ts`, with the original kept in `PersonWWW2_upstream`), and a link shared by two people in one result gets a `PersonWWW2_warning` |
+| `get_upcoming_hearings` | Real-time upcoming committee hearings and Stated meetings, each with its agenda items (bills/matters) in `EventItems`. Short shape by default (`detail: "summary"`: no null fields, titles cut at 300 characters, `legistar_url` per item); `detail: "full"` returns every Legistar field. Agendas are fetched one request per meeting, at most 5 at a time. If Legistar answers 429 (too many requests) to one, it is not retried and no more are sent: the answer keeps the agendas already fetched and says which meetings' agendas are missing and why |
+| `get_council_member` | Current contact info and active status for a council member, plus a `curated` block (Wikidata/Wikipedia, party as every ballot line won on, office social accounts; BetaNYC's, not official) and, with a local index, district and terms. The name matches word by word, ignoring case, accents and middle initials ("Amanda Farias" finds "Amanda C. Farías"); `get_voting_record` and `co_sponsors` match names the same way. `PersonWWW2` (the Legistar profile page) is checked: a known-bad upstream link is corrected from a small dated override list (`PERSON_WWW2_OVERRIDES` in `src/legistar.ts`, with the original kept in `PersonWWW2_upstream`), and a link shared by two people in one result gets a `PersonWWW2_warning`. Returns up to 10 members; when more match, it says "Showing 10 of M" |
 | `get_committee` | Current membership count and details for a committee |
 | `get_votes` | Per-item vote breakdown by event item ID |
 | `list_recent_legislation` | Most recently introduced legislation (catches bills since last index) |
@@ -303,7 +303,7 @@ containing all the words in any order; quote a `"phrase"` to require adjacency.
 | Parameter | Type | Required | Default | Description |
 |---|---|---|---|---|
 | `query` | string | yes | — | Search terms |
-| `limit` | number | no | 25 | Max results (max 100) |
+| `limit` | number | no | 25 | Max results (max 100; a larger limit is lowered to 100, and the answer says so) |
 | `agency` | string | no | — | Agency key or name for role-context snippets (e.g. `DEP`, `NYPD`) |
 | `status` | string | no | — | Filter by status (e.g. `Enacted`, `Laid Over`) |
 | `committee` | string | no | — | Filter by committee name |
@@ -367,7 +367,7 @@ All votes cast by a council member.
 | Parameter | Type | Required | Default | Description |
 |---|---|---|---|---|
 | `member_name` | string | yes | — | Full or partial name |
-| `limit` | number | no | 50 | Max results (max 500) |
+| `limit` | number | no | 50 | Max results (max 500; a larger limit is lowered to 500, and the answer says so) |
 
 #### `co_sponsors`
 
@@ -376,7 +376,7 @@ Members who most frequently co-sponsor bills with a given member.
 | Parameter | Type | Required | Default | Description |
 |---|---|---|---|---|
 | `member_name` | string | yes | — | Full or partial name |
-| `limit` | number | no | 20 | Top N co-sponsors |
+| `limit` | number | no | 20 | Top N co-sponsors (max 100; a larger limit is lowered to 100, and the answer says so) |
 
 ### Agency snippets
 
@@ -524,7 +524,7 @@ Why this shape, so nobody re-attempts the obvious-looking fix:
 - **Districts come from a snapshot.** `district_member` and the `district` field read the City's `uvw5-9znb` file as shipped, with its fetch date in every answer. The City updates that file late: on 2026-11-12 it had no term for Carl Wilson, a Council Member since 2026-05-13, so District 3 showed vacant. A vacant answer names such people under `unlisted_council_members`; check council.nyc.gov before saying a seat is empty. District lines are redrawn, so a past member's district number may not match today's map.
 - **`search_bills` is an alias of `search_legislation`.** Both return every matter type, not only bills.
 - **Every answer ends with a source line**: local answers say when the index was built and from which archive commit, live answers when they were fetched, and both give a link to check. An empty local answer means "not in this index", not "does not exist".
-- **Lists stop at a limit and say so.** Each list tool has a default and a hard maximum, given in its `limit` description. When there are more results than the limit, a second text item after the JSON says "Showing the first N results; more are available" and how to get the rest.
+- **Lists stop at a limit and say so.** Each list tool has a default and a maximum, given in its `limit` description. A whole-number `limit` above the maximum is lowered to it and the answer says so; a `limit` under 1 or not a whole number is refused with a plain message. When there are more results than the limit, a text item after the JSON says "Showing the first N results; more are available" and how to get the rest (`get_council_member`, which has every match in hand, says "Showing 10 of M"). The source line is always the last text item.
 
 ---
 

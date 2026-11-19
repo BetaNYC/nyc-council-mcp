@@ -27,7 +27,26 @@ test("every tool is read-only and has a title", () => {
   }
 });
 
-test("openWorldHint: live tools true, local tools false, except upcoming_events (live status check)", () => {
-  for (const t of [...LIVE_TOOL_DEFS, LIVE_SEARCH_TOOL_DEF]) assert.equal(t.annotations.openWorldHint, true, t.name);
-  for (const t of LOCAL_TOOL_DEFS) assert.equal(t.annotations.openWorldHint, t.name === "upcoming_events", t.name);
+// Written out by hand, not derived from the code's own rule, so a change to either shows here.
+const LIVE_OPEN = [
+  "get_bill", "get_bill_history", "get_bill_attachments", "get_upcoming_hearings", "get_council_member",
+  "get_committee", "get_votes", "list_recent_legislation", "search_legislation_live",
+];
+const OPEN_WORLD = {
+  // get_bill_history is the local one in hybrid mode; upcoming_events checks status live with a token.
+  hybrid: ["get_bill", "get_bill_attachments", "get_upcoming_hearings", "get_council_member", "get_committee",
+    "get_votes", "list_recent_legislation", "search_legislation_live", "upcoming_events"],
+  live: LIVE_OPEN,
+  local: ["upcoming_events"],
+};
+const MODES = { hybrid: { hasLive: true, hasLocal: true }, live: { hasLive: true, hasLocal: false }, local: { hasLive: false, hasLocal: true } };
+
+test("openWorldHint: exactly these tools are open-world, in each mode", () => {
+  for (const [mode, flags] of Object.entries(MODES)) {
+    const open = toolList(flags, shared).filter((t) => t.annotations.openWorldHint === true).map((t) => t.name).sort();
+    assert.deepEqual(open, [...OPEN_WORLD[mode]].sort(), mode);
+  }
+  // The live get_bill_history, hidden by the local one in hybrid mode, is open-world too.
+  assert.deepEqual([...LIVE_TOOL_DEFS, LIVE_SEARCH_TOOL_DEF].filter((t) => t.annotations.openWorldHint).map((t) => t.name).sort(), [...LIVE_OPEN].sort());
+  assert.deepEqual(LOCAL_TOOL_DEFS.filter((t) => t.annotations.openWorldHint).map((t) => t.name), ["upcoming_events"]);
 });

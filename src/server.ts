@@ -13,7 +13,7 @@ import { existsSync, readFileSync } from "fs";
 import Sqlite from "better-sqlite3";
 
 import { withSourceNote, checkUpcomingLive } from "./tools/local-source.js";
-import { withMemberTerms } from "./tools/member-terms.js";
+import { withMemberTerms, withMemberSources } from "./tools/member-terms.js";
 import { withCurated } from "./curated.js";
 import { BETANYC_INSTRUCTIONS, createBetanycTools } from "./betanyc-tools.js";
 import { getEventStatuses } from "./legistar.js";
@@ -92,6 +92,16 @@ export function betanycTools(ctx: { db: Sqlite.Database | null; hasLive: boolean
     },
     ...(ctx.hasLive ? {} : { unavailableSources: { live: LIVE_UNAVAILABLE_REASON } }),
   });
+}
+
+/** A live get_council_member answer, finished: BetaNYC's curated facts (labeled as such), then
+ * districts and terms if indexed (#28/#37), then a source line that names all three sources. */
+export function councilMemberAnswer<T extends { content: { type: string; text: string }[]; isError?: boolean }>(
+  res: T,
+  db: Sqlite.Database | null
+) {
+  const curated = withCurated(res);
+  return withMemberSources(db ? withMemberTerms(curated, db) : curated, db);
 }
 
 // ---------------------------------------------------------------------------
@@ -253,9 +263,7 @@ See README for full setup instructions.
       const res = await handleLiveTool(name, safeArgs, mode.token);
       // #28: Legistar's person records have no district; the index does.
       if (name === "get_council_member") {
-        // #28/#37: BetaNYC's curated facts (labeled as such), then districts if indexed.
-        const curated = withCurated(res);
-        return db ? withMemberTerms(curated, db) : curated;
+        return councilMemberAnswer(res, db);
       }
       return res;
     }

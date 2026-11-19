@@ -34,5 +34,8 @@ export function failure(
   if (err instanceof LegistarError) {
     return toolError(`${err.message} ${legistarHint(err.status)}`, { upstreamBody: err.body, secrets });
   }
-  return toolError(err instanceof Error ? err.message : String(err), { secrets });
+  // Only the first line: toolError (shared module 1.5.1) passes the message on as written, and
+  // the lines after it can be a stack trace.
+  const message = (err instanceof Error ? err.message : String(err)).split(/\r?\n/)[0];
+  return toolError(message, { secrets });
 }

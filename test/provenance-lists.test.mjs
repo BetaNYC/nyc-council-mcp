@@ -47,7 +47,7 @@ test("every live answer ends with its source, a link and the time it was fetched
     assert.ok(!res.isError, name);
     assert.match(
       last(res),
-      /^Source: NYC Council Legistar Web API \(Granicus\)\. As of \d{4}-\d{2}-\d{2}T[\d:.]+Z \(fetched from the source for this answer\)\. Link: https:\/\/legistar\.council\.nyc\.gov\/\S+$/,
+      /^Source: NYC Council Legistar Web API \(Granicus\), a copy BetaNYC modified \(it fixes known-bad member profile links and shortens long hearing titles\); Legistar is the official record\. Fetched from the source for this answer at \d{4}-\d{2}-\d{2} \d{2}:\d{2} E[SD]T \(New York time\)\. Link: https:\/\/legistar\.council\.nyc\.gov\/\S+$/,
       name
     );
     assert.ok(last(res).endsWith(SOURCE_LINK[name]), name);
@@ -113,15 +113,30 @@ test("every local list tool stops at its default and says more are available, wi
   }
 });
 
-test("every local list tool has a hard maximum", () => {
+test("every local list tool lowers a limit over its maximum to the maximum, and says so", () => {
   const db = bigDb(1);
   for (const [tool, args] of Object.entries(LIST_ARGS)) {
-    const res = handleLocalTool(tool, { ...args, limit: LIST_LIMITS[tool].max + 1 }, db);
-    assert.equal(res.isError, true, tool);
-    const ok = handleLocalTool(tool, { ...args, limit: LIST_LIMITS[tool].max }, db);
+    const { max } = LIST_LIMITS[tool];
+    const res = handleLocalTool(tool, { ...args, limit: max + 1 }, db);
+    assert.ok(!res.isError, `${tool}: ${res.content[0].text}`);
+    assert.equal(res.content.length, 2, tool);
+    assert.equal(res.content[1].text, `limit ${max + 1} is over this tool's maximum of ${max}, so ${max} was used.`, tool);
+    const ok = handleLocalTool(tool, { ...args, limit: max }, db);
     assert.ok(!ok.isError, tool);
     assert.equal(ok.content.length, 1, `${tool}: everything fit, so no 'more' note`);
+    for (const bad of [0, -3, 1.5]) assert.equal(handleLocalTool(tool, { ...args, limit: bad }, db).isError, true, `${tool} limit ${bad}`);
   }
+});
+
+test("a lowered limit uses the maximum: at most max rows, and the 'more' note when there are more", () => {
+  const db = bigDb(250);
+  const res = handleLocalTool("search_events", { query: "transportation", limit: 1000 }, db);
+  assert.ok(!res.isError);
+  assert.equal(JSON.parse(res.content[0].text).length, 100);
+  assert.equal(
+    res.content[1].text,
+    "limit 1000 is over this tool's maximum of 100, so 100 was used. Showing the first 100 results; more are available. Add more words."
+  );
 });
 
 // ------------------------------------------------------------------ local answers, over stdio
@@ -142,6 +157,9 @@ test("every local answer ends with its source, the index date and a link (over M
   await db.backup(dbPath);
   db.close();
   const file = new Database(dbPath);
+  // Membership and council-term rows, so get_member_roles, committee_roster and district_member answer too.
+  file.prepare("INSERT INTO office_records (record_id, person_id, body_name, body_kind, role, start) VALUES (1, 1, 'Committee on Transportation', 'committee', 'member', '2026-01-01')").run();
+  file.prepare("INSERT INTO member_terms (office_id, person_id, name, district, term_start, term_end) VALUES (1, 1, 'Pat Member', 1, '2026-01-01', '2029-12-31')").run();
   const put = file.prepare("INSERT OR REPLACE INTO index_state (key, value) VALUES (?, ?)");
   put.run("last_indexed_at", "2026-11-12T11:30:07.125Z");
   put.run("archive_commit", "9e52935");
@@ -152,16 +170,31 @@ test("every local answer ends with its source, the index date and a link (over M
   const client = new Client({ name: "provenance-test", version: "0" });
   await client.connect(new StdioClientTransport({ command: process.execPath, args: [join(ROOT, "dist/index.js")], env, stderr: "ignore" }));
   try {
+    // Every local tool must answer in this fixture, so none goes unchecked. A tool that cannot
+    // answer here goes in this list with its reason; today there are none.
+    const EXCEPTIONS = {};
     let answered = 0;
     for (const t of LOCAL_TOOL_DEFS) {
       const res = await client.callTool({ name: t.name, arguments: LOCAL_ARGS[t.name] });
-      if (res.isError) continue; // an error is not a data answer
+      if (t.name in EXCEPTIONS) continue;
+      assert.ok(!res.isError, `${t.name} gave an error, so its source line goes unchecked: ${res.content[0].text}`);
       answered++;
       assert.match(last(res), /^Source: local index built 2026-11-12T11:30:07\.125Z from jehiah\/nyc_legislation@9e52935/, t.name);
       assert.ok(last(res).endsWith(`Link: ${SOURCE_LINK[t.name]}`), `${t.name}: ${last(res)}`);
       if (t.name === "district_member") assert.match(last(res), /council terms from NYC Open Data uvw5-9znb, fetched 2026-11-13T02:13:52Z/);
     }
-    assert.ok(answered >= 14, `only ${answered} local tools answered; the check would be too weak`);
+    assert.equal(answered + Object.keys(EXCEPTIONS).length, LOCAL_TOOL_DEFS.length);
+    // The source line is the LAST block, also when a list adds a note before it: blocks are the
+    // JSON, then any notes ("limit lowered", "more are available"), then the source line.
+    for (const [tool, args] of Object.entries(LIST_ARGS)) {
+      for (const limit of [1, LIST_LIMITS[tool].max + 1]) {
+        const res = await client.callTool({ name: tool, arguments: { ...args, limit } });
+        assert.ok(!res.isError, tool);
+        assert.equal(res.content.length, 3, `${tool} limit ${limit}: JSON, note, source line`);
+        assert.match(res.content[1].text, limit === 1 ? /^Showing the first 1 results; more are available/ : /^limit \d+ is over/, tool);
+        assert.match(last(res), /^Source: local index built/, `${tool}: the source line is last`);
+      }
+    }
   } finally {
     await client.close();
   }
