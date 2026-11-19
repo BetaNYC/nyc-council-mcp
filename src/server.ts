@@ -12,7 +12,8 @@ import {
 import { existsSync, readFileSync } from "fs";
 import Sqlite from "better-sqlite3";
 
-import { withSourceNote, checkUpcomingLive } from "./tools/local-source.js";
+import { withSourceNote, checkUpcomingLiveReport } from "./tools/local-source.js";
+import { failure } from "./tools/errors.js";
 import { withMemberTerms, withMemberSources } from "./tools/member-terms.js";
 import { withCurated } from "./curated.js";
 import { BETANYC_INSTRUCTIONS, createBetanycTools } from "./betanyc-tools.js";
@@ -102,6 +103,67 @@ export function councilMemberAnswer<T extends { content: { type: string; text: s
 ) {
   const curated = withCurated(res);
   return withMemberSources(db ? withMemberTerms(curated, db) : curated, db);
+}
+
+type Answer = { content: { type: string; text: string }[]; isError?: boolean };
+
+/**
+ * One local tool's whole answer: the tool, then (upcoming_events with a token) the live status
+ * check and its SQL (#42), then the source line. All of it runs inside one guard, so a throw in
+ * any step, not only in the tool, becomes a plain isError answer (failure()), never a protocol
+ * error or a stack trace.
+ */
+export async function localToolAnswer(
+  name: string,
+  args: Record<string, unknown>,
+  db: Sqlite.Database,
+  token: string | null
+): Promise<Answer> {
+  try {
+    let res: Answer = handleLocalTool(name, args, db);
+    let liveCheckedAt: Date | null = null;
+    // #42: the archive can keep a stale meeting status, so in hybrid mode the
+    // upcoming meetings' status is checked live (one request).
+    if (name === "upcoming_events" && token && !res.isError) {
+      const days = typeof args.days === "number" ? args.days : 14;
+      const checked = await checkUpcomingLiveReport(
+        res,
+        days,
+        (from, to) => getEventStatuses(token, from, to),
+        (ids) =>
+          new Set(
+            (db
+              .prepare("SELECT event_id FROM events WHERE event_id IN (SELECT value FROM json_each(?))")
+              .all(JSON.stringify(ids)) as { event_id: number }[]).map((r) => r.event_id)
+          ),
+        token
+      );
+      res = checked.res;
+      liveCheckedAt = checked.checkedAt;
+    }
+    // #25: say when the index was built (and, with no token, that it is unchecked).
+    return withSourceNote(res, db, { hasLive: Boolean(token), tool: name, liveCheckedAt });
+  } catch (err) {
+    return failure(err, name, LOCAL_TOOL_DEFS, token);
+  }
+}
+
+/** One live tool's whole answer, guarded the same way: the tool, then for get_council_member the
+ * curated block, districts and terms, and their source lines (councilMemberAnswer). */
+export async function liveToolAnswer(
+  name: string,
+  args: Record<string, unknown>,
+  token: string,
+  db: Sqlite.Database | null
+): Promise<Answer> {
+  try {
+    if (name === LIVE_SEARCH_TOOL_DEF.name) return await handleLiveSearch(args, token);
+    const res = await handleLiveTool(name, args, token);
+    // #28: Legistar's person records have no district; the index does.
+    return name === "get_council_member" ? councilMemberAnswer(res, db) : res;
+  } catch (err) {
+    return failure(err, name, [...LIVE_TOOL_DEFS, LIVE_SEARCH_TOOL_DEF], token);
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -230,42 +292,12 @@ See README for full setup instructions.
 
     // Route to local (SQLite) handler
     if (mode.hasLocal && db && localNames.has(name)) {
-      let res = handleLocalTool(name, safeArgs, db);
-      // #42: the archive can keep a stale meeting status, so in hybrid mode the
-      // upcoming meetings' status is checked live (one request).
-      if (name === "upcoming_events" && mode.hasLive && mode.token && !res.isError) {
-        const token = mode.token;
-        const days = typeof safeArgs.days === "number" ? safeArgs.days : 14;
-        const local = db;
-        res = await checkUpcomingLive(
-          res,
-          days,
-          (from, to) => getEventStatuses(token, from, to),
-          (ids) =>
-            new Set(
-              (local
-                .prepare("SELECT event_id FROM events WHERE event_id IN (SELECT value FROM json_each(?))")
-                .all(JSON.stringify(ids)) as { event_id: number }[]).map((r) => r.event_id)
-            )
-        );
-      }
-      // #25: say when the index was built (and, with no token, that it is unchecked).
-      return withSourceNote(res, db, { hasLive: Boolean(mode.hasLive && mode.token), tool: name });
+      return localToolAnswer(name, safeArgs, db, mode.hasLive && mode.token ? mode.token : null);
     }
 
-    // Route to live search alias
-    if (mode.hasLive && mode.token && name === LIVE_SEARCH_TOOL_DEF.name) {
-      return handleLiveSearch(safeArgs, mode.token);
-    }
-
-    // Route to live API handler
+    // Route to the live API handlers (search_legislation_live included)
     if (mode.hasLive && mode.token && liveNames.has(name)) {
-      const res = await handleLiveTool(name, safeArgs, mode.token);
-      // #28: Legistar's person records have no district; the index does.
-      if (name === "get_council_member") {
-        return councilMemberAnswer(res, db);
-      }
-      return res;
+      return liveToolAnswer(name, safeArgs, mode.token, db);
     }
 
     // Tool known but its data source is not available

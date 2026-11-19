@@ -71,8 +71,12 @@ test("a live list cut at its limit says more are available", async () => {
   assert.equal(all.content.length, 2, "no 'more' note when everything fit; only the source line");
   const search = await handleLiveSearch({ query: "x", limit: 5 }, "tok");
   assert.match(search.content[1].text, /Showing the first 5 results; more are available/);
+  // Over the maximum: lowered to 50, and the answer says so, like the local lists (round 2, fix 3).
+  urls.length = 0;
   const big = await handleLiveTool("list_recent_legislation", { limit: 51 }, "tok");
-  assert.equal(big.isError, true, "over the hard maximum");
+  assert.ok(!big.isError, big.content[0].text);
+  assert.equal(new URL(urls[0]).searchParams.get("$top"), "51", "asks for 50 + 1");
+  assert.equal(big.content[1].text, "limit 51 is over this tool's maximum of 50, so 50 was used.");
 });
 
 // ------------------------------------------------------------------ local lists
@@ -97,6 +101,9 @@ function bigDb(n) {
   return db;
 }
 
+/** search_legislation and search_bills end with one line on their order and agency filter. */
+const SEARCHES = new Set(["search_legislation", "search_bills"]);
+
 const LIST_ARGS = {
   search_legislation: { query: "bicycles" }, search_bills: { query: "bicycles" }, search_events: { query: "transportation" },
   recent_bills: {}, upcoming_events: {}, get_voting_record: { member_name: "Pat Member" }, co_sponsors: { member_name: "Pat Member" },
@@ -117,13 +124,14 @@ test("every local list tool lowers a limit over its maximum to the maximum, and 
   const db = bigDb(1);
   for (const [tool, args] of Object.entries(LIST_ARGS)) {
     const { max } = LIST_LIMITS[tool];
+    const extra = SEARCHES.has(tool) ? 1 : 0;
     const res = handleLocalTool(tool, { ...args, limit: max + 1 }, db);
     assert.ok(!res.isError, `${tool}: ${res.content[0].text}`);
-    assert.equal(res.content.length, 2, tool);
+    assert.equal(res.content.length, 2 + extra, tool);
     assert.equal(res.content[1].text, `limit ${max + 1} is over this tool's maximum of ${max}, so ${max} was used.`, tool);
     const ok = handleLocalTool(tool, { ...args, limit: max }, db);
     assert.ok(!ok.isError, tool);
-    assert.equal(ok.content.length, 1, `${tool}: everything fit, so no 'more' note`);
+    assert.equal(ok.content.length, 1 + extra, `${tool}: everything fit, so no 'more' note`);
     for (const bad of [0, -3, 1.5]) assert.equal(handleLocalTool(tool, { ...args, limit: bad }, db).isError, true, `${tool} limit ${bad}`);
   }
 });
@@ -179,9 +187,25 @@ test("every local answer ends with its source, the index date and a link (over M
       if (t.name in EXCEPTIONS) continue;
       assert.ok(!res.isError, `${t.name} gave an error, so its source line goes unchecked: ${res.content[0].text}`);
       answered++;
-      assert.match(last(res), /^Source: local index built 2026-11-12T11:30:07\.125Z from jehiah\/nyc_legislation@9e52935/, t.name);
-      assert.ok(last(res).endsWith(`Link: ${SOURCE_LINK[t.name]}`), `${t.name}: ${last(res)}`);
-      if (t.name === "district_member") assert.match(last(res), /council terms from NYC Open Data uvw5-9znb, fetched 2026-11-13T02:13:52Z/);
+      // Round 2, fix 4: the first line says BetaNYC modified the data, names the mirror and its
+      // commit, says this copy is not the official record, and ends with the official record's link.
+      const lines = last(res).split("\n");
+      assert.match(
+        lines[0],
+        /^BetaNYC modified this data: it built this local index from jehiah\/nyc_legislation@9e52935, an unofficial mirror of the Council's Legistar records; .*\. This copy should not be considered the official record\. As of 2026-11-12T11:30:07\.125Z \(the date of the copy this server answers from\)\. Official record: .+, https:\/\/\S+$/,
+        t.name
+      );
+      assert.ok(lines[0].endsWith(`, ${SOURCE_LINK[t.name]}`), `${t.name}: ${lines[0]}`);
+      assert.match(lines.at(-1), /^It was not checked against the live Legistar API, because no LEGISTAR_TOKEN is set \(register at https:\/\/council\.nyc\.gov\/legislation\/api\/\)\./, t.name);
+      const terms = lines.filter((l) => l.startsWith("District and terms: "));
+      const curated = lines.filter((l) => l.startsWith("Each member's 'curated' block is BetaNYC's own"));
+      if (t.name === "district_member" || t.name === "get_member_roles") {
+        assert.equal(terms.length, 1, t.name);
+        assert.match(terms[0], /NYC Open Data uvw5-9znb; a copy shipped with this server \(fetched 2026-11-13T02:13:52Z\)/, t.name);
+      } else assert.equal(terms.length, 0, t.name);
+      // Fix 9 of round 2: the curated sentence is on get_member_roles' answer itself, not only its description.
+      assert.equal(curated.length, t.name === "get_member_roles" ? 1 : 0, t.name);
+      assert.equal(lines.length, 2 + terms.length + curated.length, `${t.name}: ${last(res)}`);
     }
     assert.equal(answered + Object.keys(EXCEPTIONS).length, LOCAL_TOOL_DEFS.length);
     // The source line is the LAST block, also when a list adds a note before it: blocks are the
@@ -190,9 +214,11 @@ test("every local answer ends with its source, the index date and a link (over M
       for (const limit of [1, LIST_LIMITS[tool].max + 1]) {
         const res = await client.callTool({ name: tool, arguments: { ...args, limit } });
         assert.ok(!res.isError, tool);
-        assert.equal(res.content.length, 3, `${tool} limit ${limit}: JSON, note, source line`);
+        const extra = SEARCHES.has(tool) ? 1 : 0;
+        assert.equal(res.content.length, 3 + extra, `${tool} limit ${limit}: JSON, note, (search: order line,) source line`);
         assert.match(res.content[1].text, limit === 1 ? /^Showing the first 1 results; more are available/ : /^limit \d+ is over/, tool);
-        assert.match(last(res), /^Source: local index built/, `${tool}: the source line is last`);
+        if (extra) assert.match(res.content[2].text, /^Order: /, tool);
+        assert.match(last(res), /^BetaNYC modified this data: /, `${tool}: the source line is last`);
       }
     }
   } finally {

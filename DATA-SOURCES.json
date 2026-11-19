@@ -95,10 +95,12 @@
       "changes": {
         "changed": true,
         "steps": [
+          "cleaned",
+          "filtered",
           "reshaped",
           "counted"
         ],
-        "detail": "Records are restructured into database tables with their values unchanged. aggregate_bills counts bills by a field, and co_sponsors counts the bills each pair of members sponsored together."
+        "detail": "The index build changes some values (src/db/indexer.ts): introduction, passed and enactment dates are cut to the day; history dates lose their trailing Z (they are New York time); a bill with no title takes its name; matters, sponsors and attachments with no ID are left out. aggregate_bills counts bills by a field, and co_sponsors counts the bills each pair of members sponsored together. search_legislation ranks results by BetaNYC's own weights (file number and title count most, then sponsors, summary and full text), and its agency filter keeps rows whose title or sponsors contain a phrase from BetaNYC's own list for that agency (src/agencies.ts, adapted from WillHsiaoNYC/legistar-mcp); neither is an official classification."
       },
       "verify_at": "https://legistar.council.nyc.gov/",
       "freshness": {
@@ -150,10 +152,12 @@
       "changes": {
         "changed": true,
         "steps": [
+          "cleaned",
+          "filtered",
           "reshaped",
           "counted"
         ],
-        "detail": "Records are restructured into database tables with their values unchanged. vote_breakdown tallies each roll call's positions (affirmative, negative, abstain), never counting an absence as a vote."
+        "detail": "The index build changes some values (src/db/indexer.ts): history dates lose their trailing Z (they are New York time), and a roll call with no event item ID or a vote with no person ID is left out. vote_breakdown tallies each roll call's positions (affirmative, negative, abstain), never counting an absence as a vote."
       },
       "verify_at": "https://legistar.council.nyc.gov/",
       "freshness": {
@@ -200,9 +204,11 @@
       "changes": {
         "changed": true,
         "steps": [
+          "cleaned",
+          "filtered",
           "reshaped"
         ],
-        "detail": "Records are restructured into database tables with their values unchanged."
+        "detail": "The index build changes some values (src/db/indexer.ts): meeting dates are cut to the day (the time is kept separately), and meetings and agenda items with no ID are left out."
       },
       "verify_at": "https://legistar.council.nyc.gov/",
       "freshness": {
@@ -251,10 +257,12 @@
       "changes": {
         "changed": true,
         "steps": [
+          "cleaned",
+          "filtered",
           "reshaped",
           "counted"
         ],
-        "detail": "Records are restructured into database tables with their values unchanged. list_committees counts the bills and meetings recorded for each body."
+        "detail": "The index build changes some values (src/db/indexer.ts): committee names, role titles and member types are trimmed; start and end dates are cut to the day; people with no ID, and office records with no ID or no committee name, are left out. list_committees counts the bills and meetings recorded for each body."
       },
       "verify_at": "https://legistar.council.nyc.gov/",
       "freshness": {
@@ -303,10 +311,12 @@
       "changes": {
         "changed": true,
         "steps": [
+          "cleaned",
+          "filtered",
           "reshaped",
           "merged"
         ],
-        "detail": "The rows are used as published, loaded into the index and joined to Legistar people on person ID, never on names. district_member works out who held a district on a date from them."
+        "detail": "The rows are loaded into the index (src/db/indexer.ts) with these changes: names are trimmed, a district that is not a number is left blank (null), term start and end dates are cut to the day, and a row with no office or person ID is left out. They are joined to Legistar people on person ID, never on names. district_member works out who held a district on a date from them."
       },
       "verify_at": "https://data.cityofnewyork.us/d/uvw5-9znb",
       "freshness": {
@@ -325,7 +335,7 @@
       "terms": {
         "license_name": "No restrictions on use: NYC Administrative Code § 23-502(d) (the Open Data Law, Local Law 11 of 2012)",
         "terms_url": "https://codelibrary.amlegal.com/codes/newyorkcity/latest/NYCadmin/0-0-0-216807",
-        "credit_line": "Source: New York City Council, City Council Members (1999 to Present), NYC Open Data uvw5-9znb; used as published."
+        "credit_line": "Source: New York City Council, City Council Members (1999 to Present), NYC Open Data uvw5-9znb; cleaned and joined to Legistar members by BetaNYC."
       },
       "report_errors": {
         "upstream_url": "https://www.nyc.gov/opendata/contact-us",

@@ -84,7 +84,7 @@ const LIVE_TOOL_DEFS = annotateTools([
   {
     name: "get_upcoming_hearings",
     description:
-      "List upcoming NYC Council committee hearings and Stated meetings. Real-time data — use this for scheduling, not the local index. Each event's EventItems array is populated with its agenda items (the bills/matters on the agenda) via a follow-up call per event; pass include_agenda=false to skip that and return events faster with EventItems empty. Returns a short shape by default (detail='summary'); detail='full' returns every Legistar field. A stated meeting can carry 100+ agenda items: for those, use include_agenda=false and page the agenda with get_event_bills.",
+      "List upcoming NYC Council committee hearings and Stated meetings. Real-time data — use this for scheduling, not the local index. Each event's EventItems array is populated with its agenda items (the bills/matters on the agenda) via a follow-up call per event; EventItems is null when that agenda could not be fetched (a note says why). Pass include_agenda=false to skip that and return events faster with EventItems empty. Returns a short shape by default (detail='summary'); detail='full' returns every Legistar field. A stated meeting can carry 100+ agenda items: for those, use include_agenda=false and page the agenda with get_event_bills.",
     inputSchema: {
       type: "object",
       additionalProperties: false,
@@ -160,7 +160,7 @@ const LIVE_TOOL_DEFS = annotateTools([
       type: "object",
       additionalProperties: false,
       properties: {
-        limit: { type: "number", description: "Number of items to return (default 25, max 50)" },
+        limit: { type: "number", description: "Number of items to return (default 25, max 50; a larger limit is lowered to 50)" },
       },
     },
   },
@@ -185,16 +185,28 @@ function withLiveSource(name: string, res: LiveResult): LiveResult {
   return { ...res, content: [...res.content, { type: "text", text: liveSourceLine(name) }] };
 }
 
-/** A list cut at `limit` (#86): the caller fetched limit + 1 rows, so one more means more exist. */
-function capped(rows: unknown[], limit: number, max: number, how: string): LiveResult {
-  if (rows.length <= limit) return json(rows);
-  const raise = limit < max ? `Raise limit (up to ${max}) or ${how}.` : `${how[0].toUpperCase()}${how.slice(1)}.`;
-  return {
-    content: [
-      json(rows.slice(0, limit)).content[0],
-      { type: "text", text: `Showing the first ${limit} results; more are available. ${raise}` },
-    ],
-  };
+/** A limit must be a whole number of at least 1; one above the tool's maximum is allowed here
+ * and lowered to it (as the local list tools do). */
+const limitArg = () =>
+  z.number().int("limit must be a whole number").min(1, "limit must be 1 or more").optional();
+
+/** The most rows list_recent_legislation and search_legislation_live return. */
+export const LIVE_LIST_MAX = 50;
+
+/**
+ * A list cut at the limit (#86): the caller fetched limit + 1 rows, so one more means more exist.
+ * `asked` is the caller's limit: when it is over `max`, `max` was used and a note says so.
+ */
+function capped(rows: unknown[], asked: number | undefined, fallback: number, max: number, how: string): LiveResult {
+  const limit = Math.min(asked ?? fallback, max);
+  const notes: string[] = [];
+  if (asked !== undefined && asked > max) notes.push(`limit ${asked} is over this tool's maximum of ${max}, so ${max} was used.`);
+  if (rows.length > limit) {
+    const raise = limit < max ? `Raise limit (up to ${max}) or ${how}.` : `${how[0].toUpperCase()}${how.slice(1)}.`;
+    notes.push(`Showing the first ${limit} results; more are available. ${raise}`);
+  }
+  const body = json(rows.slice(0, limit)).content[0];
+  return notes.length ? { content: [body, { type: "text", text: notes.join(" ") }] } : { content: [body] };
 }
 
 export async function handleLiveTool(name: string, args: Record<string, unknown>, token: string): Promise<LiveResult> {
@@ -270,7 +282,7 @@ async function runLiveTool(
             .map((m) => `${m.EventId} (${String(m.EventDate ?? "").slice(0, 10)}, ${m.EventBodyName}): ${m.reason}`)
             .join("; ");
           notes.push(
-            `The agenda is missing for ${missingAgendas.length} of ${results.length} meetings, so their EventItems are empty: ${list}. ` +
+            `The agenda is missing for ${missingAgendas.length} of ${results.length} meetings, so their EventItems are null (not fetched; this does not mean the agenda is empty): ${list}. ` +
               `Try again in a minute, or call with include_agenda=false and read one meeting's agenda with get_event_bills (needs the local index).`
           );
         }
@@ -310,7 +322,7 @@ async function runLiveTool(
       case "get_committee": {
         const { name: committeeName } = z.object({ name: z.string() }).strict().parse(args);
         const results = await getCommittee(token, committeeName, 11);
-        return capped(results, 10, 10, "use more of the committee's name");
+        return capped(results, 10, 10, 10, "use more of the committee's name");
       }
 
       case "get_votes": {
@@ -321,10 +333,10 @@ async function runLiveTool(
 
       case "list_recent_legislation": {
         const { limit } = z
-          .object({ limit: z.number().int().min(1).max(50).optional() })
+          .object({ limit: limitArg() })
           .strict().parse(args ?? {});
-        const results = await listRecentLegislation(token, (limit ?? 25) + 1);
-        return capped(results.map(withLegistarUrl), limit ?? 25, 50, "use search_legislation_live or recent_bills");
+        const results = await listRecentLegislation(token, Math.min(limit ?? 25, LIVE_LIST_MAX) + 1);
+        return capped(results.map(withLegistarUrl), limit, 25, LIVE_LIST_MAX, "use search_legislation_live or recent_bills");
       }
 
       default:
@@ -348,7 +360,7 @@ export const LIVE_SEARCH_TOOL_DEF = annotateTools([{
     additionalProperties: false,
     properties: {
       query: { type: "string", description: "Search terms. Multiple words are AND-ed (all must appear in the title/name); quote a \"phrase\" to require adjacency." },
-      limit: { type: "number", description: "Max results to return (default 20, max 50)" },
+      limit: { type: "number", description: "Max results to return (default 20, max 50; a larger limit is lowered to 50)" },
       order: {
         type: "string",
         enum: ["date_desc", "date_asc"],
@@ -370,12 +382,12 @@ async function runLiveSearch(args: Record<string, unknown>, token: string): Prom
     const { query, limit, order } = z
       .object({
         query: z.string(),
-        limit: z.number().int().min(1).max(50).optional(),
+        limit: limitArg(),
         order: z.enum(["date_desc", "date_asc"]).optional(),
       })
       .strict().parse(args);
-    const results = await searchLegislation(token, query, (limit ?? 20) + 1, order ?? "date_desc");
-    return capped(results.map(withLegistarUrl), limit ?? 20, 50, "add words to the query, or set order='date_asc' for the oldest");
+    const results = await searchLegislation(token, query, Math.min(limit ?? 20, LIVE_LIST_MAX) + 1, order ?? "date_desc");
+    return capped(results.map(withLegistarUrl), limit, 20, LIVE_LIST_MAX, "add words to the query, or set order='date_asc' for the oldest");
   } catch (err) {
     return failure(err, LIVE_SEARCH_TOOL_DEF.name, [LIVE_SEARCH_TOOL_DEF], token);
   }

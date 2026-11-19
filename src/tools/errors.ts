@@ -5,7 +5,7 @@
  */
 
 import { ZodError } from "zod";
-import { toolError, type ToolResult } from "../betanyc-tools.js";
+import { errorSummary, toolError, type ToolResult } from "../betanyc-tools.js";
 import { LegistarError } from "../legistar.js";
 import { unknownParamMessage } from "./unknown-param.js";
 
@@ -34,8 +34,7 @@ export function failure(
   if (err instanceof LegistarError) {
     return toolError(`${err.message} ${legistarHint(err.status)}`, { upstreamBody: err.body, secrets });
   }
-  // Only the first line: toolError (shared module 1.5.1) passes the message on as written, and
-  // the lines after it can be a stack trace.
-  const message = (err instanceof Error ? err.message : String(err)).split(/\r?\n/)[0];
-  return toolError(message, { secrets });
+  // One plain line (errorSummary, shared module 1.5.2): never a stack frame, at most 300
+  // characters. toolError then removes the token.
+  return toolError(errorSummary(err), { secrets });
 }

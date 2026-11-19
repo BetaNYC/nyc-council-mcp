@@ -39,7 +39,8 @@ export function termsSourceLine(fetchedAt: string | null, now: Date = new Date()
   const when = fetchedAt && isUsableAsOf(fetchedAt, now) ? `fetched ${fetchedAt}` : "fetch date unknown";
   return (
     "District and terms: City Council Members (1999 to Present), New York City Council, NYC Open Data uvw5-9znb; " +
-    `a copy shipped with this server (${when}), which BetaNYC joined to Legistar members by person ID. ` +
+    `a copy shipped with this server (${when}), which BetaNYC joined to Legistar members by person ID ` +
+    "(a district that is not a number is left blank, and term dates are cut to the day). " +
     `Link: ${SOURCE_LINK.district_member}`
   );
 }

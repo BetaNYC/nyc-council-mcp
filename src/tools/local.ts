@@ -23,6 +23,7 @@ import {
   memberRoles,
   committeeRoster,
   districtMember,
+  hasMatterAttributes,
 } from "../db/queries.js";
 import { failure } from "./errors.js";
 
@@ -33,7 +34,8 @@ import { annotateTools } from "../betanyc-tools.js";
 type LocalResult = { content: Array<{ type: string; text: string }>; isError?: boolean };
 
 /** Each list tool's default and maximum (#86). A whole-number limit above the maximum is lowered
- * to it, and the answer says so. get_event_bills pages with a total instead. */
+ * to it, and the answer says so. get_event_bills pages with a total instead, and lowers a limit
+ * over EVENT_BILLS_MAX the same way. */
 export const LIST_LIMITS: Readonly<Record<string, { default: number; max: number; how: string }>> = {
   search_legislation: { default: 25, max: 100, how: "add filters (status, committee) or more words" },
   search_bills: { default: 25, max: 100, how: "add filters (status, committee) or more words" },
@@ -71,6 +73,21 @@ function capped(tool: string, rows: unknown[], limit: number | undefined): Local
 }
 
 const plusOne = (tool: string, limit: number | undefined) => effectiveLimit(tool, limit) + 1;
+
+/** search_legislation's order, and its agency filter, are BetaNYC's choices, not Legistar's: say so
+ * on every answer, in one line (DATA-SOURCES.json, topic "bills", says the same). */
+export function searchMethodNote(agency: string | undefined, weighted: boolean): string {
+  // An index built before the weights (schema v5) is ranked by SQLite's own full-text rank.
+  const order = weighted
+    ? "Order: BetaNYC's own ranking weights (file number and title count most, then sponsors, summary, full text), not Legistar's."
+    : "Order: SQLite's full-text rank, not Legistar's.";
+  return agency
+    ? `${order} Agency filter: BetaNYC's own phrase list for each agency (src/agencies.ts), matched in the title or sponsors; it is not an official classification.`
+    : order;
+}
+
+/** The most items get_event_bills returns in one page. */
+export const EVENT_BILLS_MAX = 500;
 
 /** A real calendar date, YYYY-MM-DD (rejects 2026-02-30). */
 const isoDay = z
@@ -333,7 +350,7 @@ const DEFS = [
       additionalProperties: false,
       properties: {
         event_id: { type: "number", description: "Legistar event ID" },
-        limit: { type: "number", description: "Items per page (default 50, max 500)" },
+        limit: { type: "number", description: "Items per page (default 50, max 500; a larger limit is lowered to 500)" },
         offset: { type: "number", description: "Items to skip (default 0)" },
       },
       required: ["event_id"],
@@ -368,7 +385,8 @@ export function handleLocalTool(
           })
           .strict().parse(args);
         const results = searchBills(db, query, { limit: plusOne(name, limit), agency, status, committee });
-        return capped(name, results, limit);
+        const res = capped(name, results, limit);
+        return { ...res, content: [...res.content, { type: "text", text: searchMethodNote(agency, hasMatterAttributes(db)) }] };
       }
 
       case "search_events": {
@@ -496,13 +514,20 @@ export function handleLocalTool(
         const { event_id, limit, offset } = z
           .object({
             event_id: z.number(),
-            limit: z.number().int().min(1).max(500).optional(),
+            limit: limitArg(),
             offset: z.number().int().min(0).optional(),
           })
           .strict()
           .parse(args);
-        const results = getEventBills(db, event_id, { limit, offset });
-        return json(results);
+        const used = limit === undefined ? undefined : Math.min(limit, EVENT_BILLS_MAX);
+        const results = getEventBills(db, event_id, { limit: used, offset });
+        if (limit === undefined || limit <= EVENT_BILLS_MAX) return json(results);
+        return {
+          content: [
+            json(results).content[0],
+            { type: "text", text: `limit ${limit} is over this tool's maximum of ${EVENT_BILLS_MAX}, so ${EVENT_BILLS_MAX} was used.` },
+          ],
+        };
       }
 
       default:

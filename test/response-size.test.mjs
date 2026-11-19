@@ -49,9 +49,16 @@ test("get_event_bills offset reaches the end of the agenda", () => {
   assert.equal(out.total, 178);
 });
 
-test("get_event_bills rejects a limit above 500", () => {
-  const res = handleLocalTool("get_event_bills", { event_id: 22592, limit: 501 }, agendaDb(1));
-  assert.ok(res.isError);
+test("get_event_bills lowers a limit above 500 to 500, and says so (round 2, fix 3)", () => {
+  const res = handleLocalTool("get_event_bills", { event_id: 22592, limit: 501 }, agendaDb(600));
+  assert.ok(!res.isError, res.content[0].text);
+  const out = JSON.parse(res.content[0].text);
+  assert.equal(out.limit, 500);
+  assert.equal(out.items.length, 500);
+  assert.equal(out.total, 600);
+  assert.equal(res.content[1].text, "limit 501 is over this tool's maximum of 500, so 500 was used.");
+  assert.equal(handleLocalTool("get_event_bills", { event_id: 22592, limit: 500 }, agendaDb(1)).content.length, 1, "no note at 500");
+  for (const bad of [0, 1.5]) assert.equal(handleLocalTool("get_event_bills", { event_id: 22592, limit: bad }, agendaDb(1)).isError, true);
 });
 
 // ---------------------------------------------------------------- #22

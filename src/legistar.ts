@@ -1,6 +1,7 @@
 import { nyDateString } from "./dates.js";
 import { nameMatches } from "./names.js";
 import { USER_AGENT } from "./version.js";
+import { errorSummary } from "./betanyc-tools.js";
 
 const BASE_URL = "https://webapi.legistar.com/v1/nyc";
 
@@ -139,8 +140,9 @@ export type LegistarEvent = {
   // The /events list endpoint always returns this empty ([]); $expand=EventItems
   // is silently ignored (verified live 2026-07-01). getUpcomingHearings populates
   // it via a follow-up call to /events/{EventId}/eventitems unless agenda items
-  // are explicitly excluded.
-  EventItems: LegistarEventItem[];
+  // are explicitly excluded. null when that call was made and failed, or was not made because
+  // an earlier one failed or time ran out: the agenda is unknown, not empty.
+  EventItems: LegistarEventItem[] | null;
 };
 
 export type LegistarPerson = {
@@ -340,7 +342,13 @@ export const LEGISTAR_MAX_WAIT_MS = 10_000;
 
 /** A failed Legistar request. The message never carries the request URL, which holds the token. */
 export class LegistarError extends Error {
-  constructor(message: string, readonly status: number | null = null, readonly body: string | null = null) {
+  constructor(
+    message: string,
+    readonly status: number | null = null,
+    readonly body: string | null = null,
+    /** True when the request or its reply ran out of time (timeoutMs). */
+    readonly timedOut = false
+  ) {
     super(message);
     this.name = "LegistarError";
   }
@@ -359,17 +367,12 @@ export function retryWaitMs(retryAfter: string | null | undefined, attempt: numb
   return ms > LEGISTAR_MAX_WAIT_MS ? null : ms;
 }
 
-/** The first line of an error message, trimmed: a network error can carry a stack frame on the
- * lines after it, and toolError (shared module 1.5.1) passes the caller's message on as written. */
-function firstLine(s: string): string {
-  return s.split(/\r?\n/)[0].trim();
-}
-
 /**
  * GET one Legistar Web API URL (#83): a timeout, a User-Agent naming this package, and up to
  * LEGISTAR_MAX_RETRIES retries on 429 or 5xx honoring Retry-After. Nothing else is retried,
- * and nothing polls. `retry429: false` fails at once on a 429 (the agenda fan-out in
- * getUpcomingHearings uses it, so a rate-limited burst does not grow). Legistar takes the token
+ * and nothing polls. `retry: false` fails at once on a 429 or 5xx (the agenda fan-out in
+ * getUpcomingHearings uses it, so an outage or a rate limit does not grow into many slow
+ * requests). Legistar takes the token
  * only as a URL parameter (https://webapi.legistar.com/Home/Examples, "Tokens"), so no error
  * built here includes the URL, and the token is removed from anything the network layer or
  * Legistar says (#87). The reply is read and parsed inside the same try as the request, so a
@@ -377,11 +380,11 @@ function firstLine(s: string): string {
  */
 export async function legistarFetch<T>(
   url: string,
-  opts: { timeoutMs?: number; sleep?: (ms: number) => Promise<void>; retry429?: boolean } = {}
+  opts: { timeoutMs?: number; sleep?: (ms: number) => Promise<void>; retry?: boolean } = {}
 ): Promise<T> {
   const timeoutMs = opts.timeoutMs ?? LEGISTAR_TIMEOUT_MS;
   const sleep = opts.sleep ?? ((ms: number) => new Promise<void>((r) => setTimeout(r, ms)));
-  const retry429 = opts.retry429 ?? true;
+  const retry = opts.retry ?? true;
   const token = new URL(url).searchParams.get("token");
   const hide = (s: string) =>
     token ? s.split(token).join("[redacted]").split(encodeURIComponent(token)).join("[redacted]") : s;
@@ -392,18 +395,22 @@ export async function legistarFetch<T>(
       if (res.ok) return (await res.json()) as T;
     } catch (err) {
       const name = err instanceof Error ? err.name : "";
-      const why = hide(firstLine(err instanceof Error ? err.message : String(err)));
+      // errorSummary (shared module 1.5.2): the first plain line, never a stack frame.
+      const why = hide(errorSummary(err));
       if (name === "TimeoutError" || name === "AbortError") {
         throw new LegistarError(
           res
             ? `The Legistar API's reply did not arrive in full within ${timeoutMs / 1000} seconds.`
-            : `The Legistar API did not answer within ${timeoutMs / 1000} seconds.`
+            : `The Legistar API did not answer within ${timeoutMs / 1000} seconds.`,
+          null,
+          null,
+          true
         );
       }
       if (res) throw new LegistarError(`The Legistar API's reply could not be read (${why}).`, res.status);
       throw new LegistarError(`Could not reach the Legistar API (${why}).`);
     }
-    const retryable = (res.status === 429 && retry429) || res.status >= 500;
+    const retryable = retry && (res.status === 429 || res.status >= 500);
     const wait = retryable && attempt <= LEGISTAR_MAX_RETRIES ? retryWaitMs(res.headers?.get("retry-after"), attempt) : null;
     if (wait !== null) {
       await res.body?.cancel().catch(() => {});
@@ -565,7 +572,7 @@ export async function getBillHistory(token: string, matterId: number): Promise<L
 export async function getEventItems(
   token: string,
   eventId: number,
-  opts: { retry429?: boolean } = {}
+  opts: { retry?: boolean; timeoutMs?: number } = {}
 ): Promise<LegistarEventItem[]> {
   const url = buildUrl(`/events/${eventId}/eventitems`, token);
   return legistarFetch<LegistarEventItem[]>(url, opts);
@@ -590,6 +597,8 @@ export async function getEventStatuses(
 export const UPCOMING_HEARINGS_MAX = 50;
 /** The most agenda requests get_upcoming_hearings has in flight at once. */
 export const AGENDA_CONCURRENCY = 5;
+/** How long get_upcoming_hearings spends on agendas in all, after the meeting list. */
+export const AGENDA_BUDGET_MS = 20_000;
 
 /** A meeting whose agenda is not in the answer, and why. */
 export type MissingAgenda = Pick<LegistarEvent, "EventId" | "EventDate" | "EventBodyName"> & { reason: string };
@@ -602,18 +611,23 @@ export async function getUpcomingHearings(
   return (await getUpcomingHearingsReport(token, daysAhead, includeAgenda)).events;
 }
 
+const OUT_OF_TIME = `out of time: the agendas get ${AGENDA_BUDGET_MS / 1000} seconds in all`;
+
 /**
  * Upcoming meetings, each with its agenda items when includeAgenda is true, and the meetings
  * whose agenda could not be fetched, with the reason. The list response caps at 50 events
- * ($top), and the agendas come one request per event, at most AGENDA_CONCURRENCY at a time. A
- * 429 on an agenda is not retried: no more agenda requests are sent, and the meetings not yet
- * fetched are listed as missing, so a rate-limited burst cannot grow. Any other failure leaves
- * that one meeting's EventItems empty and lists it as missing; the rest are kept.
+ * ($top), and the agendas come one request per event, at most AGENDA_CONCURRENCY at a time.
+ * An agenda request is never retried (no retry on 429 or 5xx). After the first one fails, for
+ * any reason, no more are sent. The agendas share one time budget (AGENDA_BUDGET_MS): each
+ * request may take only the time left, and when it runs out the rest are "out of time". A
+ * meeting whose agenda is not fetched keeps EventItems null (unknown, not empty) and is listed
+ * in missingAgendas; the agendas already fetched are kept. `clock` and `budgetMs` are for tests.
  */
 export async function getUpcomingHearingsReport(
   token: string,
   daysAhead = 14,
-  includeAgenda = true
+  includeAgenda = true,
+  opts: { clock?: () => number; budgetMs?: number } = {}
 ): Promise<{ events: LegistarEvent[]; missingAgendas: MissingAgenda[] }> {
   const now = new Date();
   const future = new Date(now.getTime() + daysAhead * 24 * 60 * 60 * 1000);
@@ -627,26 +641,41 @@ export async function getUpcomingHearingsReport(
   const events = await legistarFetch<LegistarEvent[]>(url);
   if (!includeAgenda) return { events, missingAgendas: [] };
 
+  const clock = opts.clock ?? Date.now;
+  const budget = opts.budgetMs ?? AGENDA_BUDGET_MS;
+  const deadline = clock() + budget;
+  const outOfTime = budget === AGENDA_BUDGET_MS ? OUT_OF_TIME : `out of time: the agendas get ${budget / 1000} seconds in all`;
   const why = new Map<number, string>();
-  let limited = false;
+  /** Set by the first failure: the reason every meeting not yet requested gets. */
+  let stop: string | null = null;
   let next = 0;
   const worker = async () => {
     while (next < events.length) {
       const event = events[next++];
-      event.EventItems = [];
-      if (limited) {
-        why.set(event.EventId, "not requested, because Legistar answered HTTP 429 (too many requests) to an earlier agenda request");
+      event.EventItems = null;
+      const left = deadline - clock();
+      if (stop === null && left <= 0) stop = outOfTime;
+      if (stop !== null) {
+        why.set(event.EventId, stop);
         continue;
       }
+      // The request may take only the time left in the budget.
+      const cut = left < LEGISTAR_TIMEOUT_MS;
       try {
-        event.EventItems = await getEventItems(token, event.EventId, { retry429: false });
+        event.EventItems = await getEventItems(token, event.EventId, { retry: false, timeoutMs: cut ? left : LEGISTAR_TIMEOUT_MS });
       } catch (err) {
-        if (err instanceof LegistarError && err.status === 429) {
-          limited = true;
-          why.set(event.EventId, "Legistar answered HTTP 429 (too many requests)");
+        let reason: string;
+        if (err instanceof LegistarError && err.timedOut && cut) {
+          reason = outOfTime;
+          stop ??= outOfTime;
+        } else if (err instanceof LegistarError && err.status === 429) {
+          reason = "Legistar answered HTTP 429 (too many requests)";
+          stop ??= "not requested, because Legistar answered HTTP 429 (too many requests) to an earlier agenda request";
         } else {
-          why.set(event.EventId, err instanceof Error ? firstLine(err.message) : String(err));
+          reason = errorSummary(err);
+          stop ??= "not requested, because an earlier agenda request failed";
         }
+        why.set(event.EventId, reason);
       }
     }
   };
@@ -669,7 +698,7 @@ export const SUMMARY_TITLE_MAX = 300;
 export function summarizeHearing(event: LegistarEvent): Record<string, unknown> {
   const dropNulls = (o: Record<string, unknown>) =>
     Object.fromEntries(Object.entries(o).filter(([, v]) => v !== null && v !== undefined));
-  return dropNulls({
+  const summary = dropNulls({
     EventId: event.EventId,
     EventDate: event.EventDate,
     EventTime: event.EventTime,
@@ -695,6 +724,9 @@ export function summarizeHearing(event: LegistarEvent): Record<string, unknown> 
       });
     }),
   });
+  // An agenda that could not be fetched stays null (unknown), not [] (nothing on it).
+  if (event.EventItems === null) summary.EventItems = null;
+  return summary;
 }
 
 /** The most members get_council_member returns. */

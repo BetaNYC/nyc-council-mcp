@@ -45,7 +45,8 @@ test("hybrid get_council_member: the source line names Legistar, the terms file 
   assert.equal(
     lines[1],
     "District and terms: City Council Members (1999 to Present), New York City Council, NYC Open Data uvw5-9znb; " +
-      "a copy shipped with this server (fetched 2026-11-13T02:13:52Z), which BetaNYC joined to Legistar members by person ID. " +
+      "a copy shipped with this server (fetched 2026-11-13T02:13:52Z), which BetaNYC joined to Legistar members by person ID " +
+      "(a district that is not a number is left blank, and term dates are cut to the day). " +
       "Link: https://data.cityofnewyork.us/d/uvw5-9znb"
   );
   assert.equal(lines[2], CURATED_SOURCE_LINE);
@@ -142,9 +143,10 @@ test("agendas: after one 429 the meetings already fetched keep their agenda; get
   assert.deepEqual(calls.agenda, [1, 2, 3, 4, 5], "requests 2-5 were in flight; nothing started after the 429");
   const out = JSON.parse(res.content[0].text);
   assert.equal(out.find((e) => e.EventId === 2).EventItems.length, 1);
-  assert.equal(out.find((e) => e.EventId === 6).EventItems.length, 0);
+  assert.equal(out.find((e) => e.EventId === 6).EventItems, null, "not fetched: null (unknown), not [] (round 2, fix 2)");
+  assert.equal(out.find((e) => e.EventId === 1).EventItems, null);
   assert.equal(res.content.length, 3, "JSON, the missing-agenda note, the source line");
-  assert.match(res.content[1].text, /^The agenda is missing for 8 of 12 meetings, so their EventItems are empty: 1 \(2026-11-20, Committee 1\): Legistar answered HTTP 429 \(too many requests\); 6 \(2026-11-20, Committee 6\): not requested/);
+  assert.match(res.content[1].text, /^The agenda is missing for 8 of 12 meetings, so their EventItems are null \(not fetched; this does not mean the agenda is empty\): 1 \(2026-11-20, Committee 1\): Legistar answered HTTP 429 \(too many requests\); 6 \(2026-11-20, Committee 6\): not requested/);
   assert.match(last(res), /^Source: NYC Council Legistar Web API/);
 });
 
